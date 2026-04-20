@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Miroir — Contatti & Supporto</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --rose: #E8B4B8; --rose-light: #F5DDE0; --rose-dark: #C4878C;
+  --beige-mid: #EAE0D5; --beige-dark: #D9CBBF;
+  --cream: #FAF6F2; --brown: #6B4F4F; --text: #3A2A2A; --text-muted: #8A6F6F;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* NAV */
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 2rem;
+  background: rgba(250,246,242,0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(232,180,184,0.2);
+  position: sticky; top: 0; z-index: 100;
+}
+.nav-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem; font-weight: 400;
+  letter-spacing: 0.12em; color: var(--brown);
+  font-style: italic; text-decoration: none;
+}
+.nav-back {
+  font-size: 0.82rem; color: var(--text-muted);
+  text-decoration: none; display: flex; align-items: center; gap: 6px;
+  transition: color 0.2s;
+}
+.nav-back:hover { color: var(--brown); }
+
+/* LAYOUT */
+.page {
+  max-width: 960px; margin: 0 auto;
+  padding: 3rem 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+/* SINISTRA */
+.info-col {}
+.page-tag {
+  font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--rose-dark); margin-bottom: 0.75rem;
+}
+.page-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.8rem; font-weight: 300; line-height: 1.15;
+  color: var(--text); margin-bottom: 1rem;
+}
+.page-title em { font-style: italic; color: var(--rose-dark); }
+.page-desc {
+  font-size: 0.88rem; color: var(--text-muted);
+  line-height: 1.75; margin-bottom: 2.5rem;
+}
+
+.contact-items { display: flex; flex-direction: column; gap: 1rem; }
+.contact-item {
+  display: flex; align-items: flex-start; gap: 0.9rem;
+  padding: 1rem 1.1rem;
+  background: white;
+  border-radius: 14px;
+  border: 1px solid rgba(232,180,184,0.2);
+  transition: border-color 0.2s;
+}
+.contact-item:hover { border-color: var(--rose); }
+.ci-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--rose-light); display: flex;
+  align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.ci-label {
+  font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-muted); margin-bottom: 2px;
+}
+.ci-val {
+  font-size: 0.88rem; color: var(--text); font-weight: 500;
+}
+.ci-sub { font-size: 0.76rem; color: var(--text-muted); margin-top: 2px; }
+
+.faq { margin-top: 2.5rem; }
+.faq-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem; font-weight: 300; color: var(--text);
+  margin-bottom: 1rem;
+}
+.faq-item {
+  border-bottom: 1px solid var(--beige-mid);
+  padding: 0.85rem 0;
+}
+.faq-q {
+  font-size: 0.84rem; font-weight: 500; color: var(--text);
+  cursor: pointer; display: flex; justify-content: space-between;
+  align-items: center; gap: 0.5rem;
+  user-select: none;
+}
+.faq-q::after { content: '+'; color: var(--rose-dark); font-size: 1.1rem; flex-shrink: 0; }
+.faq-item.open .faq-q::after { content: '−'; }
+.faq-a {
+  font-size: 0.8rem; color: var(--text-muted); line-height: 1.7;
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+}
+.faq-item.open .faq-a { max-height: 200px; padding-top: 0.6rem; }
+
+/* DESTRA — FORM */
+.form-col {}
+.form-box {
+  background: white;
+  border-radius: 20px;
+  border: 1px solid rgba(232,180,184,0.2);
+  padding: 2rem;
+  box-shadow: 0 4px 32px rgba(107,79,79,0.06);
+}
+.form-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem; font-weight: 300; color: var(--text);
+  margin-bottom: 0.35rem;
+}
+.form-sub { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6; }
+
+.field { margin-bottom: 1.1rem; }
+.label {
+  display: block; font-size: 0.7rem; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-muted); margin-bottom: 0.4rem;
+}
+.input, .textarea, .select {
+  width: 100%; padding: 0.75rem 1rem;
+  border: 1px solid var(--beige-dark); border-radius: 10px;
+  font-size: 0.88rem; font-family: 'DM Sans', sans-serif;
+  background: var(--cream); color: var(--text);
+  outline: none; transition: border 0.15s, background 0.15s;
+  appearance: none;
+}
+.input:focus, .textarea:focus, .select:focus {
+  border-color: var(--rose-dark); background: white;
+}
+.textarea { resize: vertical; min-height: 130px; line-height: 1.6; }
+.select-wrap { position: relative; }
+.select-wrap::after {
+  content: '▾'; position: absolute; right: 14px; top: 50%;
+  transform: translateY(-50%); color: var(--text-muted);
+  pointer-events: none; font-size: 0.8rem;
+}
+
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+.submit-btn {
+  width: 100%; padding: 0.95rem;
+  border-radius: 99px; background: var(--brown);
+  color: white; font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem; font-weight: 500;
+  border: none; cursor: pointer; transition: all 0.2s;
+  margin-top: 0.5rem;
+}
+.submit-btn:hover:not(:disabled) { background: var(--text); }
+.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.form-note {
+  font-size: 0.72rem; color: var(--text-muted);
+  text-align: center; margin-top: 0.75rem; line-height: 1.6;
+}
+
+.success-msg {
+  display: none; text-align: center; padding: 1.5rem;
+  animation: fadeUp 0.4s ease;
+}
+.success-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+.success-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem; font-weight: 300; color: var(--text); margin-bottom: 0.4rem;
+}
+.success-sub { font-size: 0.82rem; color: var(--text-muted); line-height: 1.65; }
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+/* FOOTER */
+footer {
+  text-align: center; padding: 2rem;
+  font-size: 0.75rem; color: var(--text-muted);
+  border-top: 1px solid var(--beige-mid); margin-top: 2rem;
+}
+footer a { color: var(--text-muted); text-decoration: none; }
+footer a:hover { color: var(--brown); }
+
+@media (max-width: 768px) {
+  .page { grid-template-columns: 1fr; gap: 2.5rem; padding: 2rem 1.25rem; }
+  .page-title { font-size: 2.2rem; }
+  .row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/">Miroir</a>
+  <a class="nav-back" href="/">← Torna all'app</a>
+</nav>
+
+<div class="page">
+
+  <!-- SINISTRA -->
+  <div class="info-col">
+    <div class="page-tag">Supporto & Contatti</div>
+    <h1 class="page-title">Come possiamo <em>aiutarti?</em></h1>
+    <p class="page-desc">
+      Siamo qui per te — che si tratti di un problema tecnico, 
+      una domanda sui crediti o un semplice suggerimento per migliorare Miroir.
+    </p>
+
+    <div class="contact-items">
+      <div class="contact-item">
+        <div class="ci-icon">✉️</div>
+        <div>
+          <div class="ci-label">Email diretta</div>
+          <div class="ci-val">supporto@mir-oir.it</div>
+          <div class="ci-sub">Risposta entro 24 ore nei giorni lavorativi</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="ci-icon">⏱️</div>
+        <div>
+          <div class="ci-label">Tempi di risposta</div>
+          <div class="ci-val">Entro 24 ore</div>
+          <div class="ci-sub">Lun–Ven · 9:00–18:00</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="faq">
+      <div class="faq-title">Domande frequenti</div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Ho usato un credito ma l'outfit non è apparso</div>
+        <div class="faq-a">Se la generazione va in errore il sistema non scala il credito. Se invece hai visto un risultato parziale o errato, contattaci con la data e l'ora del tentativo — verificheremo e ti restituiremo il credito manualmente.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Posso avere un rimborso?</div>
+        <div class="faq-a">I crediti acquistati non sono rimborsabili una volta utilizzati. Se non hai ancora usato i crediti e hai avuto problemi tecnici gravi, valutare caso per caso scrivendo a supporto@mir-oir.it entro 7 giorni dall'acquisto.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Come funziona il piano gratuito?</div>
+        <div class="faq-a">Senza registrazione hai 1 look gratuito. Registrandoti ottieni 3 look gratuiti totali. Esauriti i look gratuiti puoi acquistare crediti: 10 crediti a 1€ (Starter) o 60 crediti a 5€ (Pro).</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">I miei dati sono al sicuro?</div>
+        <div class="faq-a">Sì. Le password sono cifrate con bcrypt e non sono mai leggibili. I tuoi dati non vengono venduti né condivisi con terzi. I pagamenti sono gestiti da Stripe, che è certificato PCI DSS.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Come elimino il mio account?</div>
+        <div class="faq-a">Scrivi a supporto@mir-oir.it con oggetto "Eliminazione account" dalla mail con cui ti sei registrato. Provvederemo entro 48 ore eliminando tutti i tuoi dati.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DESTRA — FORM -->
+  <div class="form-col">
+    <div class="form-box">
+      <div id="formSection">
+        <div class="form-title">Scrivici</div>
+        <div class="form-sub">Compila il form e ti risponderemo entro 24 ore. Per urgenze scrivi direttamente a supporto@mir-oir.it</div>
+
+        <div class="row">
+          <div class="field">
+            <label class="label">Nome</label>
+            <input class="input" id="cNome" type="text" placeholder="Il tuo nome">
+          </div>
+          <div class="field">
+            <label class="label">Email</label>
+            <input class="input" id="cEmail" type="email" placeholder="tua@email.com">
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Motivo del contatto</label>
+          <div class="select-wrap">
+            <select class="select" id="cMotivo">
+              <option value="">Seleziona un motivo...</option>
+              <option value="credito">Credito non scalato / outfit non generato</option>
+              <option value="rimborso">Richiesta rimborso</option>
+              <option value="account">Problema con l'account</option>
+              <option value="pagamento">Problema con il pagamento</option>
+              <option value="bug">Segnalazione bug</option>
+              <option value="suggerimento">Suggerimento o feedback</option>
+              <option value="altro">Altro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Messaggio</label>
+          <textarea class="textarea" id="cMsg" placeholder="Descrivi il problema o la richiesta nel dettaglio..."></textarea>
+        </div>
+
+        <div class="field">
+          <label class="label">Email account Miroir (se diversa)</label>
+          <input class="input" id="cEmailMiroir" type="email" placeholder="solo se diversa dall'email sopra">
+        </div>
+
+        <button class="submit-btn" id="submitBtn" onclick="inviaForm()">Invia messaggio</button>
+        <div class="form-note">Risposta garantita entro 24 ore nei giorni lavorativi.<br>Non usiamo i tuoi dati per scopi commerciali.</div>
+      </div>
+
+      <div class="success-msg" id="successMsg">
+        <div class="success-icon">✉️</div>
+        <div class="success-title">Messaggio inviato!</div>
+        <div class="success-sub">
+          Grazie per averci scritto. Ti risponderemo entro 24 ore all'indirizzo indicato.<br><br>
+          <a href="/" style="color:var(--rose-dark);font-weight:500;">← Torna a Miroir</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <span>© 2025 Miroir · </span>
+  <a href="/">App</a> · 
+  <a href="mailto:supporto@mir-oir.it">supporto@mir-oir.it</a>
+</footer>
+
+<script>
+const BACKEND_URL = 'https://miroir-backend-production.up.railway.app';
+
+function toggleFaq(el) {
+  el.closest('.faq-item').classList.toggle('open');
+}
+
+async function inviaForm() {
+  const nome   = document.getElementById('cNome').value.trim();
+  const email  = document.getElementById('cEmail').value.trim();
+  const motivo = document.getElementById('cMotivo').value;
+  const msg    = document.getElementById('cMsg').value.trim();
+  const emailMiroir = document.getElementById('cEmailMiroir').value.trim();
+  const btn    = document.getElementById('submitBtn');
+
+  if (!nome) return alert('Inserisci il tuo nome');
+  if (!email || !email.includes('@')) return alert('Inserisci un\'email valida');
+  if (!motivo) return alert('Seleziona il motivo del contatto');
+  if (!msg || msg.length < 10) return alert('Scrivi un messaggio di almeno 10 caratteri');
+
+  btn.disabled = true;
+  btn.textContent = 'Invio in corso...';
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/contact`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome, email, motivo, messaggio: msg, emailMiroir })
+    });
+
+    if (!res.ok) throw new Error();
+
+    document.getElementById('formSection').style.display = 'none';
+    document.getElementById('successMsg').style.display = 'block';
+  } catch(e) {
+    alert('Errore nell\'invio — riprova o scrivi direttamente a supporto@mir-oir.it');
+    btn.disabled = false;
+    btn.textContent = 'Invia messaggio';
+  }
+}
+
+// Enter nel textarea non invia
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+    e.preventDefault();
+  }
+});
+</script>
+
+</body>
+</html>

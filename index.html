@@ -1,0 +1,2141 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Miroir — Il tuo outfit del giorno</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --rose: #E8B4B8; --rose-light: #F5DDE0; --rose-dark: #C4878C;
+  --beige-dark: #D9CBBF; --beige-mid: #EAE0D5;
+  --cream: #FAF6F2; --brown: #6B4F4F;
+  --text: #3A2A2A; --text-muted: #8A6F6F;
+}
+body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+
+nav { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; background: rgba(250,246,242,0.96); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(232,180,184,0.2); position: sticky; top: 0; z-index: 100; }
+.nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 400; letter-spacing: 0.12em; color: var(--brown); font-style: italic; text-decoration: none; }
+.credits-pill { display: flex; align-items: center; gap: 0.5rem; background: var(--rose-light); border: 1px solid var(--rose); border-radius: 99px; padding: 0.35rem 1rem; font-size: 0.8rem; }
+.credits-num { font-weight: 500; color: var(--brown); }
+.credits-label { color: var(--text-muted); }
+.free-badge { background: var(--beige-mid); border-radius: 99px; padding: 0.3rem 0.85rem; font-size: 0.72rem; color: var(--text-muted); }
+.free-badge.done { background: var(--rose-light); color: var(--rose-dark); }
+
+.app-wrap { display: grid; grid-template-columns: 320px 1fr; min-height: calc(100vh - 62px); }
+
+/* SINISTRA */
+.config { background: white; border-right: 1px solid rgba(232,180,184,0.18); padding: 1.75rem 1.5rem; overflow-y: auto; }
+.config-title { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 300; margin-bottom: 1.5rem; padding-bottom: 0.9rem; border-bottom: 1px solid var(--beige-mid); }
+.config-title em { font-style: italic; color: var(--rose-dark); }
+.fg { margin-bottom: 1.4rem; }
+.fl { font-size: 0.68rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.6rem; display: block; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 0.79rem; padding: 0.38rem 0.88rem; border-radius: 99px; border: 1px solid var(--beige-dark); background: var(--cream); color: var(--text-muted); cursor: pointer; transition: all 0.15s; user-select: none; }
+.chip:hover, .chip.on { background: var(--rose-light); border-color: var(--rose); color: var(--brown); font-weight: 500; }
+.tgrid { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; }
+.tcard { border: 1px solid var(--beige-dark); border-radius: 10px; padding: 0.75rem 0.3rem; text-align: center; cursor: pointer; transition: all 0.15s; background: var(--cream); }
+.tcard:hover, .tcard.on { background: var(--rose-light); border-color: var(--rose); }
+.ti { font-size: 1.2rem; display: block; margin-bottom: 3px; }
+.tl { font-size: 0.68rem; color: var(--text-muted); line-height: 1.4; }
+.tcard.on .tl { color: var(--brown); font-weight: 500; }
+.sgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.scard { border: 1px solid var(--beige-dark); border-radius: 10px; padding: 0.75rem; cursor: pointer; transition: all 0.15s; background: var(--cream); }
+.scard:hover, .scard.on { background: var(--rose-light); border-color: var(--rose); }
+.sn { font-size: 0.83rem; font-weight: 500; color: var(--text); margin-bottom: 1px; }
+.sd { font-size: 0.68rem; color: var(--text-muted); }
+.scard.on .sn { color: var(--brown); }
+.gbtn { width: 100%; padding: 0.95rem; border-radius: 99px; background: var(--brown); color: white; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s; margin-top: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+.gbtn:hover:not(:disabled) { background: var(--text); transform: translateY(-1px); }
+.gbtn:disabled { opacity: 0.5; cursor: not-allowed; }
+.gbtn.ai-mode { background: #8B5E6B; }
+.btn-sub { font-size: 0.72rem; opacity: 0.7; }
+
+/* DESTRA */
+.result { padding: 2rem; overflow-y: auto; }
+.rhead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+.rtitle { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 300; }
+.rtitle em { font-style: italic; color: var(--rose-dark); }
+.ractions { display: flex; gap: 8px; }
+.ibtn { width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--beige-dark); background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.15s; }
+.ibtn:hover { border-color: var(--rose); background: var(--rose-light); }
+
+/* VUOTO */
+.empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: calc(100vh - 200px); text-align: center; gap: 1rem; }
+.eill { width: 100px; height: 100px; border-radius: 50%; background: var(--rose-light); border: 2px dashed var(--rose); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; }
+.etitle { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 300; }
+.esub { font-size: 0.85rem; color: var(--text-muted); max-width: 260px; line-height: 1.7; }
+.free-dots { display: flex; gap: 7px; margin-top: 0.5rem; }
+.fd { width: 11px; height: 11px; border-radius: 50%; background: var(--rose); transition: all 0.3s; }
+.fd.used { background: var(--beige-dark); }
+
+/* LOADING */
+.loading { display: none; flex-direction: column; align-items: center; justify-content: center; height: calc(100vh - 200px); gap: 1.5rem; text-align: center; }
+.loading.vis { display: flex; }
+.spin { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--beige-dark); border-top-color: var(--rose-dark); animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 300; }
+.loading-sub { font-size: 0.82rem; color: var(--text-muted); }
+
+/* OUTFIT */
+.outfit { display: none; animation: fadeUp 0.4s ease both; }
+.outfit.vis { display: block; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+.obadge { display: inline-flex; align-items: center; gap: 0.5rem; border-radius: 99px; font-size: 0.74rem; font-weight: 500; padding: 0.28rem 0.9rem; margin-bottom: 1rem; }
+.obadge.static { background: var(--beige-mid); color: var(--text-muted); border: 1px solid var(--beige-dark); }
+.obadge.ai { background: var(--rose-light); color: var(--rose-dark); border: 1px solid var(--rose); }
+.ointro { font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; font-weight: 300; line-height: 1.8; color: var(--text); margin-bottom: 1.5rem; padding: 1.1rem 1.4rem; background: white; border-radius: 14px; border: 1px solid rgba(232,180,184,0.2); border-left: 3px solid var(--rose); }
+
+/* PINTEREST */
+.pgrid { columns: 3; column-gap: 12px; margin-bottom: 1.5rem; }
+@media (max-width: 1100px) { .pgrid { columns: 2; } }
+.pin { break-inside: avoid; margin-bottom: 12px; background: white; border-radius: 16px; overflow: hidden; border: 1px solid rgba(232,180,184,0.2); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; position: relative; }
+.pin:hover { transform: translateY(-4px); box-shadow: 0 14px 36px rgba(107,79,79,0.12); }
+.piw { position: relative; overflow: hidden; }
+.pimg { width: 100%; display: block; object-fit: cover; transition: transform 0.35s; background: var(--beige-mid); }
+.pin:hover .pimg { transform: scale(1.04); }
+.pph { display: none; width: 100%; background: var(--beige-mid); flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 2rem 1rem; }
+.pov { position: absolute; inset: 0; background: rgba(58,42,42,0.18); opacity: 0; transition: opacity 0.2s; display: flex; align-items: flex-end; padding: 10px; }
+.pin:hover .pov { opacity: 1; }
+.pov-b { background: white; border-radius: 8px; padding: 4px 8px; font-size: 10px; font-weight: 500; color: var(--brown); }
+.pb { padding: 10px 12px 12px; }
+.pcat { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 2px; }
+.pnome { font-size: 0.84rem; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+.pdesc { font-size: 0.73rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 8px; }
+.plink { display: inline-flex; align-items: center; gap: 4px; font-size: 0.69rem; color: var(--rose-dark); background: var(--rose-light); padding: 3px 9px; border-radius: 99px; text-decoration: none; border: 1px solid rgba(232,180,184,0.4); transition: all 0.15s; }
+.plink:hover { background: var(--rose); color: white; }
+.otips { background: white; border-radius: 16px; border: 1px solid rgba(232,180,184,0.2); padding: 1.3rem; margin-bottom: 1.5rem; }
+.otitle { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 500; color: var(--brown); margin-bottom: 0.85rem; }
+.tlist { display: flex; flex-direction: column; gap: 0.5rem; }
+.tip { font-size: 0.82rem; color: var(--text-muted); line-height: 1.65; display: flex; gap: 0.5rem; }
+.tb { color: var(--rose-dark); flex-shrink: 0; }
+.ofoot { display: flex; gap: 1rem; flex-wrap: wrap; }
+.bp { padding: 0.7rem 1.6rem; border-radius: 99px; background: var(--brown); color: white; font-size: 0.86rem; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s; }
+.bp:hover { background: var(--text); }
+.bs { padding: 0.7rem 1.6rem; border-radius: 99px; background: var(--rose-light); color: var(--brown); font-size: 0.86rem; font-weight: 500; border: 1px solid var(--rose); cursor: pointer; transition: all 0.2s; }
+.bs:hover { background: var(--rose); color: white; }
+
+/* PAYWALL */
+.pw-overlay { display: none; position: fixed; inset: 0; background: rgba(30,10,10,0.78); z-index: 300; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(5px); overflow-y: auto; }
+.pw-overlay.open { display: flex; }
+.pw-box { max-width: 500px; width: 100%; background: var(--cream); border-radius: 24px; overflow: hidden; animation: fadeUp 0.32s ease; max-height: 95vh; overflow-y: auto; margin: auto; }
+.pw-top { background: var(--brown); padding: 1.75rem 2rem 1.5rem; text-align: center; }
+.pw-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.9rem; color: var(--rose-light); font-style: italic; letter-spacing: 0.1em; margin-bottom: 4px; }
+.pw-tag { font-size: 0.78rem; color: rgba(255,255,255,0.55); }
+.pw-body { padding: 1.75rem 2rem 2rem; }
+.pw-h { font-family: 'Cormorant Garamond', serif; font-size: 1.45rem; font-weight: 300; color: var(--text); margin-bottom: 0.4rem; }
+.pw-h em { font-style: italic; color: var(--rose-dark); }
+.pw-p { font-size: 0.84rem; color: var(--text-muted); line-height: 1.65; margin-bottom: 1.5rem; }
+.pw-benefits { display: flex; flex-direction: column; gap: 0.9rem; margin-bottom: 1.5rem; padding: 1.25rem; background: white; border-radius: 16px; border: 1px solid rgba(232,180,184,0.2); }
+.pw-ben { display: flex; align-items: flex-start; gap: 0.75rem; }
+.pw-ben-ic { width: 34px; height: 34px; border-radius: 9px; background: var(--rose-light); display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+.pw-ben-t { font-size: 0.86rem; font-weight: 500; color: var(--text); margin-bottom: 1px; }
+.pw-ben-d { font-size: 0.75rem; color: var(--text-muted); line-height: 1.5; }
+.pw-sep { border: none; border-top: 1px solid var(--beige-mid); margin: 1.25rem 0; }
+.pw-plans { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.25rem; }
+.pw-plan { border: 1.5px solid var(--beige-dark); border-radius: 14px; padding: 1rem; cursor: pointer; transition: all 0.18s; background: white; text-align: center; position: relative; }
+.pw-plan:hover { border-color: var(--rose); transform: translateY(-2px); }
+.pw-plan.sel { border-color: var(--brown); background: var(--rose-light); }
+.pw-pop { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--rose-dark); color: white; font-size: 10px; font-weight: 500; padding: 2px 10px; border-radius: 99px; white-space: nowrap; }
+.pw-pname { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 5px; }
+.pw-plan.sel .pw-pname { color: var(--brown); }
+.pw-pprice { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 300; color: var(--text); line-height: 1; }
+.pw-pcreds { font-size: 0.74rem; color: var(--text-muted); margin: 3px 0 6px; }
+.pw-plan.sel .pw-pcreds { color: var(--brown); }
+.pw-punit { display: inline-block; font-size: 0.66rem; color: var(--text-muted); background: var(--beige-mid); padding: 2px 8px; border-radius: 99px; }
+.pw-btn { width: 100%; padding: 1rem; border-radius: 99px; background: var(--brown); color: white; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s; margin-bottom: 0.6rem; }
+.pw-btn:hover { background: var(--text); }
+.pw-note { font-size: 0.71rem; color: var(--text-muted); text-align: center; margin-bottom: 0.75rem; }
+.pw-skip { width: 100%; background: none; border: none; font-size: 0.8rem; color: var(--text-muted); cursor: pointer; padding: 0.3rem; }
+.pw-skip:hover { color: var(--brown); }
+
+/* PROFILO MODAL */
+.profilo-ov { display:none; position:fixed; inset:0; background:rgba(30,10,10,0.78); z-index:500; align-items:flex-start; justify-content:flex-end; backdrop-filter:blur(4px); }
+.profilo-ov.open { display:flex; }
+.profilo-panel { width:min(420px,100vw); height:100vh; background:var(--cream); overflow-y:auto; animation:slideIn 0.3s ease; display:flex; flex-direction:column; }
+@keyframes slideIn { from { transform:translateX(100%); } to { transform:translateX(0); } }
+.profilo-head { background:var(--brown); padding:1.5rem 1.5rem 1.25rem; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+.profilo-logo { font-family:'Cormorant Garamond',serif; font-size:1.5rem; color:var(--rose-light); font-style:italic; }
+.profilo-close { background:none; border:none; color:rgba(255,255,255,0.7); font-size:1.2rem; cursor:pointer; padding:4px 8px; }
+.profilo-user { padding:1.25rem 1.5rem; background:white; border-bottom:1px solid var(--beige-mid); }
+.profilo-nome { font-size:1rem; font-weight:500; color:var(--text); }
+.profilo-email { font-size:0.78rem; color:var(--text-muted); margin-top:2px; }
+.profilo-credits { display:inline-flex; align-items:center; gap:6px; margin-top:8px; background:var(--rose-light); border:1px solid var(--rose); border-radius:99px; padding:4px 12px; font-size:0.78rem; color:var(--brown); font-weight:500; }
+.profilo-section { padding:1.25rem 1.5rem; flex:1; }
+.profilo-stitle { font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:400; color:var(--text); margin-bottom:1rem; display:flex; align-items:center; justify-content:space-between; }
+.profilo-stitle span { font-size:0.72rem; color:var(--text-muted); font-family:'DM Sans',sans-serif; font-weight:400; }
+.saved-card { background:white; border-radius:14px; border:1px solid rgba(232,180,184,0.25); padding:1rem; margin-bottom:0.75rem; }
+.saved-card-head { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:0.6rem; }
+.saved-occ { font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); }
+.saved-date { font-size:0.68rem; color:var(--text-muted); }
+.saved-intro { font-family:'Cormorant Garamond',serif; font-size:0.95rem; font-weight:300; color:var(--text); line-height:1.5; margin-bottom:0.75rem; }
+.saved-pezzi { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:0.75rem; }
+.saved-pezzo { font-size:0.7rem; background:var(--rose-light); color:var(--rose-dark); padding:3px 8px; border-radius:99px; }
+.saved-actions { display:flex; gap:6px; }
+.saved-btn { flex:1; padding:0.5rem; border-radius:8px; border:1px solid var(--beige-dark); background:white; font-size:0.75rem; color:var(--text-muted); cursor:pointer; transition:all 0.15s; display:flex; align-items:center; justify-content:center; gap:4px; }
+.saved-btn:hover { border-color:var(--rose); color:var(--brown); background:var(--rose-light); }
+.saved-btn.danger:hover { border-color:#e74c3c; color:#e74c3c; background:#fdecea; }
+.profilo-empty { text-align:center; padding:2rem 1rem; color:var(--text-muted); font-size:0.85rem; line-height:1.6; }
+.profilo-loading { text-align:center; padding:2rem; color:var(--text-muted); font-size:0.85rem; }
+
+/* CARD OUTFIT per html2canvas */
+.outfit-share-card { position:fixed; left:-9999px; top:0; width:400px; background:var(--cream); padding:1.5rem; font-family:'DM Sans',sans-serif; }
+/* MODAL PERSONALIZZAZIONE */
+.pers-ov { display:none; position:fixed; inset:0; background:rgba(30,10,10,0.82); z-index:700; align-items:center; justify-content:center; padding:1rem; backdrop-filter:blur(6px); }
+.pers-ov.open { display:flex !important; }
+.pers-box { max-width:500px; width:100%; background:var(--cream); border-radius:24px; overflow:hidden; animation:fadeUp 0.3s ease; max-height:90vh; overflow-y:auto; }
+.pers-top { background:var(--brown); padding:1.5rem 2rem; text-align:center; }
+.pers-logo { font-family:'Cormorant Garamond',serif; font-size:1.6rem; color:var(--rose-light); font-style:italic; letter-spacing:0.1em; }
+.pers-tag { font-size:0.78rem; color:rgba(255,255,255,0.6); margin-top:3px; }
+.pers-body { padding:1.75rem 2rem 2rem; }
+.pers-title { font-family:'Cormorant Garamond',serif; font-size:1.35rem; font-weight:300; color:var(--text); margin-bottom:0.35rem; }
+.pers-sub { font-size:0.82rem; color:var(--text-muted); line-height:1.65; margin-bottom:1.75rem; }
+.pers-step { margin-bottom:1.5rem; }
+.pers-qlabel { font-size:0.72rem; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.6rem; display:block; }
+.pers-chips { display:flex; flex-wrap:wrap; gap:6px; }
+.pers-chip { padding:0.45rem 0.9rem; border-radius:99px; border:1.5px solid var(--beige-dark); background:white; font-size:0.8rem; color:var(--text-muted); cursor:pointer; transition:all 0.15s; user-select:none; }
+.pers-chip:hover { border-color:var(--rose); color:var(--brown); }
+.pers-chip.on { border-color:var(--brown); background:var(--rose-light); color:var(--brown); font-weight:500; }
+.pers-input { width:100%; padding:0.7rem 1rem; border:1.5px solid var(--beige-dark); border-radius:10px; font-size:0.88rem; font-family:'DM Sans',sans-serif; background:white; color:var(--text); outline:none; transition:border 0.15s; }
+.pers-input:focus { border-color:var(--rose-dark); }
+.pers-bonus { display:flex; align-items:center; gap:0.75rem; background:var(--rose-light); border:1px solid var(--rose); border-radius:12px; padding:0.85rem 1rem; margin-bottom:1.25rem; font-size:0.82rem; color:var(--brown); }
+.pers-actions { display:flex; gap:0.75rem; }
+.pers-skip { flex:1; padding:0.85rem; border-radius:99px; background:none; border:1.5px solid var(--beige-dark); font-size:0.85rem; color:var(--text-muted); cursor:pointer; transition:all 0.2s; }
+.pers-skip:hover { border-color:var(--rose); color:var(--brown); }
+.pers-save { flex:2; padding:0.85rem; border-radius:99px; background:var(--brown); color:white; font-size:0.88rem; font-weight:500; border:none; cursor:pointer; transition:all 0.2s; }
+.pers-save:hover { background:var(--text); }
+.pers-save:disabled { opacity:0.5; cursor:not-allowed; }
+
+.reset-ov { display:none; position:fixed; inset:0; background:rgba(30,10,10,0.78); z-index:600; align-items:center; justify-content:center; padding:1rem; backdrop-filter:blur(5px); }
+.reset-ov.open { display:flex !important; }
+.reset-box { max-width:400px; width:100%; background:var(--cream); border-radius:24px; overflow:hidden; animation:fadeUp 0.3s ease; }
+.reset-top { background:var(--brown); padding:1.5rem 2rem; text-align:center; }
+.reset-logo { font-family:'Cormorant Garamond',serif; font-size:1.8rem; color:var(--rose-light); font-style:italic; letter-spacing:0.1em; }
+.reset-tag { font-size:0.78rem; color:rgba(255,255,255,0.55); margin-top:3px; }
+.reset-body { padding:1.75rem 2rem 2rem; }
+.reset-title { font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:300; color:var(--text); margin-bottom:0.4rem; }
+.reset-sub { font-size:0.83rem; color:var(--text-muted); line-height:1.6; margin-bottom:1.25rem; }
+.pw-bar { height:3px; border-radius:99px; background:var(--beige-mid); margin-top:6px; overflow:hidden; }
+.pw-bar-fill { height:100%; border-radius:99px; width:0; transition:width 0.3s,background 0.3s; }
+
+/* LIGHTBOX */
+.lb { display: none; position: fixed; inset: 0; background: rgba(20,8,8,0.88); z-index: 400; align-items: center; justify-content: center; padding: 1.5rem; }
+.lb.open { display: flex; }
+.lb-box { max-width: 460px; width: 100%; background: white; border-radius: 20px; overflow: hidden; animation: fadeUp 0.28s ease; position: relative; }
+.lb-img { width: 100%; max-height: 60vh; object-fit: cover; display: block; }
+.lb-body { padding: 1.1rem 1.4rem 1.4rem; }
+.lb-cat { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 3px; }
+.lb-nome { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; font-weight: 400; color: var(--text); margin-bottom: 5px; }
+.lb-desc { font-size: 0.83rem; color: var(--text-muted); line-height: 1.65; margin-bottom: 1rem; }
+.lb-btn { display: inline-block; padding: 0.55rem 1.3rem; border-radius: 99px; background: var(--brown); color: white; font-size: 0.82rem; font-weight: 500; text-decoration: none; }
+.lb-x { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border-radius: 50%; background: rgba(0,0,0,0.35); color: white; border: none; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+
+.toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--brown); color: white; padding: 0.72rem 1.3rem; border-radius: 11px; font-size: 0.84rem; transform: translateY(70px); opacity: 0; transition: all 0.3s; z-index: 999; }
+.toast.show { transform: translateY(0); opacity: 1; }
+
+@media (max-width: 768px) {
+  .app-wrap { grid-template-columns: 1fr; }
+  .config { border-right: none; border-bottom: 1px solid rgba(232,180,184,0.18); }
+  .result { padding: 1.25rem; }
+  .pgrid { columns: 2; }
+  nav { padding: 0.9rem 1.25rem; }
+  .pw-plans { grid-template-columns: 1fr; }
+}
+@media (max-width: 420px) { .pgrid { columns: 1; } }
+
+/* TAB VARIANTI FASCIA */
+.varianti-tabs { display:flex; gap:6px; margin-bottom:1.25rem; }
+.vtab { flex:1; padding:0.6rem 0.5rem; border-radius:10px; border:1.5px solid var(--beige-dark); background:white; cursor:pointer; text-align:center; transition:all 0.18s; }
+.vtab:hover { border-color:var(--rose); }
+.vtab.on { border-color:var(--brown); background:var(--rose-light); }
+.vtab-label { font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:2px; }
+.vtab.on .vtab-label { color:var(--brown); }
+.vtab-price { font-family:'Cormorant Garamond',serif; font-size:1rem; font-weight:400; color:var(--text); }
+.vtab.on .vtab-price { color:var(--brown); font-weight:500; }
+.vtab-brand { font-size:0.65rem; color:var(--text-muted); margin-top:2px; display:block; }
+
+/* AUTH MODAL */
+.auth-overlay { display:none; position:fixed; inset:0; background:rgba(30,10,10,0.78); z-index:500; align-items:center; justify-content:center; padding:1rem; backdrop-filter:blur(5px); }
+.auth-overlay.open { display:flex; }
+.auth-box { max-width:420px; width:100%; background:var(--cream); border-radius:24px; overflow:hidden; animation:fadeUp 0.3s ease; }
+.auth-top { background:var(--brown); padding:1.5rem 2rem; text-align:center; }
+.auth-logo { font-family:'Cormorant Garamond',serif; font-size:1.8rem; color:var(--rose-light); font-style:italic; letter-spacing:0.1em; }
+.auth-tag { font-size:0.78rem; color:rgba(255,255,255,0.55); margin-top:3px; }
+.auth-body { padding:1.75rem 2rem 2rem; }
+.auth-tabs { display:flex; gap:0; background:var(--beige-mid); border-radius:10px; padding:3px; margin-bottom:1.5rem; }
+.auth-tab { flex:1; padding:0.55rem; border:none; background:none; border-radius:8px; font-size:0.85rem; cursor:pointer; color:var(--text-muted); transition:all 0.2s; }
+.auth-tab.on { background:white; color:var(--brown); font-weight:500; box-shadow:0 1px 4px rgba(0,0,0,0.08); }
+.auth-field { margin-bottom:1rem; }
+.auth-label { display:block; font-size:0.72rem; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.45rem; }
+.auth-input { width:100%; padding:0.75rem 1rem; border:1px solid var(--beige-dark); border-radius:10px; font-size:0.9rem; font-family:'DM Sans',sans-serif; background:white; color:var(--text); outline:none; transition:border 0.15s; }
+.auth-input:focus { border-color:var(--rose-dark); }
+.auth-btn { width:100%; padding:0.9rem; border-radius:99px; background:var(--brown); color:white; font-size:0.92rem; font-weight:500; border:none; cursor:pointer; transition:all 0.2s; margin-bottom:1rem; }
+.auth-btn:hover { background:var(--text); }
+.auth-btn:disabled { opacity:0.5; cursor:not-allowed; }
+.auth-sep { display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem; }
+.auth-sep-line { flex:1; height:1px; background:var(--beige-mid); }
+.auth-sep-txt { font-size:0.75rem; color:var(--text-muted); }
+.auth-google { width:100%; padding:0.85rem; border-radius:99px; background:white; color:var(--text); font-size:0.88rem; font-weight:500; border:1.5px solid var(--beige-dark); cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:0.6rem; }
+.auth-google:hover { border-color:var(--rose); background:var(--rose-light); }
+.auth-err { font-size:0.8rem; color:#c0392b; margin-bottom:0.75rem; padding:0.6rem 0.9rem; background:#fdecea; border-radius:8px; display:none; }
+.auth-err.show { display:block; }
+.nav-user { display:flex; align-items:center; gap:0.5rem; font-size:0.82rem; }
+.nav-nome { color:var(--brown); font-weight:500; }
+.nav-logout { background:none; border:none; color:var(--text-muted); font-size:0.78rem; cursor:pointer; padding:0.3rem 0.6rem; border-radius:6px; transition:all 0.15s; }
+.nav-logout:hover { background:var(--rose-light); color:var(--brown); }
+.nav-loginbtn { background:var(--brown); color:white; border:none; border-radius:99px; padding:0.4rem 1rem; font-size:0.8rem; cursor:pointer; transition:all 0.2s; }
+.nav-loginbtn:hover { background:var(--text); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">Miroir</a>
+  <div style="display:flex;align-items:center;gap:0.75rem;">
+    <div id="navFree" class="free-badge">3 look gratis</div>
+    <div id="navCredits" class="credits-pill" style="display:none">
+      <span class="credits-num" id="creditsNum">0</span>
+      <span class="credits-label">crediti</span>
+    </div>
+    <div id="navUser" class="nav-user" style="display:none">
+      <span class="nav-nome" id="navNome" style="cursor:pointer" onclick="openProfilo()"></span>
+      <button class="nav-logout" onclick="openProfilo()" title="Il mio profilo">👤</button>
+      <button class="nav-logout" onclick="logout()">Esci</button>
+    </div>
+    <button id="navLoginBtn" class="nav-loginbtn" onclick="openAuth()">Accedi</button>
+  </div>
+</nav>
+
+<!-- AUTH MODAL -->
+<div class="auth-overlay" id="authModal">
+  <div class="auth-box">
+    <div class="auth-top">
+      <div class="auth-logo">Miroir</div>
+      <div class="auth-tag">Accedi per salvare i tuoi crediti</div>
+    </div>
+    <div class="auth-body">
+      <div class="auth-tabs">
+        <button class="auth-tab on" id="tabLogin" onclick="switchTab('login')">Accedi</button>
+        <button class="auth-tab" id="tabReg" onclick="switchTab('register')">Registrati</button>
+      </div>
+      <div class="auth-err" id="authErr"></div>
+
+      <!-- Login -->
+      <div id="formLogin">
+        <div class="auth-field">
+          <label class="auth-label">Email</label>
+          <input class="auth-input" id="loginEmail" type="email" placeholder="la@tua.email">
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">Password</label>
+          <input class="auth-input" id="loginPass" type="password" placeholder="••••••">
+        </div>
+        <div style="text-align:right;margin-bottom:1rem;">
+          <button onclick="switchTab('forgot')" style="background:none;border:none;font-size:0.78rem;color:var(--text-muted);cursor:pointer;">Password dimenticata?</button>
+        </div>
+        <button class="auth-btn" id="loginBtn" onclick="doLogin()">Accedi</button>
+      </div>
+
+      <!-- Register -->
+      <div id="formReg" style="display:none">
+        <div class="auth-field">
+          <label class="auth-label">Nome</label>
+          <input class="auth-input" id="regNome" type="text" placeholder="Il tuo nome">
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">Email</label>
+          <input class="auth-input" id="regEmail" type="email" placeholder="la@tua.email">
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">Password</label>
+          <input class="auth-input" id="regPass" type="password" placeholder="minimo 6 caratteri">
+        </div>
+        <button class="auth-btn" id="regBtn" onclick="doRegister()">Crea account</button>
+      </div>
+
+      <!-- Recupero password -->
+      <div id="formForgot" style="display:none">
+        <p style="font-size:0.84rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.6;">Inserisci la tua email — ti mandiamo un link per reimpostare la password.</p>
+        <div class="auth-field">
+          <label class="auth-label">Email</label>
+          <input class="auth-input" id="forgotEmail" type="email" placeholder="la@tua.email">
+        </div>
+        <button class="auth-btn" id="forgotBtn" onclick="doForgot()">Invia link di recupero</button>
+        <button onclick="switchTab('login')" style="width:100%;background:none;border:none;font-size:0.8rem;color:var(--text-muted);cursor:pointer;margin-top:0.5rem;">← Torna al login</button>
+      </div>
+
+      <div class="auth-sep"><div class="auth-sep-line"></div><span class="auth-sep-txt">oppure</span><div class="auth-sep-line"></div></div>
+      <button class="auth-google" onclick="doGoogle()">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Continua con Google
+      </button>
+      <button style="width:100%;background:none;border:none;font-size:0.78rem;color:var(--text-muted);cursor:pointer;margin-top:0.5rem;" onclick="closeAuth()">Continua senza account</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="app-wrap">
+  <div class="config">
+    <div class="config-title">Crea il tuo <em>outfit</em></div>
+    <div class="fg">
+      <label class="fl">Occasione</label>
+      <div class="chips" id="g-occ">
+        <div class="chip on" data-v="matrimonio">💍 Matrimonio</div>
+        <div class="chip" data-v="lavoro">💼 Lavoro</div>
+        <div class="chip" data-v="aperitivo">🥂 Aperitivo</div>
+        <div class="chip" data-v="data">🌹 Prima data</div>
+        <div class="chip" data-v="casual">☀️ Casual</div>
+        <div class="chip" data-v="serata">🌙 Serata</div>
+        <div class="chip" data-v="sport">🏃 Sport</div>
+        <div class="chip" data-v="viaggio">✈️ Viaggio</div>
+        <div class="chip" data-v="colloquio">🎯 Colloquio</div>
+        <div class="chip" data-v="spiaggia">🏖️ Spiaggia</div>
+      </div>
+    </div>
+    <div class="fg">
+      <label class="fl">Temperatura</label>
+      <div class="tgrid" id="g-temp">
+        <div class="tcard" data-v="freddo"><span class="ti">🧥</span><span class="tl">Freddo<br>&lt;10°C</span></div>
+        <div class="tcard on" data-v="mite"><span class="ti">🌤</span><span class="tl">Mite<br>10–20°C</span></div>
+        <div class="tcard" data-v="caldo"><span class="ti">☀️</span><span class="tl">Caldo<br>&gt;20°C</span></div>
+      </div>
+    </div>
+    <div class="fg">
+      <label class="fl">Genere</label>
+      <div class="chips" id="g-gen">
+        <div class="chip on" data-v="donna">Donna</div>
+        <div class="chip" data-v="uomo">Uomo</div>
+        <div class="chip" data-v="neutro">Neutro</div>
+      </div>
+    </div>
+    <div class="fg">
+      <label class="fl">Stile</label>
+      <div class="sgrid" id="g-stil">
+        <div class="scard on" data-v="elegante"><div class="sn">Elegante</div><div class="sd">Raffinato, sobrio</div></div>
+        <div class="scard" data-v="casual-chic"><div class="sn">Casual chic</div><div class="sd">Comodo ma curato</div></div>
+        <div class="scard" data-v="romantico"><div class="sn">Romantico</div><div class="sd">Morbido, femminile</div></div>
+        <div class="scard" data-v="moderno"><div class="sn">Moderno</div><div class="sd">Minimal, pulito</div></div>
+        <div class="scard" data-v="sportivo"><div class="sn">Sportivo</div><div class="sd">Comodo, attivo</div></div>
+        <div class="scard" data-v="bohemien"><div class="sn">Bohémien</div><div class="sd">Libero, creativo</div></div>
+      </div>
+    </div>
+    <div class="fg">
+      <label class="fl">Corporatura</label>
+      <div class="chips" id="g-corp">
+        <div class="chip on" data-v="qualsiasi">Qualsiasi</div>
+        <div class="chip" data-v="slanciata">Slanciata</div>
+        <div class="chip" data-v="curvy">Curvy</div>
+        <div class="chip" data-v="petite">Petite</div>
+        <div class="chip" data-v="atletica">Atletica</div>
+        <div class="chip" data-v="fianchi larghi">Fianchi larghi</div>
+        <div class="chip" data-v="spalle larghe">Spalle larghe</div>
+        <div class="chip" data-v="vita corta">Vita corta</div>
+      </div>
+    </div>
+    <div class="fg">
+      <label class="fl">Budget</label>
+      <div class="tgrid" id="g-budget">
+        <div class="tcard" data-v="basso"><span class="ti">💶</span><span class="tl">Basso<br>&lt;100€</span></div>
+        <div class="tcard on" data-v="medio"><span class="ti">💶💶</span><span class="tl">Medio<br>100-300€</span></div>
+        <div class="tcard" data-v="alto"><span class="ti">💎</span><span class="tl">Alto<br>&gt;300€</span></div>
+      </div>
+    </div>
+    <button class="gbtn" id="mainBtn" onclick="handleGenerate()">
+      <span>✦ Trova il mio outfit</span>
+      <span class="btn-sub" id="btnSub">gratis</span>
+    </button>
+  </div>
+
+  <div class="result">
+    <div class="rhead">
+      <div class="rtitle">Il tuo <em>look</em></div>
+      <div class="ractions">
+        <button class="ibtn" onclick="showToast('Outfit salvato! 💾')">💾</button>
+        <button class="ibtn" onclick="handleGenerate()">🔀</button>
+      </div>
+    </div>
+
+    <div class="empty" id="emptyState">
+      <div class="eill">👗</div>
+      <div class="etitle">Pronto per il tuo look?</div>
+      <div class="esub" id="emptySubtitle">Prova il tuo primo outfit gratis — nessuna registrazione richiesta.</div>
+      <div class="free-dots">
+        <div class="fd" id="fd1"></div>
+        <div class="fd" id="fd2"></div>
+        <div class="fd" id="fd3"></div>
+      </div>
+    </div>
+
+    <div class="loading" id="loadingState">
+      <div class="spin"></div>
+      <div class="loading-text">Miroir sta generando l'outfit perfetto per te</div>
+      <div class="loading-sub" id="loadingSub">Analizzando il tuo stile</div>
+    </div>
+
+    <div class="outfit" id="outfitPanel">
+      <div class="obadge" id="oBadge"></div>
+      <div class="varianti-tabs" id="variantiTabs" style="display:none"></div>
+      <div class="ointro" id="oIntro"></div>
+      <div class="pgrid" id="pgrid"></div>
+      <div class="otips">
+        <div class="otitle">💡 Consigli di stile</div>
+        <div class="tlist" id="tipsList"></div>
+      </div>
+      <div class="ofoot">
+        <button class="bp" id="saveLookBtn" onclick="saveLook()">💾 Salva look</button>
+        <button class="bs" onclick="handleGenerate()">🔀 Altro look</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAYWALL -->
+<div class="pw-overlay" id="paywall">
+  <div class="pw-box">
+    <div class="pw-top">
+      <div class="pw-logo">Miroir</div>
+      <div class="pw-tag">Il tuo stilista personale</div>
+    </div>
+    <div class="pw-body">
+      <div class="pw-h">Hai usato i 3 look <em>gratuiti</em></div>
+      <div class="pw-p">Passa a Premium e sblocca outfit unici generati dall'AI ogni volta — descrizioni fresche, consigli personalizzati, mai la stessa risposta due volte.</div>
+      <div class="pw-benefits">
+        <div class="pw-ben">
+          <div class="pw-ben-ic">✨</div>
+          <div><div class="pw-ben-t">Outfit unici ad ogni ricerca</div><div class="pw-ben-d">L'AI crea un look diverso ogni volta per la tua combinazione specifica.</div></div>
+        </div>
+        <div class="pw-ben">
+          <div class="pw-ben-ic">📸</div>
+          <div><div class="pw-ben-t">Foto di ispirazione per ogni capo</div><div class="pw-ben-d">Ogni pezzo dell'outfit ha la sua immagine cercata automaticamente.</div></div>
+        </div>
+        <div class="pw-ben">
+          <div class="pw-ben-ic">💬</div>
+          <div><div class="pw-ben-t">Consigli personalizzati</div><div class="pw-ben-d">Tips scritti per la tua esatta combinazione di occasione, clima e stile.</div></div>
+        </div>
+      </div>
+      <hr class="pw-sep">
+      <div class="pw-plans">
+        <div class="pw-plan" id="ps" onclick="selPlan('starter')">
+          <div class="pw-pname">Starter</div>
+          <div class="pw-pprice">1€</div>
+          <div class="pw-pcreds">10 crediti</div>
+          <div class="pw-punit">0,10€ / outfit</div>
+        </div>
+        <div class="pw-plan sel" id="pp" onclick="selPlan('pro')">
+          <div class="pw-pop">⭐ Più popolare</div>
+          <div class="pw-pname">Pro</div>
+          <div class="pw-pprice">5€</div>
+          <div class="pw-pcreds">60 crediti</div>
+          <div class="pw-punit">0,08€ / outfit</div>
+        </div>
+      </div>
+      <button class="pw-btn" onclick="purchase()">Acquista e continua →</button>
+      <div class="pw-note">Pagamento sicuro • Crediti senza scadenza • Nessun abbonamento</div>
+      <button class="pw-skip" onclick="closePW()">Forse dopo</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILO PANEL -->
+<div class="profilo-ov" id="profiloModal" onclick="if(event.target.id==='profiloModal')closeProfilo()">
+  <div class="profilo-panel">
+    <div class="profilo-head">
+      <div class="profilo-logo">Miroir</div>
+      <button class="profilo-close" onclick="closeProfilo()">✕</button>
+    </div>
+    <div class="profilo-user" id="profiloUser">
+      <div class="profilo-nome" id="profiloNome">—</div>
+      <div class="profilo-email" id="profiloEmail">—</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;">
+        <div class="profilo-credits" id="profiloCredits">0 crediti</div>
+        <button onclick="closeProfilo();openPers();" style="background:none;border:1px solid var(--beige-dark);border-radius:99px;padding:4px 12px;font-size:0.72rem;color:var(--text-muted);cursor:pointer;">✏️ Il mio stile</button>
+      </div>
+    </div>
+    <div class="profilo-section">
+      <div class="profilo-stitle">
+        I miei look salvati
+        <span id="savedCount"></span>
+      </div>
+      <div id="savedList"><div class="profilo-loading">Caricamento...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- CARD OUTFIT CONDIVISIONE (fuori schermo, per html2canvas) -->
+<div class="outfit-share-card" id="shareCard"></div>
+
+<!-- MODAL PERSONALIZZAZIONE -->
+<div class="pers-ov" id="persModal">
+  <div class="pers-box">
+    <div class="pers-top">
+      <div class="pers-logo">Miroir</div>
+      <div class="pers-tag">Il tuo stile, su misura</div>
+    </div>
+    <div class="pers-body">
+      <div class="pers-title">Dedicaci 2 minuti</div>
+      <div class="pers-sub">per ricevere outfit pensati davvero per te — non per tutti. Più ci dici, più il tuo personal shopper AI diventa preciso.</div>
+
+      <div class="pers-bonus">
+        <span style="font-size:1.2rem;">🎁</span>
+        <span>Completa il profilo e ricevi <strong>1 credito extra</strong> in regalo.</span>
+      </div>
+
+      <div class="pers-step">
+        <label class="pers-qlabel">Brand che ami (scrivi fino a 3)</label>
+        <input class="pers-input" id="persBrand" type="text" placeholder="es. Zara, COS, Acne Studios...">
+      </div>
+
+      <div class="pers-step">
+        <label class="pers-qlabel">Colori che ami</label>
+        <div class="pers-chips" id="persColoriAmo">
+          <div class="pers-chip" data-v="neutri">⬜ Neutri</div>
+          <div class="pers-chip" data-v="neri">⬛ Nero/Scuri</div>
+          <div class="pers-chip" data-v="caldi">🟤 Caldi (ruggine, cammello)</div>
+          <div class="pers-chip" data-v="pastello">🌸 Pastello</div>
+          <div class="pers-chip" data-v="vivaci">🎨 Vivaci</div>
+          <div class="pers-chip" data-v="blu">🔵 Blu/Navy</div>
+          <div class="pers-chip" data-v="verde">🟢 Verde</div>
+        </div>
+      </div>
+
+      <div class="pers-step">
+        <label class="pers-qlabel">Colori che eviti</label>
+        <div class="pers-chips" id="persColoriEvito">
+          <div class="pers-chip" data-v="rosa">🌸 Rosa</div>
+          <div class="pers-chip" data-v="giallo">🟡 Giallo</div>
+          <div class="pers-chip" data-v="arancione">🟠 Arancione</div>
+          <div class="pers-chip" data-v="rosso">🔴 Rosso</div>
+          <div class="pers-chip" data-v="verde">🟢 Verde</div>
+          <div class="pers-chip" data-v="viola">🟣 Viola</div>
+          <div class="pers-chip" data-v="beige">🟫 Beige/Crema</div>
+        </div>
+      </div>
+
+      <div class="pers-step">
+        <label class="pers-qlabel">Non indosso mai</label>
+        <div class="pers-chips" id="persMaiIndosso">
+          <div class="pers-chip" data-v="gonna">👗 Gonna</div>
+          <div class="pers-chip" data-v="tacco">👠 Tacco</div>
+          <div class="pers-chip" data-v="cravatta">👔 Cravatta</div>
+          <div class="pers-chip" data-v="shorts">🩳 Shorts</div>
+          <div class="pers-chip" data-v="abiti">👗 Abiti/Vestiti</div>
+          <div class="pers-chip" data-v="cappello">🎩 Cappello</div>
+          <div class="pers-chip" data-v="pelliccia">🧥 Pelliccia/Eco-fur</div>
+          <div class="pers-chip" data-v="stampe">🌺 Stampe/Pattern</div>
+        </div>
+      </div>
+
+      <div class="pers-step">
+        <label class="pers-qlabel">La tua icona di stile (opzionale)</label>
+        <input class="pers-input" id="persIcona" type="text" placeholder="es. Audrey Hepburn, Bella Hadid, Steve Jobs...">
+      </div>
+
+      <div class="pers-actions">
+        <button class="pers-skip" onclick="skipPers()">Dopo</button>
+        <button class="pers-save" id="persSaveBtn" onclick="savePers()">Salva e ottieni il credito →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RESET PASSWORD MODAL -->
+<div class="reset-ov" id="resetModal">
+  <div class="reset-box">
+    <div class="reset-top">
+      <div class="reset-logo">Miroir</div>
+      <div class="reset-tag">Reimposta la tua password</div>
+    </div>
+    <div class="reset-body" id="resetBody">
+      <div class="reset-title">Nuova password</div>
+      <div class="reset-sub">Scegli una password sicura di almeno 6 caratteri.</div>
+      <div class="auth-err" id="resetErr"></div>
+      <div class="auth-field">
+        <label class="auth-label">Nuova password</label>
+        <input class="auth-input" type="password" id="resetPass1" placeholder="minimo 6 caratteri" oninput="checkPwStrength(this.value)">
+        <div class="pw-bar"><div class="pw-bar-fill" id="pwBarFill"></div></div>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Conferma password</label>
+        <input class="auth-input" type="password" id="resetPass2" placeholder="ripeti la password">
+      </div>
+      <button class="auth-btn" id="resetBtn" onclick="doResetPassword()">Salva nuova password</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lb" id="lb" onclick="if(event.target.id==='lb')closeLB()">
+  <div class="lb-box">
+    <button class="lb-x" onclick="closeLB()">✕</button>
+    <img class="lb-img" id="lbImg" src="" alt="">
+    <div class="lb-body">
+      <div class="lb-cat" id="lbCat"></div>
+      <div class="lb-nome" id="lbNome"></div>
+      <div class="lb-desc" id="lbDesc"></div>
+      <a class="lb-btn" id="lbLink" href="#" target="_blank" rel="noopener">🔍 Cerca online</a>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toastEl"></div>
+
+<div style="text-align:center;padding:1.5rem 1rem;border-top:1px solid var(--beige-mid);margin-top:2rem;font-size:0.72rem;color:var(--text-muted);">
+  © 2025 Miroir &nbsp;·&nbsp;
+  <a href="/contatti.html" style="color:var(--text-muted);text-decoration:none;" onmouseover="this.style.color='var(--brown)'" onmouseout="this.style.color='var(--text-muted)'">Supporto & Contatti</a>
+  &nbsp;·&nbsp;
+  <a href="mailto:supporto@mir-oir.it" style="color:var(--text-muted);text-decoration:none;" onmouseover="this.style.color='var(--brown)'" onmouseout="this.style.color='var(--text-muted)'">supporto@mir-oir.it</a>
+</div>
+
+<script>
+// ── STATO ──────────────────────────────────────────
+const MAX_FREE = 3;
+let freeUsed = parseInt(localStorage.getItem('m_free') || '0');
+let credits   = parseInt(localStorage.getItem('m_cred') || '0');
+let selPlanId = 'pro';
+let curOutfit = null;
+
+// ── SISTEMA FOTO CON PROXY BACKEND ────────────────────
+// Il backend chiama Pexels API senza problemi CORS
+// Cache locale per non fare troppe chiamate
+
+const photoCache = {};
+
+async function getPhotoUrl(p) {
+  const query = p.cerca || p.cat + ' ' + p.nome + ' fashion';
+  if (photoCache[query]) return photoCache[query];
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/photo?q=${encodeURIComponent(query)}`);
+    const data = await res.json();
+    if (data.url) {
+      photoCache[query] = data.url;
+      return data.url;
+    }
+  } catch(e) { /* fallback */ }
+
+  return null; // triggera SVG placeholder
+}
+
+function getPhoto(p) {
+  // Versione sincrona — usa cache se disponibile, altrimenti placeholder
+  const query = p.cerca || p.cat + ' ' + p.nome + ' fashion';
+  return photoCache[query] || null;
+}
+
+// Precarica foto per tutti i pezzi di un outfit
+async function preloadPhotos(pezzi) {
+  await Promise.all(pezzi.map(p => getPhotoUrl(p)));
+}
+
+// SVG placeholder — mostrato mentre la foto carica
+function svgPlaceholder(p) {
+  const colors = {
+    'Abito':'#F5DDE0','Scarpe':'#EAE0D5','Borsa':'#F5E8E0',
+    'Gioielli':'#FFF0E6','Blazer':'#E8EFF5','Pantaloni':'#EAE0D5',
+    'Top':'#F5DDE0','Sneaker':'#F0F5E8','Giacca':'#E8EFF5',
+    'Camicia':'#F5DDE0','Accessori':'#FFF0E6','Maglieria':'#F5DDE0',
+    'Calzature':'#EAE0D5','Outerwear':'#E8EFF5','default':'#F5DDE0'
+  };
+  const icons = {
+    'Abito':'👗','Scarpe':'👠','Borsa':'👜','Gioielli':'✨',
+    'Blazer':'🧥','Giacca':'🧥','Pantaloni':'👖','Top':'👚',
+    'Sneaker':'👟','Camicia':'👔','Accessori':'✨','Maglieria':'🧶',
+    'Calzature':'👟','Outerwear':'🧥','default':'👗'
+  };
+  const bg = colors[p.cat] || colors.default;
+  const icon = icons[p.cat] || icons.default;
+  const nome = (p.nome||'').substring(0,28);
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='400' height='500'>
+    <rect width='400' height='500' fill='${bg}'/>
+    <text x='200' y='210' font-size='80' text-anchor='middle'>${icon}</text>
+    <text x='200' y='280' font-size='15' text-anchor='middle' fill='#6B4F4F' font-family='sans-serif' font-weight='500'>${p.cat}</text>
+    <text x='200' y='305' font-size='12' text-anchor='middle' fill='#8A6F6F' font-family='sans-serif'>${nome}</text>
+  </svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+function handleImgError(img, p) {
+  img.src = svgPlaceholder(p);
+  img.onerror = null;
+}
+
+// ── DB STATICO ESPANSO ─────────────────────────────
+// Copre tutte le combinazioni principali di occasione x temperatura x genere x stile
+
+const DB = {
+
+  // ─── MATRIMONIO ────────────────────────────────────
+  "matrimonio_mite_donna_elegante": {
+    intro: "Un abito midi che sussurra eleganza — la silhouette giusta per essere ricordata senza rubare la scena.",
+    pezzi: [
+      { cat:"Abito",    nome:"Midi floreale in chiffon cipria",    desc:"Drappeggio fluido, stampa botanica delicata su fondo cipria.", h:"260px", cerca:"floral chiffon midi dress wedding guest woman" },
+      { cat:"Scarpe",   nome:"Décolleté tacco medio nude",          desc:"Tacco 6 cm, punta arrotondata. Comodo per cerimonia e banchetto.", h:"190px", cerca:"nude beige block heel pumps wedding woman" },
+      { cat:"Borsa",    nome:"Clutch in raso con chiusura gioiello",desc:"Piccola, rigida, con fermaglio dorato. L'essenziale dentro.", h:"155px", cerca:"satin clutch bag gold clasp evening wedding" },
+      { cat:"Gioielli", nome:"Orecchini pendenti con perle barocche",desc:"Perle irregolari in oro bianco — moderni ma senza tempo.", h:"190px", cerca:"baroque pearl drop earrings elegant woman" }
+    ],
+    tips:["Evita bianco e avorio — la regola d'oro di ogni matrimonio.", "Porta cerotti anti-vesciche — i tacchi da cerimonia fanno sempre male.", "Un foulard sottile in borsa: copre le spalle in chiesa e scalda la sera."]
+  },
+  "matrimonio_freddo_donna_elegante": {
+    intro: "Eleganza invernale senza rinunciare al calore — il cappotto diventa parte del look.",
+    pezzi: [
+      { cat:"Abito",    nome:"Abito longuette in velluto bordeaux", desc:"Velluto stretch, scollo a V, maniche lunghe. Caldo e sofisticato.", h:"260px", cerca:"velvet long dress burgundy elegant woman winter" },
+      { cat:"Cappotto", nome:"Cappotto in misto lana cammello",     desc:"Taglio sartoriale, monopetto. Si toglie a tavola ma non va mai storto.", h:"240px", cerca:"camel wool coat elegant woman winter wedding" },
+      { cat:"Scarpe",   nome:"Décolleté in raso con tacco a spillo", desc:"Tacco 8 cm, punta affusolata. Il contrasto con il velluto è perfetto.", h:"170px", cerca:"satin stiletto heels elegant woman winter" },
+      { cat:"Gioielli", nome:"Collana girocollo in oro giallo",      desc:"Catena sottile con pendente ovale — visibile sullo scollo V.", h:"190px", cerca:"gold choker necklace pendant elegant woman" }
+    ],
+    tips:["Il velluto è il tessuto invernale più elegante — si porta bene anche alle nozze.", "Scegli un cappotto che non copra completamente l'abito da sotto.", "Calze coprenti color carne: calde e invisibili."]
+  },
+  "matrimonio_caldo_donna_elegante": {
+    intro: "Estate e cerimonia — leggerezza come lusso, colore come scelta coraggiosa.",
+    pezzi: [
+      { cat:"Abito",    nome:"Abito empire in georgette verde salvia",desc:"Taglio morbido sotto il seno, spalline sottili. Freschissimo.", h:"260px", cerca:"sage green georgette empire dress wedding guest summer" },
+      { cat:"Sandali",  nome:"Sandali con fasce intrecciate tono su tono",desc:"Tacco 5 cm, cinturino alla caviglia. Freschi e raffinati.", h:"180px", cerca:"sage green strappy heeled sandals wedding summer woman" },
+      { cat:"Borsa",    nome:"Pochette in rafia intrecciata",          desc:"Naturale, artigianale, perfetta per cerimonie all'aperto.", h:"155px", cerca:"raffia woven clutch bag summer wedding woman" },
+      { cat:"Accessori",nome:"Occhiali cat-eye in acetato tartarugato", desc:"La protezione solare più chic per il ricevimento outdoor.", h:"180px", cerca:"tortoise cat eye sunglasses elegant woman summer" }
+    ],
+    tips:["Il verde salvia fotografa straordinariamente — ottimo per i ricordi.", "Rafia e georgette sono i tessuti estivi più eleganti.", "Porta un ventaglio pieghevole — chic e salvavita con il caldo."]
+  },
+  "matrimonio_mite_uomo_elegante": {
+    intro: "L'abito da cerimonia reinterpretato — struttura impeccabile, personalità nei dettagli.",
+    pezzi: [
+      { cat:"Abito",    nome:"Abito blu navy slim fit",              desc:"Lana fresca, solapel in seta. Il classico che non sbaglia mai.", h:"260px", cerca:"navy slim fit suit man wedding elegant" },
+      { cat:"Camicia",  nome:"Camicia bianca in popeline",           desc:"Collo francese, abbottonatura nascosta. Base impeccabile.", h:"200px", cerca:"white poplin dress shirt man wedding" },
+      { cat:"Cravatta", nome:"Cravatta in seta azzurro polvere",     desc:"Tinta unita, nodo a quattro. Il colore alleggerisce il navy.", h:"170px", cerca:"light blue silk tie man wedding elegant" },
+      { cat:"Scarpe",   nome:"Oxford stringati in cuoio marrone scuro",desc:"Doppia suola in cuoio. Il marrone con il navy è la combinazione giusta.", h:"190px", cerca:"dark brown oxford leather shoes man wedding" }
+    ],
+    tips:["La cravatta deve arrivare alla cintura — né sopra né sotto.", "Fazzoletto nel taschino: stesso tessuto della cravatta, mai abbinato identico.", "Lustra le scarpe la sera prima — si vede sempre."]
+  },
+  "matrimonio_caldo_uomo_elegante": {
+    intro: "Cerimonia estiva — il lino è la risposta giusta a caldo e stile.",
+    pezzi: [
+      { cat:"Abito",    nome:"Abito in lino beige sabbia",           desc:"Leggero, non foderato. Accetta le grinze — è parte del carattere.", h:"260px", cerca:"linen beige suit man wedding summer elegant" },
+      { cat:"Camicia",  nome:"Camicia azzurro cielo in lino",        desc:"Colletto italiano, maniche arrotolate. Freschissima.", h:"200px", cerca:"light blue linen shirt man wedding summer" },
+      { cat:"Scarpe",   nome:"Mocassino in suede color cuoio",       desc:"Senza calzini — la scelta corretta con il lino d'estate.", h:"180px", cerca:"cognac suede loafer man summer wedding no socks" },
+      { cat:"Accessori",nome:"Pochette in lino bianco con orlo colorato",desc:"Tre punte fuori dal taschino — il dettaglio che fa la differenza.", h:"160px", cerca:"linen pocket square white colored edge man wedding" }
+    ],
+    tips:["Il lino si sgualcisce — è normale e fa parte del look.", "Senza calzini con il mocassino: elegante d'estate, mai in inverno.", "Il beige fotografa bene all'aperto — ottima scelta per cerimonie in giardino."]
+  },
+
+  // ─── LAVORO ────────────────────────────────────────
+  "lavoro_mite_donna_elegante": {
+    intro: "Professionale senza essere rigida — autorevolezza e personalità in un solo look curato.",
+    pezzi: [
+      { cat:"Blazer",    nome:"Blazer doppiopetto in lana grigio antracite",desc:"Struttura sartoriale, bottoni dorati. Parla prima di te.", h:"250px", cerca:"grey double breasted blazer woman office elegant" },
+      { cat:"Pantaloni", nome:"Pantalone a sigaretta in cady nero",          desc:"Vita alta, gamba dritta. Perfetto con il blazer oversize.", h:"200px", cerca:"black cigarette trousers high waist woman office" },
+      { cat:"Scarpe",    nome:"Mocassino chunky in vernice nera",            desc:"Suola spessa, fibbia dorata. Comodo 8 ore e stiloso.", h:"165px", cerca:"black patent chunky loafer woman office" },
+      { cat:"Borsa",     nome:"Tote strutturata in pelle cognac",            desc:"A4 inside, manici rigidi. Il colore cognac scalda il nero.", h:"190px", cerca:"cognac leather structured tote bag woman professional" }
+    ],
+    tips:["Un blazer ben tagliato vale più di tre completi economici.", "Il cognac con il nero è la combinazione più sofisticata per l'ufficio.", "Unghie curate: sono la prima cosa che si vede in una stretta di mano."]
+  },
+  "lavoro_freddo_donna_elegante": {
+    intro: "Inverno in ufficio — il cappotto diventa estensione del look, non riparo dal freddo.",
+    pezzi: [
+      { cat:"Maglione",  nome:"Dolcevita in cashmere color camel",   desc:"Morbido, a coste fini. Lusso quotidiano e base perfetta.", h:"230px", cerca:"camel cashmere turtleneck sweater woman office winter" },
+      { cat:"Pantaloni", nome:"Pantalone palazzo in flanella grigia", desc:"Tessuto pesante che cade bene. Con il dolcevita è un look completo.", h:"200px", cerca:"grey flannel wide leg trousers woman office winter" },
+      { cat:"Cappotto",  nome:"Cappotto oversize in misto lana navy", desc:"Lungo al ginocchio, colletto ampio. Il capospalla che fa il look.", h:"250px", cerca:"navy oversized wool coat woman elegant winter" },
+      { cat:"Stivali",   nome:"Stivali al ginocchio in pelle nera",   desc:"Tacco 4 cm, punta tonda. Caldi e impeccabili.", h:"190px", cerca:"black leather knee high boots woman office winter" }
+    ],
+    tips:["Il camel con il grigio e il navy è la palette cromatica più sofisticata dell'inverno.", "Un cappotto di qualità dura 10 anni — vale l'investimento.", "Stivali al ginocchio sopra i pantaloni: solo se i pantaloni sono slim o tucked in."]
+  },
+  "lavoro_caldo_donna_elegante": {
+    intro: "Estate in ufficio — freschezza con autorevolezza, senza compromessi.",
+    pezzi: [
+      { cat:"Abito",    nome:"Wrap dress in seta stampata blu cobalto",desc:"Taglio a portafoglio, maniche corte. Elegante e fresco.", h:"250px", cerca:"blue silk wrap dress woman office summer elegant" },
+      { cat:"Sandali",  nome:"Sandali con cinturino in pelle bianca",  desc:"Tacco 5 cm, cinturino alla caviglia. Professionali e freschi.", h:"180px", cerca:"white leather ankle strap sandals woman office summer" },
+      { cat:"Borsa",    nome:"Shopper in paglia naturale strutturata",  desc:"Maniglie in cuoio, forma rigida. Più chic della tote classica.", h:"165px", cerca:"straw structured shopper bag woman office summer" },
+      { cat:"Gioielli", nome:"Bracciale rigido in oro giallo",          desc:"Uno solo, portato sul polso che non scrive. Oro giallo d'estate.", h:"160px", cerca:"gold bangle bracelet woman office summer" }
+    ],
+    tips:["Il blu cobalto è il colore dell'autorevolezza estiva.", "Seta e seta artificiale: entrambe fresche, molto diverse nel prezzo.", "Il bracciale rigido non disturba quando si scrive — meglio degli anelli."]
+  },
+  "lavoro_mite_uomo_elegante": {
+    intro: "L'ufficio moderno richiede precisione — non rigidità.",
+    pezzi: [
+      { cat:"Abito",    nome:"Abito grigio medio slim fit",            desc:"Lana fresca, due bottoni. Il grigio è il colore più versatile.", h:"260px", cerca:"grey slim fit suit man office elegant" },
+      { cat:"Camicia",  nome:"Camicia azzurro chiaro in cotone",       desc:"Colletto italiano, polsini semplici. Base impeccabile.", h:"200px", cerca:"light blue cotton dress shirt man office" },
+      { cat:"Scarpe",   nome:"Derby in cuoio marrone chiaro",          desc:"Stringato aperto, suola in cuoio. Più moderno dell'oxford.", h:"180px", cerca:"light brown leather derby shoes man office" },
+      { cat:"Borsa",    nome:"Cartella in pelle marrone a soffietto",  desc:"Porta laptop, chiusura a fermaglio. Classica senza essere antiquata.", h:"190px", cerca:"brown leather briefcase man office professional" }
+    ],
+    tips:["L'abito grigio è la base più versatile del guardaroba maschile professionale.", "Il marrone con il grigio funziona sempre — evita il nero con il grigio.", "No profumo in ufficio — o pochissimo, a distanza ravvicinata non deve sentirsi."]
+  },
+  "lavoro_mite_donna_casual-chic": {
+    intro: "Smart casual per ambienti creativi — curato senza essere ingessato.",
+    pezzi: [
+      { cat:"Top",       nome:"Maglia a coste in merino color terracotta",desc:"Tucked in. Il terracotta è caldo e originale, non scontato.", h:"230px", cerca:"terracotta ribbed merino sweater woman casual office" },
+      { cat:"Pantaloni", nome:"Chino straight fit verde salvia",           desc:"Gamba dritta, vita media. Il verde salvia con il terracotta è perfetto.", h:"200px", cerca:"sage green straight chino trousers woman casual office" },
+      { cat:"Sneaker",   nome:"Sneaker in pelle bianca con suola spessa",  desc:"Chunky sole ma silhouette pulita. Non da palestra.", h:"160px", cerca:"white leather chunky sole sneakers woman casual" },
+      { cat:"Borsa",     nome:"Tote canvas con dettagli in pelle",         desc:"Capiente, con tasca interna. Per chi porta tutto con sé.", h:"190px", cerca:"canvas leather trim tote bag woman casual office" }
+    ],
+    tips:["Il tucked-in trasforma qualsiasi maglia in look curato in 3 secondi.", "Colori caldi (terracotta, ocra) + colori freddi (salvia, pervinca): contrasto sofisticato.", "Sneaker bianche: puliscile ogni domenica sera."]
+  },
+  "lavoro_mite_uomo_casual-chic": {
+    intro: "Business casual fatto bene — il confine tra curato e rilassato, gestito con precisione.",
+    pezzi: [
+      { cat:"Camicia",   nome:"Camicia Oxford a quadri piccoli blu/bianco",desc:"Colletto button-down. Il tessuto Oxford è casual ma strutturato.", h:"230px", cerca:"blue white check oxford shirt man casual office" },
+      { cat:"Pantaloni", nome:"Chino in cotone lavato color sabbia",        desc:"Fit slim, risvolto. Il lavato dà texture senza essere trasandato.", h:"200px", cerca:"sand beige slim chino trousers man casual office" },
+      { cat:"Scarpe",    nome:"Mocassino penny loafer in camoscio marrone", desc:"Senza calzini o con calzini corti. Il simbolo del casual chic maschile.", h:"180px", cerca:"brown suede penny loafer man casual smart" },
+      { cat:"Borsa",     nome:"Zaino in pelle nera con cerniere silver",    desc:"Semplice, ordinato, capace. La borsa maschile più versatile.", h:"200px", cerca:"black leather backpack silver zip man office casual" }
+    ],
+    tips:["Button-down collar: il colletto che non ha bisogno di cravatta per stare bene.", "Chino + mocassino + camicia Oxford = smart casual maschile senza errori.", "Lo zaino in pelle è accettabile in qualsiasi ufficio moderno."]
+  },
+
+  // ─── APERITIVO ─────────────────────────────────────
+  "aperitivo_mite_donna_casual-chic": {
+    intro: "L'aperitivo è il momento per brillare — senza sembrare che ci si sia provati troppo.",
+    pezzi: [
+      { cat:"Top",       nome:"Blusa in seta stampata a fiori astratti",desc:"Morbida, con scollo a V. Il pattern fa il lavoro — base neutra sotto.", h:"240px", cerca:"silk printed blouse abstract floral woman going out" },
+      { cat:"Jeans",     nome:"Straight jeans vita alta in denim scuro", desc:"Il denim classico. Con le scarpe giuste diventa chic ovunque.", h:"200px", cerca:"dark high waist straight jeans woman going out" },
+      { cat:"Scarpe",    nome:"Mules tacco blocco in velluto bordeaux",  desc:"Tacco 7 cm, punta aperta. Comode in piedi al bar.", h:"175px", cerca:"bordeaux velvet block heel mules woman evening" },
+      { cat:"Gioielli",  nome:"Orecchini a cerchio dorati extra-large",  desc:"Il singolo accessorio che trasforma il look.", h:"170px", cerca:"large gold hoop earrings woman evening out" }
+    ],
+    tips:["Un pezzo bold su base neutra — la formula che non sbaglia mai.", "Grandi orecchini = capelli raccolti. Lasciati sciolti → orecchini piccoli.", "Un rossetto in borsa: cambia il look da giorno a sera in 30 secondi."]
+  },
+  "aperitivo_mite_uomo_casual-chic": {
+    intro: "Dopo-lavoro o aperitivo: il momento in cui il casual si fa intenzionale.",
+    pezzi: [
+      { cat:"Camicia",   nome:"Camicia linen washed in blu navy",       desc:"Non stirata perfettamente — è parte del look. Bottoni perlacei.", h:"230px", cerca:"navy linen shirt man casual evening aperitivo" },
+      { cat:"Pantaloni", nome:"Pantalone in cotone stretch nocciola",   desc:"Slim, leggero. Meglio del jeans per una serata in piedi.", h:"200px", cerca:"hazelnut cotton slim trousers man going out evening" },
+      { cat:"Scarpe",    nome:"Chelsea boot in suede grigio",           desc:"Tacco 3 cm. Il boot più versatile del guardaroba maschile.", h:"190px", cerca:"grey suede chelsea boot man evening casual" },
+      { cat:"Accessori", nome:"Orologio con cinturino in pelle marrone",desc:"Automatico o al quarzo — l'accessorio maschile che non passa mai.", h:"170px", cerca:"leather strap watch man casual evening brown" }
+    ],
+    tips:["La camicia in lino non stirata ha un suo stile — non è trascuratezza.", "Chelsea boot: il solo stivale accettabile all'aperitivo.", "L'orologio è l'unico gioiello maschile che non fa mai domande."]
+  },
+  "aperitivo_caldo_donna_romantico": {
+    intro: "Serata estiva — il tipo di look che si ricorda per il modo in cui si muoveva.",
+    pezzi: [
+      { cat:"Abito",    nome:"Abito midi in chiffon a fiori giallo limone",desc:"Gonna a ruota, bustino aderente. Colore estate pura.", h:"260px", cerca:"yellow floral chiffon midi dress woman summer evening" },
+      { cat:"Sandali",  nome:"Sandali flat dorati con fasce sottili",      desc:"Flat per una serata all'aperto. Il dorato con il giallo esplode.", h:"175px", cerca:"gold flat strappy sandals woman summer evening" },
+      { cat:"Borsa",    nome:"Mini bag rotonda in vimini",                 desc:"Micro-bag con tracolla corta. Boho ma sofisticata.", h:"155px", cerca:"round wicker mini bag woman summer evening boho" },
+      { cat:"Profumo",  nome:"Fragranza floreale agrumata",               desc:"Gelsomino e bergamotto — estiva, fresca, memorabile.", h:"175px", cerca:"floral citrus perfume bottle woman summer" }
+    ],
+    tips:["Il giallo si porta solo con accessori dorati — mai argento.", "Abito a ruota: cammina lentamente per farlo volare bene.", "Il profumo è il ricordo che rimane più a lungo — sceglilo con cura."]
+  },
+
+  // ─── CASUAL ────────────────────────────────────────
+  "casual_mite_donna_casual-chic": {
+    intro: "Il casual quotidiano fatto bene — nessuno sforzo apparente, tutto calcolato con precisione.",
+    pezzi: [
+      { cat:"Top",       nome:"T-shirt bianca in cotone pesante pima",  desc:"Spessore percepibile, orlo dritto. La base di tutto.", h:"220px", cerca:"white heavy cotton t-shirt woman casual minimal" },
+      { cat:"Jeans",     nome:"Straight leg vita alta in denim dark",   desc:"Il taglio dritto funziona su tutte le silhouette.", h:"200px", cerca:"dark high waist straight jeans woman casual" },
+      { cat:"Blazer",    nome:"Blazer destrutturato oversize in beige",  desc:"Sulle spalle o indossato — eleva qualsiasi look in 3 secondi.", h:"235px", cerca:"beige oversized unstructured blazer woman casual chic" },
+      { cat:"Sneaker",   nome:"Sneaker in pelle bianca con suola piatta",desc:"Pulite, niente loghi evidenti. Sempre in ordine.", h:"155px", cerca:"white leather minimal sneakers woman casual" }
+    ],
+    tips:["Un capo di qualità percepibile vale più di cinque economici insieme.", "Il blazer destrutturato trasforma istantaneamente qualsiasi look.", "Tre colori massimo — uno dominante, uno secondario, uno accento."]
+  },
+  "casual_mite_uomo_casual-chic": {
+    intro: "Il casual maschile al suo meglio — comodo senza essere sciatto.",
+    pezzi: [
+      { cat:"T-shirt",   nome:"T-shirt bianca in cotone pesante",       desc:"Peso 180g+. La qualità si vede e si sente.", h:"220px", cerca:"white heavy cotton t-shirt man casual minimal quality" },
+      { cat:"Jeans",     nome:"Jeans straight fit in denim indaco",     desc:"Lavaggio medio, niente strappi. Classic e sempre giusto.", h:"200px", cerca:"indigo straight fit jeans man casual classic" },
+      { cat:"Giacca",    nome:"Giacca in nylon leggera color kaki",     desc:"Impermeabile, leggera. Il capospalla casual più versatile.", h:"230px", cerca:"khaki nylon light jacket man casual" },
+      { cat:"Sneaker",   nome:"Sneaker low-top in tela bianca",         desc:"Semplici, pulite. Non da ginnastica — da città.", h:"160px", cerca:"white canvas low top sneakers man casual minimal" }
+    ],
+    tips:["Una t-shirt di qualità si vede subito — investi in 3 buone invece di 10 economiche.", "Il jeans straight è il taglio più versatile — funziona con tutto.", "Giacca in nylon: leggera, pratica, e con il jeans è sempre giusta."]
+  },
+  "casual_caldo_donna_casual-chic": {
+    intro: "Estate in città — freschezza senza sacrificare il dettaglio.",
+    pezzi: [
+      { cat:"Top",       nome:"Canotta in lino bianco scollo quadrato",desc:"Tessuto naturale, cade bene. Il lino d'estate è lusso accessibile.", h:"220px", cerca:"white linen square neck tank top woman summer casual" },
+      { cat:"Gonna",     nome:"Gonna midi in cotone a fiori su fondo panna",desc:"Elastico in vita, leggera. Si abbina a qualsiasi top.", h:"210px", cerca:"floral cotton midi skirt cream woman summer casual" },
+      { cat:"Sandali",   nome:"Sandali piatti in cuoio intrecciato naturale",desc:"Comodi tutto il giorno. Il cuoio si adatta al piede.", h:"165px", cerca:"natural leather woven flat sandals woman summer" },
+      { cat:"Borsa",     nome:"Tote in canvas naturale con stampa",     desc:"Capiente, lavabile, pratica. La borsa dell'estate.", h:"180px", cerca:"canvas natural tote bag woman summer casual" }
+    ],
+    tips:["Lino e cotone sono i tessuti dell'estate italiana per eccellenza.", "Gonna midi con sandali flat: più elegante di quanto sembri.", "Tote di tela: tienine una in borsa piegata — ti salva la vita."]
+  },
+  "casual_caldo_uomo_casual-chic": {
+    intro: "Estate maschile — semplicità come scelta consapevole.",
+    pezzi: [
+      { cat:"T-shirt",   nome:"T-shirt in cotone fiammato bianco ottico",desc:"Leggera, micro-texture. Meglio del cotone liscio con il caldo.", h:"210px", cerca:"white slub cotton t-shirt man summer casual" },
+      { cat:"Shorts",    nome:"Bermuda in lino greige con risvolto",    desc:"Lunghezza al ginocchio, non oltre. Il risvolto è obbligatorio.", h:"195px", cerca:"linen bermuda shorts greige man summer casual elegant" },
+      { cat:"Scarpe",    nome:"Sneaker in canvas bianca con suola in gomma",desc:"Leggerissima. Con i bermuda è più appropriata del sandalo.", h:"165px", cerca:"white canvas sneakers man summer casual light" },
+      { cat:"Accessori", nome:"Occhiali aviator in metallo gold",       desc:"Classici, universali. Il dorato con il greige è perfetto.", h:"170px", cerca:"gold aviator sunglasses man summer casual" }
+    ],
+    tips:["Il bermuda in lino non è uno short da spiaggia — è un capo estivo serio.", "Bermuda sopra il ginocchio: mai. Al ginocchio: sempre.", "Gli occhiali da sole sono l'accessorio maschile più importante dell'estate."]
+  },
+  "casual_freddo_donna_casual-chic": {
+    intro: "Autunno e inverno casual — stratificazione intelligente come estetica.",
+    pezzi: [
+      { cat:"Maglione",  nome:"Maglione oversize in lana misto alpaca grigio",desc:"Morbidissimo, caduta naturale. Il grigio è la base perfetta.", h:"240px", cerca:"grey oversized alpaca wool sweater woman casual winter" },
+      { cat:"Jeans",     nome:"Jeans straight vintage wash lavaggio chiaro",  desc:"Contrasto con il grigio del maglione — non abbinarli dello stesso tono.", h:"200px", cerca:"light wash vintage straight jeans woman casual autumn" },
+      { cat:"Stivali",   nome:"Stivali texani in pelle marrone cognac",        desc:"Con i jeans dentro o fuori. Il cognac scalda qualsiasi palette.", h:"200px", cerca:"cognac leather cowboy boots woman casual winter" },
+      { cat:"Borsa",     nome:"Bauletto in pelle morbida color moka",          desc:"Forma rigida, tracolla doppia. Femminile e capiente.", h:"180px", cerca:"moka leather barrel bag woman casual autumn" }
+    ],
+    tips:["Maglione oversize + jeans straight: la formula del casual invernale perfetto.", "Stivali texani: usali sopra i jeans per un look più moderno.", "Il cognac è il colore accessori dell'autunno — funziona con tutto."]
+  },
+
+  // ─── SERATA ────────────────────────────────────────
+  "serata_mite_donna_elegante": {
+    intro: "La notte appartiene a chi sa come vestirsi — un look che non si dimentica.",
+    pezzi: [
+      { cat:"Abito",    nome:"Slip dress in seta verde smeraldo",       desc:"Taglio semplice, raso fluido. La luce della sera lo trasforma.", h:"270px", cerca:"emerald green satin slip dress woman evening elegant" },
+      { cat:"Scarpe",   nome:"Sandali a stiletto con laccio alla caviglia",desc:"Tacco 10 cm, punta aperta. Il laccio tiene il piede sicuro.", h:"195px", cerca:"stiletto ankle strap sandals woman evening elegant" },
+      { cat:"Borsa",    nome:"Minaudière in ottone dorato a catena",     desc:"Rigida, geometrica. Porta solo l'essenziale — è il punto.", h:"155px", cerca:"gold brass minaudiere chain bag woman evening" },
+      { cat:"Gioielli", nome:"Collana body chain in oro sottile",        desc:"Visibile sullo scollo. O questa o gli orecchini — mai tutto insieme.", h:"180px", cerca:"gold body chain delicate necklace woman evening" }
+    ],
+    tips:["O labbra o occhi intensi — mai entrambi al massimo insieme.", "Il raso cattura la luce in modo unico nelle foto — irripetibile.", "Porta cerotti per i talloni — i tacchi da serata fanno sempre male."]
+  },
+  "serata_mite_uomo_elegante": {
+    intro: "Serata elegante — il momento in cui il guardaroba maschile dà il meglio.",
+    pezzi: [
+      { cat:"Abito",    nome:"Abito nero slim fit in lana fresca",      desc:"Due bottoni, solapel in seta nera. La versione moderna del total black.", h:"260px", cerca:"black slim fit wool suit man evening elegant" },
+      { cat:"Camicia",  nome:"Camicia bianca in popeline con colletto pin-point",desc:"Colletto a punta stretta, polsini doppi. La versione raffinata.", h:"200px", cerca:"white pin-point poplin dress shirt man evening elegant" },
+      { cat:"Cravatta", nome:"Cravatta in seta jacquard blu notte",     desc:"Pattern micro a fiori su sfondo blu scuro. Riconosci chi guarda da vicino.", h:"175px", cerca:"navy blue jacquard silk tie man evening elegant" },
+      { cat:"Scarpe",   nome:"Oxfords in pelle verniciata nera",        desc:"Cap toe, laccio nero, suola sottile. Il massimo dell'eleganza maschile.", h:"195px", cerca:"black patent cap toe oxford shoes man evening formal" }
+    ],
+    tips:["Cravatta con dimple: la fossetta al centro del nodo — segnale di chi sa.", "Camicia bianca + abito nero = combinazione che funziona ovunque.", "Niente orologio digitale con il formalwear — o analogico o niente."]
+  },
+  "serata_caldo_donna_romantico": {
+    intro: "Serata estiva romantica — il look che fa dire 'sei bellissima' senza sembrare troppo.",
+    pezzi: [
+      { cat:"Abito",    nome:"Abito midi a spalle scoperte in crêpe rosa antico",desc:"Scollo bustier morbido, gonna svasata. Romantico senza eccedere.", h:"260px", cerca:"dusty pink off shoulder crepe midi dress woman romantic evening" },
+      { cat:"Sandali",  nome:"Sandali kitten heel in raso nude",              desc:"Tacco 4 cm — il più comodo dei tacchi. Elegantissimo.", h:"180px", cerca:"nude satin kitten heel sandals woman romantic evening" },
+      { cat:"Borsa",    nome:"Pochette a busta in velluto bordeaux",           desc:"Contrasto cromatico con il rosa. Il bordeaux aggiunge profondità.", h:"155px", cerca:"bordeaux velvet envelope clutch woman romantic evening" },
+      { cat:"Gioielli", nome:"Bracciale tennis in cristalli silver",           desc:"Sottile, scintillante. Una sola mano — non entrambe.", h:"165px", cerca:"silver crystal tennis bracelet woman evening romantic" }
+    ],
+    tips:["Il contrasto rosa antico + bordeaux è la coppia cromatica più romantica.", "Kitten heel: il tacco per chi vuole eleganza senza sofferenza.", "Profumo floreale leggero — la sera amplifica tutto, dosa con cura."]
+  },
+
+  // ─── COLLOQUIO ─────────────────────────────────────
+  "colloquio_mite_donna_elegante": {
+    intro: "Il primo impatto conta — comunica competenza, cura e personalità autentica.",
+    pezzi: [
+      { cat:"Blazer",    nome:"Blazer sartoriale grigio antracite",     desc:"Spalle definite, un bottone. Il grigio comunica serietà senza freddezza.", h:"250px", cerca:"charcoal grey tailored blazer woman interview professional" },
+      { cat:"Pantaloni", nome:"Pantalone a sigaretta in nero",          desc:"Vita alta, gamba dritta, tessuto qualitativo. Niente trasparenze.", h:"195px", cerca:"black cigarette trousers high waist woman interview" },
+      { cat:"Scarpe",    nome:"Décolleté tacco medio in pelle nera",    desc:"Tacco 5 cm. Abbastanza alto per essere professionale, abbastanza basso per camminare.", h:"170px", cerca:"black leather mid heel pumps woman interview professional" },
+      { cat:"Borsa",     nome:"Cartella in pelle nera strutturata",     desc:"Rigida, con manici corti. Trasmette organizzazione e professionalità.", h:"195px", cerca:"black leather structured briefcase bag woman professional" }
+    ],
+    tips:["Vesti un gradino sopra il dress code dell'azienda — mai uguale o sotto.", "Unghie curate sono obbligatorie — si notano sempre.", "Evita profumi intensi — non sai se il selezionatore è sensibile."]
+  },
+  "colloquio_mite_uomo_elegante": {
+    intro: "Il colloquio si vince prima di aprire bocca — il look fa il 40% del lavoro.",
+    pezzi: [
+      { cat:"Abito",    nome:"Abito blu navy two-piece slim fit",       desc:"Classico, rassicurante, autorevole. Il colore più potente per un colloquio.", h:"260px", cerca:"navy blue two piece slim suit man job interview" },
+      { cat:"Camicia",  nome:"Camicia azzurro chiaro in cotone no-iron",desc:"No-iron: arriva impeccabile anche dopo ore in borsa.", h:"200px", cerca:"light blue no-iron cotton shirt man interview professional" },
+      { cat:"Cravatta", nome:"Cravatta in seta regimental blu/grigio",  desc:"Pattern classico a righe diagonali. Trasmette affidabilità.", h:"175px", cerca:"blue grey regimental stripe silk tie man interview" },
+      { cat:"Scarpe",   nome:"Oxford stringati marrone scuro lucidati", desc:"Brillanti, senza un graffio. La cura delle scarpe dice tutto.", h:"190px", cerca:"dark brown polished oxford shoes man interview formal" }
+    ],
+    tips:["Le scarpe vengono notate per prime — lucidare la sera prima è obbligatorio.", "Il navy trasmette fiducia e competenza in ogni cultura aziendale.", "Orologio analogico al polso: segnala precisione e attenzione al tempo."]
+  },
+
+  // ─── DATA ──────────────────────────────────────────
+  "data_mite_donna_romantico": {
+    intro: "Un look che ti fa sentire te stessa — bella, a tuo agio, indimenticabile.",
+    pezzi: [
+      { cat:"Abito",    nome:"Wrap dress midi a stampa astratta in seta",desc:"Valorizza qualsiasi silhouette. La stampa racconta una personalità.", h:"260px", cerca:"abstract print silk wrap dress woman romantic date" },
+      { cat:"Sandali",  nome:"Sandali con cinturino intrecciato in pelle cuoio",desc:"Tacco 6 cm, cinturino alla caviglia. Eleganti senza essere formali.", h:"185px", cerca:"tan leather woven heeled sandals woman romantic date" },
+      { cat:"Borsa",    nome:"Tracolla piccola in pelle morbida color avorio",desc:"Mani libere, non ingombrante. Cuoio chiaro con qualsiasi palette.", h:"155px", cerca:"ivory soft leather small crossbody bag woman date" },
+      { cat:"Profumo",  nome:"Eau de parfum muschiata e floreale",      desc:"Due spruzzi — dietro le orecchie, sui polsi. Non di più.", h:"185px", cerca:"musky floral perfume bottle woman romantic evening" }
+    ],
+    tips:["Indossa qualcosa che hai già messo con successo — non sperimentare.", "Il profumo è il ricordo che rimane più a lungo nella memoria.", "Un dettaglio personale (anello, orecchino, borsa) diventa argomento di conversazione."]
+  },
+  "data_mite_uomo_casual-chic": {
+    intro: "Prima data — curato ma non rigido, interessante ma non eccentrico.",
+    pezzi: [
+      { cat:"Camicia",  nome:"Camicia in chambray blu medio",            desc:"Tessuto misto lino-cotone, leggermente strutturato. Perfetta.", h:"230px", cerca:"blue chambray shirt man casual date evening" },
+      { cat:"Pantaloni",nome:"Chino slim color nocciola",                desc:"Fit preciso, tessuto non stirato rigidamente. Décontracté.", h:"200px", cerca:"hazelnut slim chino man casual date evening" },
+      { cat:"Scarpe",   nome:"Chelsea boot in pelle scamosciata marrone",desc:"Tacco 3 cm. Elegante quanto basta senza essere formale.", h:"185px", cerca:"brown suede chelsea boot man date casual evening" },
+      { cat:"Profumo",  nome:"Fragranza legnosa con note di cedro",      desc:"Discreta, memorabile. Non si deve sentire a un metro di distanza.", h:"175px", cerca:"woody cedar cologne perfume bottle man evening" }
+    ],
+    tips:["Vesti in modo leggermente sopra il luogo — segnala interesse e rispetto.", "Il profumo si applica ai polsi e al collo — non sulla camicia.", "Telefono in tasca, non sul tavolo — tutta l'attenzione è sulla persona davanti."]
+  },
+
+  // ─── VIAGGIO ───────────────────────────────────────
+  "viaggio_mite_donna_casual-chic": {
+    intro: "Comoda in aeroporto, presentabile all'arrivo — nessun compromesso tra i due.",
+    pezzi: [
+      { cat:"Top",       nome:"T-shirt in lyocell grigio chiaro anti-piega",desc:"Non si sgualcisce in valigia. Traspirante e fresca.", h:"210px", cerca:"grey lyocell anti-wrinkle t-shirt woman travel" },
+      { cat:"Pantaloni", nome:"Pantalone in tech fabric elasticizzato navy",desc:"Morbidi come un pigiama, presentabili come un chino.", h:"200px", cerca:"navy tech fabric stretch travel trousers woman comfortable" },
+      { cat:"Giacca",    nome:"Giacca trapuntata leggera color champagne",  desc:"Si arrotola in un sacchetto. Coperta in aereo, stile all'arrivo.", h:"230px", cerca:"champagne lightweight quilted jacket woman travel" },
+      { cat:"Sneaker",   nome:"Slip-on in tessuto tecnico bianco",          desc:"Via ai controlli sicurezza in 5 secondi. Leggere in valigia.", h:"165px", cerca:"white technical fabric slip on sneakers woman travel airport" }
+    ],
+    tips:["Lyocell e tech fabric: comodissimi in volo e impresentabili mai.", "Gli slip-on ai controlli aeroportuali valgono oro.", "Un foulard di seta: coperta, cuscino, accessorio in uno — non viaggiare senza."]
+  },
+  "viaggio_mite_uomo_casual-chic": {
+    intro: "In aeroporto come in riunione — un look che viaggia bene come te.",
+    pezzi: [
+      { cat:"Felpa",    nome:"Felpa in cotone organico color slate grey",  desc:"Pesante quanto basta, senza cappuccio. Presentabile ovunque.", h:"220px", cerca:"slate grey organic cotton sweatshirt man travel casual" },
+      { cat:"Pantaloni",nome:"Jogger tech slim in nero",                   desc:"Tasche a zip, vita elastica. Il pantalone da viaggio definitivo.", h:"200px", cerca:"black tech slim jogger man travel comfortable" },
+      { cat:"Sneaker",  nome:"Sneaker running minimalista bianca",         desc:"Leggera, ammortizzata. Nei check-in vale più di qualsiasi altro scarpa.", h:"170px", cerca:"white minimal running sneakers man travel airport" },
+      { cat:"Borsa",    nome:"Zaino tecnico 20L in nylon impermeabile",    desc:"Laptop, cavo, cambio. Il carry-on perfetto per viaggi brevi.", h:"210px", cerca:"black waterproof nylon 20L backpack man travel" }
+    ],
+    tips:["No jeans in aereo — prendono spazio, restringono, non respirano.", "Zaino con scomparto laptop esterno = controlli di sicurezza veloci.", "Una powerbank sempre carica è parte del look del viaggiatore consapevole."]
+  },
+
+  // ─── SPORT ─────────────────────────────────────────
+  "sport_mite_donna_sportivo": {
+    intro: "Funzionale, comodo, con il giusto tocco di stile — perché anche in palestra si può essere curate.",
+    pezzi: [
+      { cat:"Top",       nome:"Sports bra con dettagli mesh in nero",     desc:"Supporto medio-alto, mesh traspirante sul retro. Set coordinato.", h:"210px", cerca:"black mesh sports bra woman gym workout" },
+      { cat:"Leggings",  nome:"Leggings vita alta a compressione in verde oliva",desc:"Non scendono, non si vedono in trasparenza. Colore originale.", h:"200px", cerca:"olive green high waist compression leggings woman gym" },
+      { cat:"Scarpe",    nome:"Running shoes in mesh grigio/verde",       desc:"Specifiche per la corsa — non le stesse della passeggiata.", h:"165px", cerca:"grey green mesh running shoes woman workout gym" },
+      { cat:"Accessori", nome:"Fascia larga in cotone coordinata",        desc:"Abbinata al set. I capelli fuori dagli occhi, il look completo.", h:"165px", cerca:"olive green wide headband woman gym workout sport" }
+    ],
+    tips:["Il set coordinato fa sembrare tutto più intenzionale e curato.", "Scarpe specifiche per l'attività — aiutano le prestazioni e prevengono infortuni.", "Una borraccia di design è ormai un accessorio a tutti gli effetti."]
+  },
+  "sport_mite_uomo_sportivo": {
+    intro: "Allenamento o corsa — funzionale prima di tutto, ma non per questo anonimo.",
+    pezzi: [
+      { cat:"T-shirt",   nome:"T-shirt tecnica in drifit grigio chiaro", desc:"Ultra-leggera, asciuga in minuti. Non trattiene gli odori.", h:"210px", cerca:"grey drifit technical t-shirt man gym workout" },
+      { cat:"Shorts",    nome:"Shorts running in nylon nero 5 pollici",  desc:"Fodera interna, tasche laterali con zip. La misura giusta.", h:"190px", cerca:"black nylon 5 inch running shorts man gym workout" },
+      { cat:"Scarpe",    nome:"Trail running shoes in mesh multicolor",  desc:"Grip, ammortizzazione, peso piuma. Per strada o in palestra.", h:"175px", cerca:"trail running shoes mesh man workout gym" },
+      { cat:"Accessori", nome:"Berretto running in microfibre grigio",   desc:"Leggero, asciuga subito. Per correre sotto il sole senza pensieri.", h:"165px", cerca:"grey microfibre running cap man workout sport" }
+    ],
+    tips:["Drifit o equivalente: il cotone bagnato è il peggior compagno di allenamento.", "Shorts 5 pollici: la lunghezza giusta per correre senza fasciare e senza eccedere.", "Berretto in corsa: non per la pioggia — per il sole."]
+  },
+
+  // ─── SPIAGGIA ──────────────────────────────────────
+  "spiaggia_caldo_donna_casual-chic": {
+    intro: "Dalla spiaggia all'aperitivo senza cambiare — il look balneare perfetto.",
+    pezzi: [
+      { cat:"Costume",   nome:"Costume intero con cut-out laterale in nero",desc:"Fasciante, versatile. Funziona come body per il dopo-spiaggia.", h:"230px", cerca:"black one piece cutout swimsuit woman beach chic" },
+      { cat:"Copricostume",nome:"Pareo in mussola bianca stampata",          desc:"Avvolto o annodato. Fa da gonna, da coprispalle, da tutto.", h:"200px", cerca:"white printed muslin pareo beach coverup woman" },
+      { cat:"Sandali",   nome:"Sandali piatti in cuoio intrecciato naturale",desc:"Resistono a sabbia e acqua. Comodi tutto il giorno.", h:"165px", cerca:"natural leather woven flat sandals woman beach summer" },
+      { cat:"Cappello",  nome:"Cappello di paglia a tesa larga naturale",    desc:"Protezione solare e accessorio imprescindibile.", h:"185px", cerca:"natural straw wide brim hat woman beach summer" }
+    ],
+    tips:["SPF 50 ogni 2 ore — fa parte del look quanto la borsa.", "Il costume intero è più versatile del bikini per il dopo-spiaggia.", "Occhiali con lenti UV400 — proteggono davvero gli occhi."]
+  },
+  "spiaggia_caldo_uomo_casual-chic": {
+    intro: "Mare d'estate — minimal per scelta, non per mancanza di idee.",
+    pezzi: [
+      { cat:"Costume",   nome:"Boardshort in nylon ripstop blu navy",    desc:"Lunghezza al ginocchio, tasche laterali con zip. No mesh interno.", h:"195px", cerca:"navy nylon boardshort man beach summer" },
+      { cat:"T-shirt",   nome:"T-shirt in lino/cotone bianco natural",   desc:"Per la passeggiata o il bar. Leggera, non si vede bagnata.", h:"200px", cerca:"white linen cotton t-shirt man beach summer casual" },
+      { cat:"Sandali",   nome:"Sandali in gomma EVA con cinturino regolabile",desc:"Resistono a qualsiasi cosa. Meglio delle infradito per camminare.", h:"165px", cerca:"black eva rubber adjustable sandals man beach summer" },
+      { cat:"Accessori", nome:"Occhiali wayfarer in acetato nero",        desc:"Classici, universali, indistruttibili. Non sbaglia mai.", h:"175px", cerca:"black acetate wayfarer sunglasses man beach summer" }
+    ],
+    tips:["Boardshort al ginocchio — sopra non si porta dopo i 20 anni.", "Il wayfarer è l'occhiale da sole più versatile mai creato.", "Protezione solare SPF30 anche per uomo — la pelle non ha genere."]
+  }
+};
+
+function getStatic(occ, tmp, gen, sty) {
+  const keys = [
+    `${occ}_${tmp}_${gen}_${sty}`,
+    `${occ}_${tmp}_${gen}_elegante`,
+    `${occ}_${tmp}_${gen}_casual-chic`,
+    `${occ}_mite_${gen}_${sty}`,
+    `${occ}_mite_${gen}_elegante`,
+    `${occ}_caldo_${gen}_${sty}`,
+    // fallback per genere neutro
+    `${occ}_${tmp}_donna_${sty}`,
+    `${occ}_mite_donna_elegante`,
+    'casual_mite_donna_casual-chic'
+  ];
+  for (const k of keys) if (DB[k]) return DB[k];
+  return DB['casual_mite_donna_casual-chic'];
+}
+
+// ── UI ──────────────────────────────────────────────
+function initGroups() {
+  ['g-occ','g-temp','g-gen','g-stil','g-corp','g-budget'].forEach(id => {
+    const grp = document.getElementById(id);
+    if (!grp) return;
+    grp.querySelectorAll('[data-v]').forEach(el => {
+      el.addEventListener('click', () => {
+        grp.querySelectorAll('[data-v]').forEach(c => c.classList.remove('on'));
+        el.classList.add('on');
+      });
+    });
+  });
+}
+function getV(id) { const e = document.querySelector(`#${id} .on`); return e ? e.dataset.v : null; }
+
+function updateUI() {
+  // dots — mostrano progresso rispetto al limite attuale
+  const maxDots = currentUser ? MAX_FREE_LOGGED : MAX_FREE_GUEST;
+  for (let i = 1; i <= 3; i++) {
+    const d = document.getElementById(`fd${i}`);
+    if (!d) continue;
+    if (i > maxDots) { d.style.display = 'none'; }
+    else { d.style.display = 'block'; d.classList.toggle('used', i <= freeUsed); }
+  }
+  // navbar — utente loggato vs non loggato
+  if (currentUser) {
+    document.getElementById('navLoginBtn').style.display = 'none';
+    document.getElementById('navUser').style.display = 'flex';
+    document.getElementById('navNome').textContent = currentUser.nome;
+  } else {
+    document.getElementById('navLoginBtn').style.display = 'block';
+    document.getElementById('navUser').style.display = 'none';
+  }
+  // crediti e badge free
+  if (credits > 0) {
+    document.getElementById('navFree').style.display = 'none';
+    document.getElementById('navCredits').style.display = 'flex';
+    document.getElementById('creditsNum').textContent = credits;
+  } else {
+    document.getElementById('navCredits').style.display = 'none';
+    const fb = document.getElementById('navFree');
+    fb.style.display = 'block';
+    if (currentUser) {
+      // Loggato: mostra ricerche gratuite rimaste su 3
+      const rem = MAX_FREE_LOGGED - freeUsed;
+      if (rem > 0) {
+        fb.textContent = rem === MAX_FREE_LOGGED ? `${rem} look gratis` : `${rem} look gratis rimasti`;
+        fb.className = 'free-badge';
+      } else {
+        fb.textContent = 'Gratis esauriti';
+        fb.className = 'free-badge done';
+      }
+    } else {
+      // Non loggato: o "1 look gratis" o "Registrati gratis"
+      if (freeUsed < MAX_FREE_GUEST) {
+        fb.textContent = '1 look gratis';
+        fb.className = 'free-badge';
+      } else {
+        fb.textContent = 'Registrati gratis';
+        fb.className = 'free-badge done';
+        fb.style.cursor = 'pointer';
+        fb.onclick = () => openAuthWithMessage('Registrati gratis per altri 2 look!');
+      }
+    }
+  }
+  // bottone
+  const sub = document.getElementById('btnSub');
+  const btn = document.getElementById('mainBtn');
+  if (credits > 0) {
+    btn.className = 'gbtn ai-mode';
+    sub.textContent = `1 credito · ${credits} rimasti`;
+  } else if (currentUser && freeUsed < MAX_FREE_LOGGED) {
+    btn.className = 'gbtn';
+    sub.textContent = `gratis (${MAX_FREE_LOGGED - freeUsed} rimasti)`;
+  } else if (!currentUser && freeUsed < MAX_FREE_GUEST) {
+    btn.className = 'gbtn';
+    sub.textContent = 'gratis · nessuna registrazione';
+  } else if (!currentUser) {
+    btn.className = 'gbtn';
+    sub.textContent = 'registrati gratis per continuare';
+  } else {
+    btn.className = 'gbtn';
+    sub.textContent = 'acquista crediti';
+  }
+
+  // Messaggio schermata vuota
+  const esub = document.getElementById('emptySubtitle');
+  if (esub) {
+    if (currentUser && freeUsed < MAX_FREE_LOGGED) {
+      esub.textContent = `Hai ${MAX_FREE_LOGGED - freeUsed} look gratuiti rimasti.`;
+    } else if (!currentUser && freeUsed === 0) {
+      esub.textContent = 'Prova il tuo primo outfit gratis — nessuna registrazione richiesta.';
+    } else if (!currentUser && freeUsed >= MAX_FREE_GUEST) {
+      esub.textContent = 'Registrati gratis per altri 2 look, poi scegli se passare a Premium.';
+    }
+  }
+}
+
+const loadMsgs = [
+  'Analizziamo le tue preferenze...',
+  'Selezioniamo i capi migliori...',
+  'Abbiniamo colori e tessuti...',
+  'Quasi pronto il tuo look...'
+];
+let loadTimer;
+function startLoad() {
+  let i = 0;
+  document.getElementById('loadingSub').textContent = loadMsgs[0];
+  loadTimer = setInterval(() => { i=(i+1)%loadMsgs.length; document.getElementById('loadingSub').textContent = loadMsgs[i]; }, 1900);
+}
+function stopLoad() { clearInterval(loadTimer); }
+
+// Variante corrente visualizzata
+let curVarianteIdx = 0;
+let curVarianti = [];
+
+function renderVariante(idx, genere) {
+  const v = curVarianti[idx];
+  if (!v) return;
+  curVarianteIdx = idx;
+
+  // Aggiorna tab attivo
+  document.querySelectorAll('.vtab').forEach((t,i) => t.classList.toggle('on', i===idx));
+
+  document.getElementById('oIntro').textContent = v.intro || '';
+  window._pezziData = v.pezzi;
+
+  const genSuffix = genere === 'uomo' ? 'man male fashion' : genere === 'donna' ? 'woman female fashion' : 'fashion';
+  const catStyle = {
+    'Abito':{'bg':'#F5DDE0','icon':'👗','color':'#C4878C'},'Vestito':{'bg':'#F5DDE0','icon':'👗','color':'#C4878C'},
+    'Gonna':{'bg':'#F5DDE0','icon':'👗','color':'#C4878C'},'Top':{'bg':'#FCEEF0','icon':'👚','color':'#C4878C'},
+    'Camicia':{'bg':'#FCEEF0','icon':'👚','color':'#C4878C'},'Blusa':{'bg':'#FCEEF0','icon':'👚','color':'#C4878C'},
+    'Maglia':{'bg':'#FCEEF0','icon':'🧶','color':'#C4878C'},'Maglieria':{'bg':'#FCEEF0','icon':'🧶','color':'#C4878C'},
+    'Maglione':{'bg':'#FCEEF0','icon':'🧶','color':'#C4878C'},'Felpa':{'bg':'#FCEEF0','icon':'👕','color':'#C4878C'},
+    'Pantaloni':{'bg':'#EAE0D5','icon':'👖','color':'#8A6F6F'},'Jeans':{'bg':'#E8EDF5','icon':'👖','color':'#5A6F8A'},
+    'Shorts':{'bg':'#EAE0D5','icon':'🩳','color':'#8A6F6F'},'Bermuda':{'bg':'#EAE0D5','icon':'🩳','color':'#8A6F6F'},
+    'Blazer':{'bg':'#E8EFF5','icon':'🧥','color':'#5A7A8A'},'Giacca':{'bg':'#E8EFF5','icon':'🧥','color':'#5A7A8A'},
+    'Cappotto':{'bg':'#E8EFF5','icon':'🧥','color':'#5A7A8A'},'Outerwear':{'bg':'#E8EFF5','icon':'🧥','color':'#5A7A8A'},
+    'Scarpe':{'bg':'#F0EAE8','icon':'👠','color':'#8A5A5A'},'Calzature':{'bg':'#F0EAE8','icon':'👟','color':'#8A5A5A'},
+    'Sneaker':{'bg':'#EFF5E8','icon':'👟','color':'#5A8A5A'},'Stivali':{'bg':'#F0EAE8','icon':'👢','color':'#8A5A5A'},
+    'Sandali':{'bg':'#F0EAE8','icon':'👡','color':'#8A5A5A'},'Borsa':{'bg':'#F5EAE0','icon':'👜','color':'#8A6A4A'},
+    'Clutch':{'bg':'#F5EAE0','icon':'👛','color':'#8A6A4A'},'Tote':{'bg':'#F5EAE0','icon':'👜','color':'#8A6A4A'},
+    'Gioielli':{'bg':'#FFF5E6','icon':'✨','color':'#8A6A2A'},'Accessori':{'bg':'#FFF5E6','icon':'✨','color':'#8A6A2A'},
+    'Profumo':{'bg':'#F5E6FF','icon':'🌸','color':'#8A5A8A'},'Cappello':{'bg':'#EAF0F5','icon':'🎩','color':'#5A6A7A'},
+    'Cravatta':{'bg':'#EAF0F5','icon':'👔','color':'#5A6A7A'},'Cintura':{'bg':'#EAE0D5','icon':'👔','color':'#8A6F6F'},
+    'Occhiali':{'bg':'#EAF0F5','icon':'🕶️','color':'#5A6A7A'},'default':{'bg':'#F5DDE0','icon':'👗','color':'#C4878C'}
+  };
+
+  document.getElementById('pgrid').innerHTML = (v.pezzi||[]).map((p,i) => {
+    const st = catStyle[p.cat] || catStyle.default;
+    const cercaConGenere = (p.cerca || p.nome) + ' ' + genSuffix;
+    const thumbUrl = `https://tse1.mm.bing.net/th?q=${encodeURIComponent(cercaConGenere)}&w=120&h=120&c=7`;
+    const prezzoTag = p.prezzo ? `<span style="font-size:0.7rem;color:var(--rose-dark);font-weight:500;">${p.prezzo}</span>` : '';
+
+    // Store intelligenti basati sul brand citato nel nome
+    const stores = getStoreLinks(p);
+    const storeIconsHtml = stores.map(s =>
+      `<a href="${s.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()"
+         style="font-size:0.62rem;padding:3px 7px;border-radius:99px;background:white;color:#5A6A7A;border:1px solid #D9CBBF;text-decoration:none;white-space:nowrap;"
+         title="${s.label}">${s.icon}</a>`
+    ).join('');
+    const storePillsHtml = stores.map(s =>
+      `<a class="plink" href="${s.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${s.icon} ${s.label}</a>`
+    ).join('');
+
+    return `
+    <div class="pin" onclick="openLB(${i})">
+      <div class="piw" style="height:${p.h||'200px'};background:${st.bg};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:1.25rem;position:relative;">
+        <img src="${thumbUrl}" alt="${p.nome}"
+          style="width:110px;height:110px;object-fit:cover;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.12);"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div style="display:none;font-size:3rem;line-height:1">${st.icon}</div>
+        <div style="font-size:0.8rem;font-weight:500;color:${st.color};text-align:center;max-width:150px;line-height:1.3">${p.nome}</div>
+        ${prezzoTag}
+        <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center;">${storeIconsHtml}</div>
+      </div>
+      <div class="pb">
+        <div class="pcat">${p.cat}</div>
+        <div class="pnome">${p.nome} ${prezzoTag}</div>
+        <div class="pdesc">${p.desc}</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;">${storePillsHtml}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('tipsList').innerHTML =
+    (v.tips||[]).map(t=>`<div class="tip"><span class="tb">✦</span><span>${t}</span></div>`).join('');
+
+  curOutfit = v;
+}
+
+async function showOutfit(data, isAI, genere) {
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('loadingState').classList.remove('vis');
+  const panel = document.getElementById('outfitPanel');
+  panel.classList.remove('vis'); void panel.offsetWidth; panel.classList.add('vis');
+
+  const b = document.getElementById('oBadge');
+  b.className = isAI ? 'obadge ai' : 'obadge static';
+  b.textContent = isAI ? '✨ Outfit generato da AI' : '✦ Look del giorno';
+
+  const tabsEl = document.getElementById('variantiTabs');
+
+  // Gestisce sia formato varianti (AI) che singolo (statico)
+  if (data.varianti && data.varianti.length > 1) {
+    curVarianti = data.varianti;
+    tabsEl.style.display = 'flex';
+    tabsEl.innerHTML = data.varianti.map((v,i) => `
+      <div class="vtab ${i===0?'on':''}" onclick="renderVariante(${i},'${genere}')">
+        <span class="vtab-label">${v.fascia}</span>
+        <span class="vtab-price">${v.totale||'–'}</span>
+      </div>`).join('');
+    renderVariante(0, genere);
+  } else {
+    // Formato singolo (ricerche gratuite)
+    curVarianti = [data.varianti?.[0] || data];
+    tabsEl.style.display = 'none';
+    document.getElementById('oIntro').textContent = data.intro || data.varianti?.[0]?.intro || '';
+    window._pezziData = data.pezzi || data.varianti?.[0]?.pezzi || [];
+    // Usa renderVariante per consistenza
+    curVarianti = [{ intro: data.intro, pezzi: data.pezzi, tips: data.tips, prezzo:'–' }];
+    renderVariante(0, genere);
+  }
+}
+
+// ── GENERA ──────────────────────────────────────────
+const MAX_FREE_GUEST    = 1; // senza account
+const MAX_FREE_LOGGED   = 3; // con account
+
+function handleGenerate() {
+  const occ    = getV('g-occ')    || 'casual';
+  const tmp    = getV('g-temp')   || 'mite';
+  const gen    = getV('g-gen')    || 'donna';
+  const sty    = getV('g-stil')   || 'casual-chic';
+  const corp   = getV('g-corp')   || 'qualsiasi';
+  const budget = getV('g-budget') || 'medio';
+
+  if (credits > 0) {
+    genAI(occ,tmp,gen,sty,corp,budget);
+  } else if (currentUser && freeUsed < MAX_FREE_LOGGED) {
+    genStatic(occ,tmp,gen,sty);
+  } else if (!currentUser && freeUsed < MAX_FREE_GUEST) {
+    genStatic(occ,tmp,gen,sty);
+  } else if (!currentUser && freeUsed >= MAX_FREE_GUEST) {
+    openAuthWithMessage('Registrati gratis per altri 2 look — poi scegli se passare a Premium.');
+  } else {
+    openPW();
+  }
+}
+
+async function genStatic(occ,tmp,gen,sty) {
+  // Verifica server-side che le ricerche gratuite non siano esaurite
+  let userId = localStorage.getItem('miroir_uid');
+  if (!userId) {
+    userId = 'u_' + Math.random().toString(36).substr(2, 9) + Date.now();
+    localStorage.setItem('miroir_uid', userId);
+  }
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/free-search`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+      body: JSON.stringify({ userId })
+    });
+
+    if (res.status === 403) {
+      // Esaurite server-side
+      if (!currentUser) {
+        // Non loggato → invita a registrarsi
+        openAuthWithMessage('Registrati gratis per altri 2 look — poi scegli se passare a Premium.');
+      } else {
+        // Loggato → paywall acquisto
+        openPW();
+      }
+      return;
+    }
+
+    const data = await res.json();
+    freeUsed = data.freeUsed;
+    localStorage.setItem('m_free', freeUsed);
+    updateUI();
+
+    const outfit = getStatic(occ,tmp,gen,sty);
+    showOutfit(outfit, false, gen);
+
+    if (data.remaining === 0) {
+      setTimeout(() => showToast('Hai usato i 3 look gratuiti! Passa a Premium per outfit AI ✨'), 1000);
+    }
+
+  } catch(e) {
+    console.warn('Backend non raggiungibile, uso contatore locale');
+    freeUsed++; localStorage.setItem('m_free', freeUsed);
+    updateUI();
+    const outfit = getStatic(occ,tmp,gen,sty);
+    showOutfit(outfit, false, gen);
+  }
+}
+
+async function genAI(occ,tmp,gen,sty,corp,budget) {
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('outfitPanel').classList.remove('vis');
+  document.getElementById('loadingState').classList.add('vis');
+  document.getElementById('mainBtn').disabled = true;
+  startLoad();
+
+  const sty_gen = gen;
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+      body: JSON.stringify({ occasione:occ, temperatura:tmp, genere:gen, stile:sty, corporatura:corp||'qualsiasi', budget:budget||'medio' })
+    });
+
+    if (res.status === 402) {
+      stopLoad();
+      document.getElementById('loadingState').classList.remove('vis');
+      document.getElementById('emptyState').style.display = 'flex';
+      credits = 0; localStorage.setItem('m_cred', 0);
+      updateUI(); openPW(); return;
+    }
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Errore');
+
+    const outfit = data.outfit;
+    const heights = ['260px','195px','160px','205px'];
+    if (outfit.varianti) {
+      outfit.varianti = outfit.varianti.map(v => ({
+        ...v,
+        pezzi: (v.pezzi||[]).slice(0,5).map((p,i) => ({...p, h:heights[i]||'190px'}))
+      }));
+    }
+
+    credits = data.creditsLeft;
+    localStorage.setItem('m_cred', credits);
+    updateUI();
+    stopLoad();
+    document.getElementById('loadingState').classList.remove('vis');
+    showOutfit(outfit, true, sty_gen);
+    const nVarianti = outfit.varianti?.length || 1;
+    showToast(`${nVarianti > 1 ? `${nVarianti} proposte pronte` : 'Outfit pronto'}! Crediti rimasti: ${credits}`);
+
+  } catch(e) {
+    stopLoad();
+    document.getElementById('loadingState').classList.remove('vis');
+    document.getElementById('emptyState').style.display = 'flex';
+    showToast('Errore nella generazione — riprova!');
+    console.error(e);
+  }
+  document.getElementById('mainBtn').disabled = false;
+}
+// ── PAYWALL ─────────────────────────────────────────
+function openPW() { document.getElementById('paywall').classList.add('open'); }
+function closePW() { document.getElementById('paywall').classList.remove('open'); }
+function selPlan(id) {
+  selPlanId = id;
+  document.getElementById('ps').classList.toggle('sel', id==='starter');
+  document.getElementById('pp').classList.toggle('sel', id==='pro');
+}
+const BACKEND_URL = 'https://miroir-backend-production.up.railway.app';
+
+async function purchase() {
+  // Se non loggato, apri prima il login
+  if (!currentUser) {
+    closePW();
+    openAuth();
+    showToast('Accedi per acquistare i crediti');
+    return;
+  }
+
+  const btn = document.querySelector('.pw-btn');
+  btn.textContent = 'Reindirizzamento...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/create-checkout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+      body: JSON.stringify({ plan: selPlanId })
+    });
+    const data = await res.json();
+
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error('URL mancante');
+    }
+  } catch (err) {
+    console.error(err);
+    btn.textContent = 'Acquista e continua →';
+    btn.disabled = false;
+    showToast('Errore nel pagamento — riprova!');
+  }
+}
+
+// Controlla se l'utente torna dalla pagina Stripe con pagamento completato
+async function checkPaymentReturn() {
+  const params = new URLSearchParams(window.location.search);
+  const sessionId = params.get('session_id');
+  const userId = localStorage.getItem('miroir_uid');
+
+  if (sessionId && userId) {
+    try {
+    const res = await fetch(`${BACKEND_URL}/verify-payment?session_id=${sessionId}`, {
+      headers: { 'Authorization': `Bearer ${getToken()}` }
+    });      const data = await res.json();
+
+      if (data.success) {
+        // Aggiorna i crediti localmente
+        credits = data.credits;
+        localStorage.setItem('m_cred', credits);
+        updateUI();
+        // Pulisci l'URL
+        window.history.replaceState({}, '', window.location.pathname);
+        showToast(`${data.added} crediti aggiunti! Miroir Premium attivo ✨`);
+        setTimeout(handleGenerate, 800);
+      }
+    } catch (err) {
+      console.error('Errore verifica pagamento:', err);
+    }
+  }
+
+  // Pagamento annullato
+  if (params.get('cancelled') === 'true') {
+    window.history.replaceState({}, '', window.location.pathname);
+    showToast('Pagamento annullato — puoi riprovare quando vuoi.');
+  }
+}
+
+// ── LIGHTBOX ─────────────────────────────────────────
+function openLB(i) {
+  if (!curOutfit) return;
+  const p = curOutfit.pezzi[i];
+  document.getElementById('lbImg').src = p.img;
+  document.getElementById('lbCat').textContent = p.cat;
+  document.getElementById('lbNome').textContent = p.nome;
+  document.getElementById('lbDesc').textContent = p.desc;
+  document.getElementById('lbLink').href = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(p.cerca)}`;
+  document.getElementById('lb').classList.add('open');
+}
+function closeLB() { document.getElementById('lb').classList.remove('open'); }
+
+function showToast(msg) {
+  const t = document.getElementById('toastEl');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2800);
+}
+
+// ── AUTH ─────────────────────────────────────────────
+let currentUser = null;
+
+function openAuth() { document.getElementById('authModal').classList.add('open'); }
+function openAuthWithMessage(msg) {
+  // Aggiorna il sottotitolo del modal con il messaggio contestuale
+  document.querySelector('.auth-tag').textContent = msg;
+  // Assicura che sia sul tab registrazione
+  switchTab('register');
+  openAuth();
+}
+function closeAuth() {
+  document.getElementById('authModal').classList.remove('open');
+  // Ripristina il sottotitolo originale
+  document.querySelector('.auth-tag').textContent = 'Accedi per salvare i tuoi crediti';
+  clearAuthErr();
+}
+
+function switchTab(tab) {
+  document.getElementById('formLogin').style.display  = tab==='login'  ? 'block' : 'none';
+  document.getElementById('formReg').style.display    = tab==='register' ? 'block' : 'none';
+  document.getElementById('formForgot').style.display = tab==='forgot' ? 'block' : 'none';
+  document.getElementById('tabLogin').classList.toggle('on', tab==='login');
+  document.getElementById('tabReg').classList.toggle('on', tab==='register');
+  // Nascondi tabs nel forgot
+  document.querySelector('.auth-tabs').style.display = tab==='forgot' ? 'none' : 'flex';
+  clearAuthErr();
+}
+
+async function doForgot() {
+  const email = document.getElementById('forgotEmail').value.trim();
+  if (!email) return showAuthErr('Inserisci la tua email');
+  const btn = document.getElementById('forgotBtn');
+  btn.disabled = true; btn.textContent = 'Invio in corso...';
+  try {
+    await fetch(`${BACKEND_URL}/auth/forgot-password`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email })
+    });
+    btn.textContent = '✓ Email inviata!';
+    showToast('Controlla la tua email — link valido per 1 ora');
+    // Dopo 4 secondi torna cliccabile
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.textContent = 'Invia di nuovo';
+      document.getElementById('forgotEmail').value = '';
+    }, 4000);
+  } catch(e) {
+    showAuthErr('Errore — riprova tra un momento');
+    btn.disabled = false;
+    btn.textContent = 'Invia link di recupero';
+  }
+}
+
+function showAuthErr(msg) {
+  const e = document.getElementById('authErr');
+  e.textContent = msg; e.classList.add('show');
+}
+function clearAuthErr() { document.getElementById('authErr').classList.remove('show'); }
+
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  if (!email || !pass) return showAuthErr('Inserisci email e password');
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = 'Accesso in corso...';
+  try {
+    const res = await fetch(`${BACKEND_URL}/auth/login`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, password:pass })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    onLogin(data.token, data.user);
+  } catch(e) {
+    showAuthErr(e.message);
+  }
+  btn.disabled = false; btn.textContent = 'Accedi';
+}
+
+async function doRegister() {
+  const nome  = document.getElementById('regNome').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass  = document.getElementById('regPass').value;
+  if (!email || !pass) return showAuthErr('Inserisci email e password');
+  const btn = document.getElementById('regBtn');
+  btn.disabled = true; btn.textContent = 'Creazione account...';
+  try {
+    const res = await fetch(`${BACKEND_URL}/auth/register`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, password:pass, nome })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    onLogin(data.token, data.user);
+  } catch(e) {
+    showAuthErr(e.message);
+  }
+  btn.disabled = false; btn.textContent = 'Crea account';
+}
+
+async function doGoogle() {
+  // Google OAuth richiede un Client ID configurato su console.cloud.google.com
+  // Per ora mostra messaggio e suggerisce email/password
+  showAuthErr('Google login non ancora attivo — usa email e password per ora.');
+}
+
+function onLogin(token, user) {
+  localStorage.setItem('miroir_token', token);
+  localStorage.setItem('miroir_uid', user.id.toString());
+  currentUser = user;
+  credits  = user.credits;
+  freeUsed = user.freeUsed;
+  localStorage.setItem('m_cred', credits);
+  localStorage.setItem('m_free', freeUsed);
+  closeAuth();
+  updateUI();
+  showToast(`Ciao, ${user.nome}! ✨`);
+  // Apri questionario se profilo non compilato
+  checkProfiloAfterLogin(user);
+}
+
+function logout() {
+  localStorage.removeItem('miroir_token');
+  currentUser = null;
+  credits = 0; freeUsed = 0;
+  localStorage.setItem('m_cred', 0);
+  localStorage.setItem('m_free', 0);
+  updateUI();
+  showToast('Disconnesso');
+}
+
+function getToken() { return localStorage.getItem('miroir_token'); }
+
+async function restoreSession() {
+  const token = getToken();
+  if (!token) return;
+  try {
+    const res = await fetch(`${BACKEND_URL}/auth/me`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) { localStorage.removeItem('miroir_token'); return; }
+    const user = await res.json();
+    currentUser = user;
+    credits  = user.credits;
+    // Prendi il valore PIÙ ALTO tra locale e server per free_used
+    // così chi ha già usato ricerche senza account non le recupera al login
+    const localFree = parseInt(localStorage.getItem('m_free') || '0');
+    freeUsed = Math.max(user.freeUsed, localFree);
+    // Se il locale è più alto, aggiorna anche il server
+    if (localFree > user.freeUsed) {
+      try {
+        await fetch(`${BACKEND_URL}/sync-free`, {
+          method: 'POST',
+          headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${token}` },
+          body: JSON.stringify({ freeUsed: localFree })
+        });
+      } catch(e) {}
+    }
+    localStorage.setItem('m_cred', credits);
+    localStorage.setItem('m_free', freeUsed);
+    updateUI();
+  } catch(e) { /* sessione non valida */ }
+}
+
+// ── SALVA LOOK ───────────────────────────────────────
+async function saveLook() {
+  if (!currentUser) {
+    openAuthWithMessage('Accedi per salvare i tuoi look preferiti!');
+    return;
+  }
+  if (!curVarianti.length) return;
+
+  const btn = document.getElementById('saveLookBtn');
+  btn.disabled = true; btn.textContent = 'Salvataggio...';
+
+  const outfitToSave = curVarianti[curVarianteIdx] || curOutfit;
+  const occ = getV('g-occ') || 'casual';
+  const sty = getV('g-stil') || 'elegante';
+  const gen = getV('g-gen') || 'donna';
+  const bud = getV('g-budget') || 'medio';
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/save-outfit`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${getToken()}` },
+      body: JSON.stringify({ outfit:outfitToSave, occasione:occ, stile:sty, genere:gen, budget:bud })
+    });
+    const data = await res.json();
+
+    if (res.status === 403) {
+      // Limite raggiunto
+      const isPremium = data.isPremium;
+      if (!isPremium) {
+        showToast(`Limite di 10 look raggiunto — acquista crediti per salvarne fino a 50!`);
+        setTimeout(() => openPW(), 1500);
+      } else {
+        showToast(`Hai raggiunto il limite di 50 look salvati — elimina i vecchi per fare spazio.`);
+      }
+      btn.disabled = false; btn.textContent = '💾 Salva look';
+      return;
+    }
+
+    if (!res.ok) throw new Error();
+    btn.textContent = `✓ Salvato! (${data.saved}/${data.max})`;
+    showToast(`Look salvato! ${data.saved}/${data.max} nel tuo profilo 💾`);
+    setTimeout(() => { btn.disabled = false; btn.textContent = '💾 Salva look'; }, 2500);
+  } catch(e) {
+    showToast('Errore nel salvataggio — riprova');
+    btn.disabled = false; btn.textContent = '💾 Salva look';
+  }
+}
+
+// ── PROFILO ──────────────────────────────────────────
+async function openProfilo() {
+  if (!currentUser) { openAuth(); return; }
+  document.getElementById('profiloModal').classList.add('open');
+  document.getElementById('profiloNome').textContent = currentUser.nome;
+  document.getElementById('profiloEmail').textContent = currentUser.email;
+  document.getElementById('profiloCredits').textContent = `${credits} crediti`;
+  await loadSavedOutfits();
+}
+
+function closeProfilo() {
+  document.getElementById('profiloModal').classList.remove('open');
+}
+
+// Mappa brand → store
+const BRAND_STORE = {
+  'zara':        { label:'Zara',       url: (q,qi) => `https://www.zara.com/it/it/search?searchTerm=${qi}`, icon:'🏬' },
+  'h&m':         { label:'H&M',        url: (q,qi) => `https://www2.hm.com/it_it/search-results.html?q=${qi}`, icon:'🛍️' },
+  'hm':          { label:'H&M',        url: (q,qi) => `https://www2.hm.com/it_it/search-results.html?q=${qi}`, icon:'🛍️' },
+  'mango':       { label:'Mango',      url: (q,qi) => `https://shop.mango.com/it/search?q=${qi}&fullText=true`, icon:'🥭' },
+  'cos':         { label:'COS',        url: (q,qi) => `https://www.cos.com/it-it/search?q=${q}`, icon:'⬜' },
+  'uniqlo':      { label:'Uniqlo',     url: (q,qi) => `https://www.uniqlo.com/it/search/?q=${qi}`, icon:'🟥' },
+  'asos':        { label:'ASOS',       url: (q,qi) => `https://www.asos.com/it/ricerca/?q=${q}`, icon:'🔵' },
+  'primark':     { label:'Primark',    url: (q,qi) => `https://www.primark.com/it-it/c/abbigliamento?q=${qi}`, icon:'🟢' },
+  'decathlon':   { label:'Decathlon',  url: (q,qi) => `https://www.decathlon.it/search?Ntt=${q}`, icon:'🏃' },
+  'nike':        { label:'Nike',       url: (q,qi) => `https://www.nike.com/it/search?q=${q}`, icon:'✔️' },
+  'adidas':      { label:'Adidas',     url: (q,qi) => `https://www.adidas.it/search?q=${q}`, icon:'⚡' },
+  'a.p.c':       { label:'A.P.C.',     url: (q,qi) => `https://www.apc.fr/en/search?term=${q}`, icon:'🔲' },
+  'toteme':      { label:'Toteme',     url: (q,qi) => `https://toteme-studio.com/search?q=${q}`, icon:'⬛' },
+  'max mara':    { label:'Max Mara',   url: (q,qi) => `https://www.maxmara.com/it/search?q=${q}`, icon:'🟫' },
+  'acne':        { label:'Acne',       url: (q,qi) => `https://www.acnestudios.com/eu/en/search?q=${q}`, icon:'🔴' },
+  'isabel marant':{ label:'I.Marant',  url: (q,qi) => `https://www.isabelmarant.com/en/search?q=${q}`, icon:'🌿' },
+};
+
+// Determina quali store mostrare per un capo
+function getStoreLinks(p) {
+  const nomeLower = (p.nome || '').toLowerCase();
+  // Query pulita: usa p.cerca (generata dall'AI per le ricerche) o fallback su nome
+  const queryRaw = p.cerca || p.nome || '';
+  const q = encodeURIComponent(queryRaw);
+  const qIt = encodeURIComponent(p.nome || queryRaw); // versione italiana per store IT
+
+  // Cerca brand specifico nel nome del capo
+  for (const [key, store] of Object.entries(BRAND_STORE)) {
+    if (nomeLower.includes(key)) {
+      return [{ label: store.label, url: store.url(q, qIt), icon: store.icon }];
+    }
+  }
+
+  // Nessun brand specifico — mostra Amazon + Zalando + Zara
+  return [
+    { label:'Amazon', url:`https://www.amazon.it/s?k=${qIt}`, icon:'📦' },
+    { label:'Zalando', url:`https://www.zalando.it/catalogues/?q=${qIt}`, icon:'👗' },
+    { label:'Zara', url:`https://www.zara.com/it/it/search?searchTerm=${qIt}`, icon:'🏬' },
+  ];
+}
+
+async function loadSavedOutfits() {
+  const list = document.getElementById('savedList');
+  list.innerHTML = '<div class="profilo-loading">Caricamento...</div>';
+  try {
+    const res = await fetch(`${BACKEND_URL}/my-outfits`, {
+      headers: { 'Authorization': `Bearer ${getToken()}` }
+    });
+    const data = await res.json();
+
+    const isPremium = credits > 0 || data.length > 10;
+    const maxSaved = isPremium ? 50 : 10;
+    document.getElementById('savedCount').textContent = `${data.length}/${maxSaved}`;
+
+    if (!data.length) {
+      list.innerHTML = '<div class="profilo-empty">Nessun look salvato ancora.<br>Genera un outfit e clicca "Salva look"!</div>';
+      return;
+    }
+
+    // Salva i dati in memoria per riapertura
+    window._savedOutfits = {};
+    data.forEach(item => { window._savedOutfits[item.id] = item; });
+
+    list.innerHTML = data.map(item => {
+      const outfit = item.outfit || item;
+      // Gestisce sia formato varianti che singolo
+      const primaVariante = outfit.varianti?.[0] || outfit;
+      const pezzi = primaVariante.pezzi || outfit.pezzi || [];
+      const nVarianti = outfit.varianti?.length || 1;
+      const date = new Date(item.created_at).toLocaleDateString('it-IT', { day:'numeric', month:'short' });
+      return `
+      <div class="saved-card" id="saved_${item.id}">
+        <div class="saved-card-head">
+          <div>
+            <div class="saved-occ">${item.occasione || 'Outfit'}${nVarianti > 1 ? ` · ${nVarianti} varianti` : ''}</div>
+            <div class="saved-intro">${primaVariante.intro || outfit.intro || ''}</div>
+          </div>
+          <div class="saved-date">${date}</div>
+        </div>
+        <div class="saved-pezzi">
+          ${pezzi.slice(0,4).map(p=>`<span class="saved-pezzo">${p.cat}</span>`).join('')}
+        </div>
+        <div class="saved-actions">
+          <button class="saved-btn" onclick="reopenSavedOutfit(${item.id})">
+            👁️ Apri
+          </button>
+          <button class="saved-btn" onclick='shareOutfitWA(${JSON.stringify(primaVariante)}, "${item.occasione||''}")'>
+            📱 WA
+          </button>
+          <button class="saved-btn danger" onclick="deleteOutfit(${item.id})">
+            🗑️
+          </button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    list.innerHTML = '<div class="profilo-empty">Errore nel caricamento — riprova.</div>';
+  }
+}
+
+function reopenSavedOutfit(id) {
+  const item = window._savedOutfits?.[id];
+  if (!item) return;
+  const outfit = item.outfit || item;
+  const genere = item.genere || 'donna';
+  closeProfilo();
+  // Mostra l'outfit salvato senza rigenerare
+  showOutfit(outfit, true, genere);
+  showToast('Look riaperto! 👁️');
+}
+
+async function deleteOutfit(id) {
+  try {
+    await fetch(`${BACKEND_URL}/my-outfits/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${getToken()}` }
+    });
+    document.getElementById(`saved_${id}`)?.remove();
+    showToast('Look eliminato');
+    const remaining = document.querySelectorAll('[id^="saved_"]').length;
+    document.getElementById('savedCount').textContent = `${remaining} salvati`;
+    if (!remaining) {
+      document.getElementById('savedList').innerHTML =
+        '<div class="profilo-empty">Nessun look salvato ancora.</div>';
+    }
+  } catch(e) {
+    showToast('Errore eliminazione');
+  }
+}
+
+// ── CONDIVISIONE WHATSAPP con immagine ───────────────
+async function shareOutfitWA(outfit, occasione) {
+  const pezzi = outfit.pezzi || [];
+
+  // Costruisci la card visiva per html2canvas
+  const card = document.getElementById('shareCard');
+  card.innerHTML = `
+    <div style="background:#FAF6F2;padding:24px;font-family:'DM Sans',sans-serif;border-radius:16px;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#6B4F4F;font-style:italic;margin-bottom:4px;text-align:center;">Miroir</div>
+      <div style="font-size:11px;color:#8A6F6F;text-align:center;margin-bottom:16px;letter-spacing:0.08em;text-transform:uppercase;">${occasione}</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#3A2A2A;line-height:1.6;margin-bottom:16px;padding:12px 14px;background:white;border-radius:10px;border-left:3px solid #E8B4B8;">${outfit.intro || ''}</div>
+      ${pezzi.map(p => `
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;background:white;border-radius:10px;padding:10px 12px;">
+          <div style="font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#8A6F6F;min-width:60px;padding-top:2px;">${p.cat}</div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:500;color:#3A2A2A;">${p.nome}</div>
+            <div style="font-size:11px;color:#8A6F6F;margin-top:2px;">${p.desc}</div>
+            ${p.prezzo ? `<div style="font-size:11px;color:#C4878C;font-weight:500;margin-top:3px;">${p.prezzo}</div>` : ''}
+          </div>
+        </div>`).join('')}
+      ${outfit.tips?.length ? `
+        <div style="margin-top:12px;padding:10px 12px;background:#F5DDE0;border-radius:10px;">
+          <div style="font-size:10px;font-weight:500;color:#C4878C;margin-bottom:6px;">💡 CONSIGLI</div>
+          ${outfit.tips.map(t=>`<div style="font-size:11px;color:#6B4F4F;margin-bottom:4px;">✦ ${t}</div>`).join('')}
+        </div>` : ''}
+      <div style="text-align:center;margin-top:14px;font-size:10px;color:#8A6F6F;">mir-oir.it</div>
+    </div>`;
+
+  // Porta la card temporaneamente in posizione visibile ma fuori viewport
+  card.style.left = '-9999px';
+  card.style.top = '0';
+  card.style.position = 'fixed';
+
+  showToast('Generazione immagine...');
+
+  try {
+    const canvas = await html2canvas(card, {
+      backgroundColor: '#FAF6F2',
+      scale: 2,
+      useCORS: true,
+      logging: false
+    });
+
+    canvas.toBlob(async (blob) => {
+      // Su mobile: Web Share API con file
+      if (navigator.canShare && navigator.canShare({ files: [new File([blob], 'miroir-outfit.png', { type:'image/png' })] })) {
+        try {
+          await navigator.share({
+            files: [new File([blob], 'miroir-outfit.png', { type:'image/png' })],
+            title: 'Il mio outfit Miroir',
+            text: `Outfit per ${occasione} — mir-oir.it`
+          });
+          return;
+        } catch(e) { /* fallback */ }
+      }
+
+      // Fallback: scarica immagine + apri WhatsApp con testo
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'miroir-outfit.png'; a.click();
+      URL.revokeObjectURL(url);
+
+      // Apri WhatsApp con testo dopo 1 secondo
+      setTimeout(() => {
+        const testo = `✨ *Il mio outfit Miroir*\n\n*${outfit.intro}*\n\n` +
+          pezzi.map(p => `👔 *${p.cat}:* ${p.nome} ${p.prezzo||''}\n_${p.desc}_`).join('\n\n') +
+          `\n\n🔗 Crea il tuo look su mir-oir.it`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(testo)}`, '_blank');
+      }, 1000);
+    }, 'image/png');
+
+  } catch(e) {
+    console.error('html2canvas error:', e);
+    // Fallback solo testo
+    const testo = `✨ *Il mio outfit Miroir*\n\n*${outfit.intro}*\n\n` +
+      pezzi.map(p => `👔 *${p.cat}:* ${p.nome}\n_${p.desc}_`).join('\n\n') +
+      `\n\n🔗 mir-oir.it`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(testo)}`, '_blank');
+  }
+}
+// ── PERSONALIZZAZIONE ────────────────────────────────
+document.querySelectorAll('#persColoriAmo .pers-chip, #persColoriEvito .pers-chip, #persMaiIndosso .pers-chip').forEach(chip => {
+  chip.addEventListener('click', () => chip.classList.toggle('on'));
+});
+
+function getChips(id) {
+  return [...document.querySelectorAll(`#${id} .pers-chip.on`)].map(c => c.dataset.v);
+}
+
+function openPers() { document.getElementById('persModal').classList.add('open'); }
+function skipPers() {
+  document.getElementById('persModal').classList.remove('open');
+  localStorage.setItem('pers_skipped', '1');
+}
+
+async function savePers() {
+  const btn = document.getElementById('persSaveBtn');
+  btn.disabled = true; btn.textContent = 'Salvataggio...';
+  const profilo = {
+    brand:       document.getElementById('persBrand').value.trim(),
+    coloriAmo:   getChips('persColoriAmo'),
+    coloriEvito: getChips('persColoriEvito'),
+    maiIndosso:  getChips('persMaiIndosso'),
+    icona:       document.getElementById('persIcona').value.trim()
+  };
+  try {
+    const res = await fetch(`${BACKEND_URL}/auth/profilo`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${getToken()}`},
+      body: JSON.stringify(profilo)
+    });
+    if (!res.ok) throw new Error();
+    if (currentUser) currentUser.profilo = profilo;
+    credits++;
+    localStorage.setItem('m_cred', credits);
+    updateUI();
+    document.getElementById('persModal').classList.remove('open');
+    showToast('Profilo salvato! +1 credito in regalo 🎁');
+  } catch(e) {
+    showToast('Errore salvataggio — riprova');
+  }
+  btn.disabled = false; btn.textContent = 'Salva e ottieni il credito →';
+}
+
+function checkProfiloAfterLogin(user) {
+  if (!user.profilo && !localStorage.getItem('pers_skipped')) {
+    setTimeout(() => openPers(), 1200);
+  }
+}
+
+function checkPwStrength(val) {
+  const bar = document.getElementById('pwBarFill');
+  if (!bar) return;
+  if (!val) { bar.style.width='0'; return; }
+  const score = (val.length>=6?1:0)+(val.length>=10?1:0)+(/[A-Z]/.test(val)?1:0)+(/[0-9]/.test(val)?1:0)+(/[^a-zA-Z0-9]/.test(val)?1:0);
+  const colors=['#E24B4A','#E24B4A','#F0B429','#4CAF50','#2E7D52'];
+  const widths=['20%','35%','55%','75%','100%'];
+  bar.style.width=widths[Math.min(score-1,4)]||'20%';
+  bar.style.background=colors[Math.min(score-1,4)]||colors[0];
+}
+
+async function doResetPassword() {
+  const token = document.getElementById('resetModal').dataset.token;
+  const pass1 = document.getElementById('resetPass1').value;
+  const pass2 = document.getElementById('resetPass2').value;
+  const btn = document.getElementById('resetBtn');
+  const err = document.getElementById('resetErr');
+  err.classList.remove('show');
+  if (!pass1||pass1.length<6) { err.textContent='Password minimo 6 caratteri'; return err.classList.add('show'); }
+  if (pass1!==pass2) { err.textContent='Le due password non coincidono'; return err.classList.add('show'); }
+  btn.disabled=true; btn.textContent='Salvataggio...';
+  try {
+    const res = await fetch(`${BACKEND_URL}/auth/reset-password`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ token, password:pass1 })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    document.getElementById('resetBody').innerHTML = `
+      <div class="reset-title" style="margin-bottom:0.5rem;">Password aggiornata! ✓</div>
+      <div class="reset-sub" style="margin-bottom:1.5rem;">Reimpostata con successo.<br>Puoi ora accedere con la nuova password.</div>
+      <button class="auth-btn" onclick="document.getElementById('resetModal').classList.remove('open');openAuth();">Accedi ora →</button>
+    `;
+    window.history.replaceState({}, '', window.location.pathname);
+  } catch(e) {
+    err.textContent = (e.message||'').includes('valid')||e.message.includes('scadul')
+      ? 'Link scaduto — richiedi un nuovo link dal login.'
+      : 'Errore durante il salvataggio — riprova.';
+    err.classList.add('show');
+    btn.disabled=false; btn.textContent='Salva nuova password';
+  }
+}
+
+function checkResetTokenOnLoad() {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('reset_token');
+  if (!token) return;
+
+  // Piccolo delay per essere sicuri che il DOM sia completamente pronto
+  setTimeout(() => {
+    const modal = document.getElementById('resetModal');
+    if (!modal) return;
+    modal.dataset.token = token;
+    modal.style.display = 'flex'; // forza display oltre che la classe
+    modal.classList.add('open');
+    // Pulisci URL dopo aver salvato il token
+    window.history.replaceState({}, '', window.location.pathname);
+  }, 100);
+}
+
+// INIT
+initGroups();
+updateUI();
+
+// Controlla URL params — reset_token ha priorità su session_id
+const _urlParams = new URLSearchParams(window.location.search);
+if (_urlParams.get('reset_token')) {
+  checkResetTokenOnLoad();
+} else {
+  checkPaymentReturn();
+}
+
+restoreSession();
+</script>
+</body>
+</html>
