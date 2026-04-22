@@ -509,6 +509,7 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
 
     <div class="outfit" id="outfitPanel">
       <div class="obadge" id="oBadge"></div>
+      <div id="outfitAvviso" style="display:none;background:#FFF3CD;border:1px solid #F0B429;border-radius:10px;padding:0.7rem 1rem;font-size:0.8rem;color:#7A5C00;margin-bottom:0.75rem;line-height:1.5;"></div>
       <div class="varianti-tabs" id="variantiTabs" style="display:none"></div>
       <div class="ointro" id="oIntro"></div>
       <div class="pgrid" id="pgrid"></div>
@@ -1379,24 +1380,33 @@ function renderVariante(idx, genere) {
     const st = catStyle[p.cat] || catStyle.default;
     const cercaConGenere = genTag + ' ' + (p.cerca || p.nome);
     const thumbUrl = `https://tse1.mm.bing.net/th?q=${encodeURIComponent(cercaConGenere)}&w=120&h=120&c=7`;
-    const prezzoTag = p.prezzo ? `<span style="font-size:0.7rem;color:var(--rose-dark);font-weight:500;">${p.prezzo}</span>` : '';
 
-    // Store intelligenti basati sul brand citato nel nome
+    // Se è il capo dell'utente usa la sua foto
+    const isTuo = p.tuo === true;
+    const imgSrc = (isTuo && photoBase64) ? `data:${photoType||'image/jpeg'};base64,${photoBase64}` : thumbUrl;
+    const imgBorder = isTuo ? '2px solid var(--rose-dark)' : 'none';
+    const tuoBadge = isTuo ? `<div style="position:absolute;top:6px;left:6px;background:var(--rose-dark);color:white;font-size:0.6rem;padding:2px 7px;border-radius:99px;font-weight:500;">📸 Il tuo</div>` : '';
+
+    const prezzoTag = p.prezzo
+      ? `<span style="font-size:0.7rem;color:var(--rose-dark);font-weight:500;">${p.prezzo}</span>`
+      : isTuo ? `<span style="font-size:0.68rem;color:var(--text-muted);">già tuo</span>` : '';
+
     const stores = getStoreLinks(p);
-    const storeIconsHtml = stores.map(s =>
+    const storeIconsHtml = isTuo ? '' : stores.map(s =>
       `<a href="${s.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()"
          style="font-size:0.62rem;padding:3px 7px;border-radius:99px;background:white;color:#5A6A7A;border:1px solid #D9CBBF;text-decoration:none;white-space:nowrap;"
          title="${s.label}">${s.icon}</a>`
     ).join('');
-    const storePillsHtml = stores.map(s =>
+    const storePillsHtml = isTuo ? '<span style="font-size:0.72rem;color:var(--rose-dark);">📸 Dal tuo armadio</span>' : stores.map(s =>
       `<a class="plink" href="${s.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${s.icon} ${s.label}</a>`
     ).join('');
 
     return `
     <div class="pin" onclick="openLB(${i})">
       <div class="piw" style="height:${p.h||'200px'};background:${st.bg};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:1.25rem;position:relative;">
-        <img src="${thumbUrl}" alt="${p.nome}"
-          style="width:110px;height:110px;object-fit:cover;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.12);"
+        ${tuoBadge}
+        <img src="${imgSrc}" alt="${p.nome}"
+          style="width:110px;height:110px;object-fit:cover;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.12);border:${imgBorder};"
           onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
         <div style="display:none;font-size:3rem;line-height:1">${st.icon}</div>
         <div style="font-size:0.8rem;font-weight:500;color:${st.color};text-align:center;max-width:150px;line-height:1.3">${p.nome}</div>
@@ -1427,6 +1437,14 @@ async function showOutfit(data, isAI, genere) {
   const b = document.getElementById('oBadge');
   b.className = isAI ? 'obadge ai' : 'obadge static';
   b.textContent = isAI ? '✨ Outfit generato da AI' : '✦ Look del giorno';
+
+  const avvisoEl = document.getElementById('outfitAvviso');
+  if (data.avviso) {
+    avvisoEl.textContent = '⚠️ ' + data.avviso;
+    avvisoEl.style.display = 'block';
+  } else {
+    avvisoEl.style.display = 'none';
+  }
 
   const tabsEl = document.getElementById('variantiTabs');
 
@@ -1968,7 +1986,17 @@ async function generateFromPhoto() {
 
     // Mostra capo analizzato come toast
     if (outfit.capoAnalizzato) {
-      showToast(`📸 ${outfit.capoAnalizzato}`);
+      const desc = typeof outfit.capoAnalizzato === 'object'
+        ? `${outfit.capoAnalizzato.tipo} — ${outfit.capoAnalizzato.desc}`
+        : outfit.capoAnalizzato;
+      showToast(`📸 Riconosciuto: ${desc}`);
+    }
+
+    // Mostra avviso coerenza se l'AI ha adattato lo stile
+    if (outfit.avviso) {
+      setTimeout(() => {
+        showToast(`⚠️ ${outfit.avviso}`);
+      }, 3200);
     }
 
     credits = data.creditsLeft;
