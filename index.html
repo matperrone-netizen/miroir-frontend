@@ -448,6 +448,37 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
       <span>✦ Trova il mio outfit</span>
       <span class="btn-sub" id="btnSub">gratis</span>
     </button>
+
+    <!-- UPLOAD FOTO ARMADIO — solo premium -->
+    <div id="uploadSection" style="display:none;margin-top:0.75rem;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.5rem;">
+        <div style="flex:1;height:1px;background:var(--beige-mid);"></div>
+        <span style="font-size:0.7rem;color:var(--text-muted);letter-spacing:0.08em;">oppure</span>
+        <div style="flex:1;height:1px;background:var(--beige-mid);"></div>
+      </div>
+      <label id="uploadLabel" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:0.8rem;border-radius:99px;border:1.5px dashed var(--beige-dark);background:white;cursor:pointer;font-size:0.84rem;color:var(--text-muted);transition:all 0.2s;" onmouseover="this.style.borderColor='var(--rose)';this.style.color='var(--brown)'" onmouseout="this.style.borderColor='var(--beige-dark)';this.style.color='var(--text-muted)'">
+        <span>📸</span>
+        <span id="uploadLabelText">Carica un capo del tuo armadio</span>
+        <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="onPhotoSelected(this)">
+      </label>
+      <!-- Preview foto selezionata -->
+      <div id="photoPreview" style="display:none;margin-top:0.75rem;position:relative;text-align:center;">
+        <img id="photoImg" style="width:100%;max-height:160px;object-fit:cover;border-radius:12px;border:1px solid var(--beige-mid);">
+        <button onclick="removePhoto()" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.5);color:white;border:none;border-radius:50%;width:24px;height:24px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+        <div id="photoSuggerimento" style="display:none;margin-top:0.5rem;padding:0.6rem 0.75rem;background:var(--rose-light);border-radius:8px;font-size:0.72rem;color:var(--brown);text-align:left;line-height:1.5;">
+          ✓ Foto caricata! Per risultati migliori: capo su sfondo chiaro, ben illuminato, tutto il capo visibile.
+        </div>
+        <button class="gbtn" style="margin-top:0.5rem;background:#8B5E6B;" onclick="generateFromPhoto()">
+          <span>📸 Abbina questo capo</span>
+          <span class="btn-sub">1 credito</span>
+        </button>
+      </div>
+
+      <!-- Istruzioni come fare una buona foto -->
+      <div style="margin-top:0.6rem;font-size:0.7rem;color:var(--text-muted);line-height:1.6;padding:0 0.25rem;">
+        💡 <strong>Consiglio:</strong> fotografa il capo su una superficie piana o appeso, con buona luce. Evita foto sfocate o troppo scure.
+      </div>
+    </div>
   </div>
 
   <div class="result">
@@ -1288,6 +1319,8 @@ function updateUI() {
       esub.textContent = 'Hai esaurito i crediti — acquistane altri per continuare.';
     }
   }
+  // Mostra upload foto solo se loggato con crediti
+  updateUploadSection();
 }
 
 const loadMsgs = [
@@ -1806,7 +1839,165 @@ async function restoreSession() {
   } catch(e) { /* sessione non valida */ }
 }
 
-// ── SALVA LOOK ───────────────────────────────────────
+// ── UPLOAD FOTO ARMADIO ──────────────────────────────
+let photoBase64 = null;
+let photoType = null;
+
+function onPhotoSelected(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  // Controllo tipo file
+  const tipiAccettati = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+  if (!tipiAccettati.includes(file.type.toLowerCase())) {
+    showToast('Formato non supportato — usa JPG, PNG o WEBP');
+    input.value = '';
+    return;
+  }
+
+  // Controllo dimensione max 5MB
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('Foto troppo grande — max 5MB');
+    input.value = '';
+    return;
+  }
+
+  // Controllo dimensione minima 50KB — foto troppo piccola è inutile
+  if (file.size < 50 * 1024) {
+    showToast('Foto troppo piccola — usa una foto più nitida');
+    input.value = '';
+    return;
+  }
+
+  photoType = file.type || 'image/jpeg';
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataUrl = e.target.result;
+
+    // Controllo dimensioni immagine in pixel
+    const img = new Image();
+    img.onload = () => {
+      if (img.width < 100 || img.height < 100) {
+        showToast('Immagine troppo piccola — riprova con una foto più grande');
+        input.value = '';
+        return;
+      }
+
+      // Tutto ok — salva e mostra preview
+      photoBase64 = dataUrl.split(',')[1];
+
+      document.getElementById('photoImg').src = dataUrl;
+      document.getElementById('photoPreview').style.display = 'block';
+      document.getElementById('uploadLabel').style.display = 'none';
+
+      // Mostra suggerimento qualità
+      const suggerimento = document.getElementById('photoSuggerimento');
+      if (suggerimento) suggerimento.style.display = 'block';
+    };
+    img.src = dataUrl;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removePhoto() {
+  photoBase64 = null;
+  photoType = null;
+  document.getElementById('photoInput').value = '';
+  document.getElementById('photoPreview').style.display = 'none';
+  document.getElementById('uploadLabel').style.display = 'flex';
+  document.getElementById('uploadLabelText').textContent = 'Carica un capo del tuo armadio';
+}
+
+async function generateFromPhoto() {
+  if (!photoBase64) return;
+  if (!currentUser) {
+    openAuthWithMessage('Accedi per usare la funzione armadio.');
+    return;
+  }
+  if (credits <= 0) { openPW(); return; }
+
+  const occ  = getV('g-occ')    || 'casual';
+  const tmp  = getV('g-temp')   || 'mite';
+  const gen  = getV('g-gen')    || 'donna';
+  const sty  = getV('g-stil')   || 'casual-chic';
+  const corp = getV('g-corp')   || 'qualsiasi';
+  const bud  = getV('g-budget') || 'medio';
+
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('outfitPanel').classList.remove('vis');
+  document.getElementById('loadingState').classList.add('vis');
+  document.getElementById('mainBtn').disabled = true;
+  startLoad();
+  document.getElementById('loadingSub').textContent = 'Analizziamo il tuo capo...';
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/generate-from-photo`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${getToken()}` },
+      body: JSON.stringify({
+        imageBase64: photoBase64,
+        imageType:   photoType,
+        occasione:   occ,
+        temperatura: tmp,
+        genere:      gen,
+        stile:       sty,
+        corporatura: corp,
+        budget:      bud
+      })
+    });
+
+    if (res.status === 402) {
+      stopLoad();
+      document.getElementById('loadingState').classList.remove('vis');
+      document.getElementById('emptyState').style.display = 'flex';
+      credits = 0; localStorage.setItem('m_cred', 0);
+      updateUI(); openPW(); return;
+    }
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+
+    const outfit = data.outfit;
+    const heights = ['260px','195px','160px','205px'];
+    if (outfit.varianti) {
+      outfit.varianti = outfit.varianti.map(v => ({
+        ...v,
+        pezzi: (v.pezzi||[]).slice(0,5).map((p,i) => ({...p, h:heights[i]||'190px'}))
+      }));
+    }
+
+    // Mostra capo analizzato come toast
+    if (outfit.capoAnalizzato) {
+      showToast(`📸 ${outfit.capoAnalizzato}`);
+    }
+
+    credits = data.creditsLeft;
+    localStorage.setItem('m_cred', credits);
+    updateUI();
+    stopLoad();
+    document.getElementById('loadingState').classList.remove('vis');
+    showOutfit(outfit, true, gen);
+
+    // Badge speciale per foto
+    document.getElementById('oBadge').textContent = '📸 Outfit dal tuo armadio';
+
+  } catch(e) {
+    stopLoad();
+    document.getElementById('loadingState').classList.remove('vis');
+    document.getElementById('emptyState').style.display = 'flex';
+    showToast('Errore analisi foto — riprova!');
+    console.error(e);
+  }
+  document.getElementById('mainBtn').disabled = false;
+}
+
+// Mostra/nascondi sezione upload in base ai crediti
+function updateUploadSection() {
+  const section = document.getElementById('uploadSection');
+  if (section) {
+    section.style.display = (currentUser && credits > 0) ? 'block' : 'none';
+  }
+}
 async function saveLook() {
   if (!currentUser) {
     openAuthWithMessage('Accedi per salvare i tuoi look preferiti!');
