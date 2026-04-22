@@ -1141,15 +1141,13 @@ function initGroups() {
 function getV(id) { const e = document.querySelector(`#${id} .on`); return e ? e.dataset.v : null; }
 
 function updateUI() {
-  // dots — mostrano progresso rispetto al limite attuale
-  const maxDots = currentUser ? MAX_FREE_LOGGED : MAX_FREE_GUEST;
+  // Dots — nascondili, non servono più con la nuova logica
   for (let i = 1; i <= 3; i++) {
     const d = document.getElementById(`fd${i}`);
-    if (!d) continue;
-    if (i > maxDots) { d.style.display = 'none'; }
-    else { d.style.display = 'block'; d.classList.toggle('used', i <= freeUsed); }
+    if (d) d.style.display = 'none';
   }
-  // navbar — utente loggato vs non loggato
+
+  // Navbar — loggato vs non loggato
   if (currentUser) {
     document.getElementById('navLoginBtn').style.display = 'none';
     document.getElementById('navUser').style.display = 'flex';
@@ -1158,67 +1156,58 @@ function updateUI() {
     document.getElementById('navLoginBtn').style.display = 'block';
     document.getElementById('navUser').style.display = 'none';
   }
-  // crediti e badge free
+
+  // Badge crediti in navbar
+  const fb = document.getElementById('navFree');
   if (credits > 0) {
     document.getElementById('navFree').style.display = 'none';
     document.getElementById('navCredits').style.display = 'flex';
     document.getElementById('creditsNum').textContent = credits;
-  } else {
+  } else if (!currentUser) {
     document.getElementById('navCredits').style.display = 'none';
-    const fb = document.getElementById('navFree');
     fb.style.display = 'block';
-    if (currentUser) {
-      // Loggato: mostra ricerche gratuite rimaste su 3
-      const rem = MAX_FREE_LOGGED - freeUsed;
-      if (rem > 0) {
-        fb.textContent = rem === MAX_FREE_LOGGED ? `${rem} look gratis` : `${rem} look gratis rimasti`;
-        fb.className = 'free-badge';
-      } else {
-        fb.textContent = 'Gratis esauriti';
-        fb.className = 'free-badge done';
-      }
-    } else {
-      // Non loggato: o "1 look gratis" o "Registrati gratis"
-      if (freeUsed < MAX_FREE_GUEST) {
-        fb.textContent = '1 look gratis';
-        fb.className = 'free-badge';
-      } else {
-        fb.textContent = 'Registrati gratis';
-        fb.className = 'free-badge done';
-        fb.style.cursor = 'pointer';
-        fb.onclick = () => openAuthWithMessage('Registrati gratis per altri 2 look!');
-      }
-    }
+    fb.style.cursor = freeUsed >= MAX_FREE_GUEST ? 'pointer' : 'default';
+    fb.textContent = freeUsed < MAX_FREE_GUEST ? '1 look gratis' : 'Registrati · 1 credito AI';
+    fb.className = freeUsed < MAX_FREE_GUEST ? 'free-badge' : 'free-badge done';
+    if (freeUsed >= MAX_FREE_GUEST) fb.onclick = () => openAuthWithMessage('Registrati gratis e ricevi subito 1 credito AI — outfit pensato per te.');
+  } else {
+    // Loggato ma 0 crediti
+    document.getElementById('navCredits').style.display = 'none';
+    fb.style.display = 'block';
+    fb.textContent = 'Acquista crediti';
+    fb.className = 'free-badge done';
+    fb.style.cursor = 'pointer';
+    fb.onclick = () => openPW();
   }
-  // bottone
+
+  // Bottone genera
   const sub = document.getElementById('btnSub');
   const btn = document.getElementById('mainBtn');
   if (credits > 0) {
     btn.className = 'gbtn ai-mode';
-    sub.textContent = `1 credito · ${credits} rimasti`;
-  } else if (currentUser && freeUsed < MAX_FREE_LOGGED) {
-    btn.className = 'gbtn';
-    sub.textContent = `gratis (${MAX_FREE_LOGGED - freeUsed} rimasti)`;
+    sub.textContent = `${credits} ${credits === 1 ? 'credito' : 'crediti'} rimasti`;
   } else if (!currentUser && freeUsed < MAX_FREE_GUEST) {
     btn.className = 'gbtn';
     sub.textContent = 'gratis · nessuna registrazione';
   } else if (!currentUser) {
     btn.className = 'gbtn';
-    sub.textContent = 'registrati gratis per continuare';
+    sub.textContent = 'registrati · 1 credito AI gratis';
   } else {
     btn.className = 'gbtn';
-    sub.textContent = 'acquista crediti';
+    sub.textContent = 'acquista crediti per continuare';
   }
 
   // Messaggio schermata vuota
   const esub = document.getElementById('emptySubtitle');
   if (esub) {
-    if (currentUser && freeUsed < MAX_FREE_LOGGED) {
-      esub.textContent = `Hai ${MAX_FREE_LOGGED - freeUsed} look gratuiti rimasti.`;
+    if (credits > 0) {
+      esub.textContent = `Hai ${credits} ${credits === 1 ? 'credito' : 'crediti'} — ogni outfit genera 3 proposte per fascia di prezzo.`;
     } else if (!currentUser && freeUsed === 0) {
       esub.textContent = 'Prova il tuo primo outfit gratis — nessuna registrazione richiesta.';
-    } else if (!currentUser && freeUsed >= MAX_FREE_GUEST) {
-      esub.textContent = 'Registrati gratis per altri 2 look, poi scegli se passare a Premium.';
+    } else if (!currentUser) {
+      esub.textContent = 'Registrati gratis e ricevi subito 1 credito AI per un outfit personalizzato.';
+    } else {
+      esub.textContent = 'Hai esaurito i crediti — acquistane altri per continuare.';
     }
   }
 }
@@ -1364,12 +1353,10 @@ function handleGenerate() {
 
   if (credits > 0) {
     genAI(occ,tmp,gen,sty,corp,budget);
-  } else if (currentUser && freeUsed < MAX_FREE_LOGGED) {
-    genStatic(occ,tmp,gen,sty);
   } else if (!currentUser && freeUsed < MAX_FREE_GUEST) {
     genStatic(occ,tmp,gen,sty);
-  } else if (!currentUser && freeUsed >= MAX_FREE_GUEST) {
-    openAuthWithMessage('Registrati gratis per altri 2 look — poi scegli se passare a Premium.');
+  } else if (!currentUser) {
+    openAuthWithMessage('Registrati gratis e ricevi subito 1 credito AI — outfit pensato per te.');
   } else {
     openPW();
   }
@@ -1394,7 +1381,7 @@ async function genStatic(occ,tmp,gen,sty) {
       // Esaurite server-side
       if (!currentUser) {
         // Non loggato → invita a registrarsi
-        openAuthWithMessage('Registrati gratis per altri 2 look — poi scegli se passare a Premium.');
+        openAuthWithMessage('Registrati gratis e ricevi subito 1 credito AI — outfit generato per te, non per tutti.');
       } else {
         // Loggato → paywall acquisto
         openPW();
