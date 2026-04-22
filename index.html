@@ -584,9 +584,76 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
         <span>Completa il profilo e ricevi <strong>1 credito extra</strong> in regalo.</span>
       </div>
 
+      <!-- BRAND — max 3 selezioni -->
       <div class="pers-step">
-        <label class="pers-qlabel">Brand che ami (scrivi fino a 3)</label>
-        <input class="pers-input" id="persBrand" type="text" placeholder="es. Zara, COS, Acne Studios...">
+        <label class="pers-qlabel">I tuoi brand preferiti <span style="font-weight:400;color:var(--rose-dark);">— scegli fino a 3</span></label>
+        <div id="brandCounter" style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.6rem;">0/3 selezionati</div>
+
+        <div style="margin-bottom:0.6rem;">
+          <div style="font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--rose-dark);margin-bottom:4px;">Everyday / Fast Fashion</div>
+          <div class="pers-chips brand-chips">
+            <div class="pers-chip" data-v="zara" data-cluster="fast-fashion contemporaneo, trend-driven, pezzi chiave accessibili">Zara</div>
+            <div class="pers-chip" data-v="h&m" data-cluster="fast-fashion accessibile, basics di qualità, trend a basso costo">H&M</div>
+            <div class="pers-chip" data-v="mango" data-cluster="fast-fashion mediterraneo, femminile, ufficio e casual">Mango</div>
+            <div class="pers-chip" data-v="bershka" data-cluster="streetwear giovane, trend aggressivi, urban casual">Bershka</div>
+            <div class="pers-chip" data-v="primark" data-cluster="basics economici, essenziali quotidiani, accessibile">Primark</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:0.6rem;">
+          <div style="font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--rose-dark);margin-bottom:4px;">Contemporary / Minimal</div>
+          <div class="pers-chips brand-chips">
+            <div class="pers-chip" data-v="cos" data-cluster="minimal scandinavo, linee architettoniche, qualità mid-range, colori neutri">COS</div>
+            <div class="pers-chip" data-v="arket" data-cluster="minimal nordico, qualità sostenibile, essenziale curato">Arket</div>
+            <div class="pers-chip" data-v="uniqlo" data-cluster="basics giapponesi, qualità elevata, funzionale minimalista">Uniqlo</div>
+            <div class="pers-chip" data-v="& other stories" data-cluster="contemporary femminile, mix di stili, accessori curati">& Other Stories</div>
+            <div class="pers-chip" data-v="weekday" data-cluster="denim contemporaneo, streetwear curato, minimal urban">Weekday</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:0.6rem;">
+          <div style="font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--rose-dark);margin-bottom:4px;">Streetwear / Urban</div>
+          <div class="pers-chips brand-chips">
+            <div class="pers-chip" data-v="carhartt" data-cluster="workwear urbano autentico, streetwear robusto, utilitarian chic">Carhartt</div>
+            <div class="pers-chip" data-v="stone island" data-cluster="technical streetwear, ricerca sui tessuti, urban premium">Stone Island</div>
+            <div class="pers-chip" data-v="cp company" data-cluster="sportswear italiano di ricerca, urban outdoor, detail-oriented">C.P. Company</div>
+            <div class="pers-chip" data-v="nike" data-cluster="sportswear globale, athleisure, sneaker culture, performance">Nike</div>
+            <div class="pers-chip" data-v="adidas" data-cluster="sportswear lifestyle, heritage atletico, sneaker culture">Adidas</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:0.6rem;">
+          <div style="font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--rose-dark);margin-bottom:4px;">Premium Casual</div>
+          <div class="pers-chips brand-chips">
+            <div class="pers-chip" data-v="a.p.c." data-cluster="parisian casual chic, denim di qualità, minimal francese">A.P.C.</div>
+            <div class="pers-chip" data-v="toteme" data-cluster="minimal svedese di lusso, silhouette pulite, colori neutri premium">Totême</div>
+            <div class="pers-chip" data-v="sandro" data-cluster="parisian chic accessibile, femminile sofisticato, occasione e casual">Sandro</div>
+            <div class="pers-chip" data-v="isabel marant" data-cluster="boho parigino, texture naturali, rock femminile">Isabel Marant</div>
+            <div class="pers-chip" data-v="ami paris" data-cluster="parisian casual moderno, sartorialità rilassata, discreta eleganza">AMI Paris</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:0.6rem;">
+          <div style="font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--rose-dark);margin-bottom:4px;">Classico / Sartoriale</div>
+          <div class="pers-chips brand-chips">
+            <div class="pers-chip" data-v="ralph lauren" data-cluster="preppy americano, eleganza sportiva, polo e blazer classici">Ralph Lauren</div>
+            <div class="pers-chip" data-v="boss" data-cluster="sartoriale moderno, business premium, eleganza contemporanea">BOSS</div>
+            <div class="pers-chip" data-v="tommy hilfiger" data-cluster="preppy americano classico, nautico, casual-smart colorato">Tommy Hilfiger</div>
+            <div class="pers-chip" data-v="max mara" data-cluster="eleganza italiana femminile, cappotti iconici, sartorialità di lusso">Max Mara</div>
+            <div class="pers-chip" data-v="armani" data-cluster="sartorialità italiana di lusso, eleganza minimalista, power dressing">Armani</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:0.6rem;">
+          <div style="font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--rose-dark);margin-bottom:4px;">Lusso Contemporaneo</div>
+          <div class="pers-chips brand-chips">
+            <div class="pers-chip" data-v="acne studios" data-cluster="avant-garde scandinavo, denim artistico, intellettuale fashion">Acne Studios</div>
+            <div class="pers-chip" data-v="bottega veneta" data-cluster="lusso discreto italiano, intrecciato iconico, quiet luxury">Bottega Veneta</div>
+            <div class="pers-chip" data-v="loro piana" data-cluster="lusso discreto assoluto, cashmere e tessuti rari, quiet luxury">Loro Piana</div>
+            <div class="pers-chip" data-v="brunello cucinelli" data-cluster="lusso umanistico, cachemire naturale, eleganza rilassata di altissimo livello">Brunello Cucinelli</div>
+            <div class="pers-chip" data-v="the row" data-cluster="quiet luxury minimale, perfezione sartoriale, eleganza senza logo">The Row</div>
+          </div>
+        </div>
       </div>
 
       <div class="pers-step">
@@ -630,8 +697,19 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
       </div>
 
       <div class="pers-step">
-        <label class="pers-qlabel">La tua icona di stile (opzionale)</label>
-        <input class="pers-input" id="persIcona" type="text" placeholder="es. Audrey Hepburn, Bella Hadid, Steve Jobs...">
+        <label class="pers-qlabel">La tua icona di stile <span style="font-weight:400;">(opzionale)</span></label>
+        <div class="pers-chips" id="persIcona">
+          <div class="pers-chip" data-v="Audrey Hepburn">Audrey Hepburn</div>
+          <div class="pers-chip" data-v="Bella Hadid">Bella Hadid</div>
+          <div class="pers-chip" data-v="Zendaya">Zendaya</div>
+          <div class="pers-chip" data-v="Margot Robbie">Margot Robbie</div>
+          <div class="pers-chip" data-v="Steve Jobs">Steve Jobs</div>
+          <div class="pers-chip" data-v="David Beckham">David Beckham</div>
+          <div class="pers-chip" data-v="Ryan Gosling">Ryan Gosling</div>
+          <div class="pers-chip" data-v="A$AP Rocky">A$AP Rocky</div>
+          <div class="pers-chip" data-v="Timothée Chalamet">Timothée Chalamet</div>
+          <div class="pers-chip" data-v="Cate Blanchett">Cate Blanchett</div>
+        </div>
       </div>
 
       <div class="pers-actions">
@@ -2033,12 +2111,40 @@ async function shareOutfitWA(outfit, occasione) {
   }
 }
 // ── PERSONALIZZAZIONE ────────────────────────────────
-document.querySelectorAll('#persColoriAmo .pers-chip, #persColoriEvito .pers-chip, #persMaiIndosso .pers-chip').forEach(chip => {
+// Init chips multipla selezione standard
+document.querySelectorAll('#persColoriAmo .pers-chip, #persColoriEvito .pers-chip, #persMaiIndosso .pers-chip, #persIcona .pers-chip').forEach(chip => {
   chip.addEventListener('click', () => chip.classList.toggle('on'));
+});
+
+// Brand chips — max 3 selezioni
+document.querySelectorAll('.brand-chips .pers-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    const isOn = chip.classList.contains('on');
+    const selected = document.querySelectorAll('.brand-chips .pers-chip.on');
+    if (!isOn && selected.length >= 3) {
+      // Feedback visivo se si tenta di selezionare più di 3
+      chip.style.animation = 'none';
+      chip.style.borderColor = '#e74c3c';
+      setTimeout(() => { chip.style.borderColor = ''; }, 600);
+      return;
+    }
+    chip.classList.toggle('on');
+    const count = document.querySelectorAll('.brand-chips .pers-chip.on').length;
+    document.getElementById('brandCounter').textContent = `${count}/3 selezionati`;
+    document.getElementById('brandCounter').style.color = count === 3 ? 'var(--rose-dark)' : 'var(--text-muted)';
+  });
 });
 
 function getChips(id) {
   return [...document.querySelectorAll(`#${id} .pers-chip.on`)].map(c => c.dataset.v);
+}
+
+function getBrandData() {
+  const selected = [...document.querySelectorAll('.brand-chips .pers-chip.on')];
+  return {
+    nomi:    selected.map(c => c.dataset.v),
+    cluster: selected.map(c => c.dataset.cluster).join(' | ')
+  };
 }
 
 function openPers() { document.getElementById('persModal').classList.add('open'); }
@@ -2050,13 +2156,19 @@ function skipPers() {
 async function savePers() {
   const btn = document.getElementById('persSaveBtn');
   btn.disabled = true; btn.textContent = 'Salvataggio...';
+
+  const brandData = getBrandData();
+  const icona = getChips('persIcona');
+
   const profilo = {
-    brand:       document.getElementById('persBrand').value.trim(),
+    brand:       brandData.nomi,
+    brandCluster: brandData.cluster,
     coloriAmo:   getChips('persColoriAmo'),
     coloriEvito: getChips('persColoriEvito'),
     maiIndosso:  getChips('persMaiIndosso'),
-    icona:       document.getElementById('persIcona').value.trim()
+    icona:       icona[0] || ''
   };
+
   try {
     const res = await fetch(`${BACKEND_URL}/auth/profilo`, {
       method:'POST',
