@@ -209,6 +209,36 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
 .pers-save:hover { background:var(--text); }
 .pers-save:disabled { opacity:0.5; cursor:not-allowed; }
 
+/* NEWS & EVENTI MODAL */
+.news-ov { display:none; position:fixed; inset:0; background:rgba(30,10,10,0.78); z-index:500; align-items:flex-start; justify-content:center; padding:1rem; backdrop-filter:blur(5px); overflow-y:auto; }
+.news-ov.open { display:flex; }
+.news-box { max-width:680px; width:100%; background:var(--cream); border-radius:24px; overflow:hidden; animation:fadeUp 0.3s ease; margin:auto; }
+.news-head { background:var(--brown); padding:1.25rem 1.5rem; display:flex; align-items:center; justify-content:space-between; }
+.news-logo { font-family:'Cormorant Garamond',serif; font-size:1.4rem; color:var(--rose-light); font-style:italic; }
+.news-close { background:none; border:none; color:rgba(255,255,255,0.7); font-size:1.2rem; cursor:pointer; }
+.news-tabs { display:flex; border-bottom:1px solid var(--beige-mid); background:white; }
+.news-tab { flex:1; padding:0.85rem; border:none; background:none; font-size:0.85rem; color:var(--text-muted); cursor:pointer; border-bottom:2px solid transparent; transition:all 0.2s; }
+.news-tab.on { color:var(--brown); border-bottom-color:var(--brown); font-weight:500; }
+.news-body { padding:1.5rem; max-height:70vh; overflow-y:auto; }
+.news-card { background:white; border-radius:14px; border:1px solid rgba(232,180,184,0.2); padding:1.1rem 1.25rem; margin-bottom:0.85rem; }
+.news-card-tag { font-size:0.65rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--rose-dark); margin-bottom:0.35rem; }
+.news-card-title { font-family:'Cormorant Garamond',serif; font-size:1.05rem; font-weight:400; color:var(--text); margin-bottom:0.4rem; line-height:1.4; }
+.news-card-body { font-size:0.8rem; color:var(--text-muted); line-height:1.65; }
+.news-card-date { font-size:0.68rem; color:var(--text-muted); margin-top:0.5rem; }
+.evento-card { background:white; border-radius:14px; border:1px solid rgba(232,180,184,0.2); padding:1.1rem 1.25rem; margin-bottom:0.85rem; display:flex; gap:1rem; align-items:flex-start; }
+.evento-date-box { background:var(--rose-light); border-radius:10px; padding:0.5rem 0.75rem; text-align:center; min-width:52px; flex-shrink:0; }
+.evento-day { font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:400; color:var(--brown); line-height:1; }
+.evento-month { font-size:0.62rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); }
+.evento-name { font-family:'Cormorant Garamond',serif; font-size:1rem; font-weight:400; color:var(--text); margin-bottom:0.25rem; }
+.evento-place { font-size:0.75rem; color:var(--text-muted); margin-bottom:0.4rem; }
+.evento-desc { font-size:0.78rem; color:var(--text-muted); line-height:1.6; margin-bottom:0.5rem; }
+.evento-link { font-size:0.75rem; color:var(--rose-dark); text-decoration:none; font-weight:500; }
+.evento-link:hover { text-decoration:underline; }
+.news-refresh-btn { padding:0.45rem 1rem; border-radius:99px; background:var(--brown); color:white; border:none; font-size:0.78rem; cursor:pointer; transition:all 0.2s; margin-bottom:1rem; }
+.news-refresh-btn:hover { background:var(--text); }
+.news-refresh-btn:disabled { opacity:0.5; cursor:not-allowed; }
+.news-loading { text-align:center; padding:2rem; color:var(--text-muted); font-size:0.85rem; }
+
 .reset-ov { display:none; position:fixed; inset:0; background:rgba(30,10,10,0.78); z-index:600; align-items:center; justify-content:center; padding:1rem; backdrop-filter:blur(5px); }
 .reset-ov.open { display:flex !important; }
 .reset-box { max-width:400px; width:100%; background:var(--cream); border-radius:24px; overflow:hidden; animation:fadeUp 0.3s ease; }
@@ -294,8 +324,9 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
 
 <nav>
   <a class="nav-logo" href="#">Miroir</a>
-  <div style="display:flex;align-items:center;gap:0.75rem;">
-    <div id="navFree" class="free-badge">3 look gratis</div>
+  <div style="display:flex;align-items:center;gap:0.6rem;">
+    <button class="nav-logout" onclick="openNewsModal()" style="font-size:0.8rem;padding:0.3rem 0.75rem;border-radius:99px;border:1px solid var(--beige-dark);background:white;">✦ News</button>
+    <div id="navFree" class="free-badge">1 look gratis</div>
     <div id="navCredits" class="credits-pill" style="display:none">
       <span class="credits-num" id="creditsNum">0</span>
       <span class="credits-label">crediti</span>
@@ -748,6 +779,52 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
         <button class="pers-skip" onclick="skipPers()">Dopo</button>
         <button class="pers-save" id="persSaveBtn" onclick="savePers()">Salva e ottieni il credito →</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- NEWS & EVENTI MODAL -->
+<div class="news-ov" id="newsModal" onclick="if(event.target.id==='newsModal')closeNewsModal()">
+  <div class="news-box">
+    <div class="news-head">
+      <div class="news-logo">Miroir</div>
+      <button class="news-close" onclick="closeNewsModal()">✕</button>
+    </div>
+    <div class="news-tabs">
+      <button class="news-tab on" id="tabNews" onclick="switchNewsTab('news')">✦ News Moda</button>
+      <button class="news-tab" id="tabEventi" onclick="switchNewsTab('eventi')">📅 Eventi</button>
+    </div>
+    <div class="news-body">
+
+      <!-- TAB NEWS -->
+      <div id="newsSection">
+        <div id="newsAdminBar" style="display:none;margin-bottom:1rem;">
+          <button class="news-refresh-btn" id="refreshNewsBtn" onclick="refreshNews()">🔄 Aggiorna news</button>
+          <span style="font-size:0.72rem;color:var(--text-muted);" id="newsLastUpdate"></span>
+        </div>
+        <div id="newsList"><div class="news-loading">Caricamento...</div></div>
+      </div>
+
+      <!-- TAB EVENTI -->
+      <div id="eventiSection" style="display:none">
+        <!-- Form admin — visibile solo con admin key -->
+        <div id="eventiAdminBar" style="display:none;margin-bottom:1.25rem;">
+          <div style="background:white;border-radius:14px;border:1px solid rgba(232,180,184,0.3);padding:1.1rem 1.25rem;">
+            <div style="font-size:0.72rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.85rem;">➕ Aggiungi evento</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:0.6rem;">
+              <input id="evNome" placeholder="Nome evento *" style="padding:0.6rem 0.85rem;border:1px solid var(--beige-dark);border-radius:8px;font-size:0.82rem;font-family:'DM Sans',sans-serif;outline:none;" onfocus="this.style.borderColor='var(--rose-dark)'" onblur="this.style.borderColor='var(--beige-dark)'">
+              <input id="evLuogo" placeholder="Luogo (es. Milano)" style="padding:0.6rem 0.85rem;border:1px solid var(--beige-dark);border-radius:8px;font-size:0.82rem;font-family:'DM Sans',sans-serif;outline:none;" onfocus="this.style.borderColor='var(--rose-dark)'" onblur="this.style.borderColor='var(--beige-dark)'">
+              <input id="evDataInizio" type="date" style="padding:0.6rem 0.85rem;border:1px solid var(--beige-dark);border-radius:8px;font-size:0.82rem;font-family:'DM Sans',sans-serif;outline:none;" onfocus="this.style.borderColor='var(--rose-dark)'" onblur="this.style.borderColor='var(--beige-dark)'">
+              <input id="evDataFine" type="date" placeholder="Data fine (opz.)" style="padding:0.6rem 0.85rem;border:1px solid var(--beige-dark);border-radius:8px;font-size:0.82rem;font-family:'DM Sans',sans-serif;outline:none;" onfocus="this.style.borderColor='var(--rose-dark)'" onblur="this.style.borderColor='var(--beige-dark)'">
+            </div>
+            <input id="evDesc" placeholder="Descrizione breve" style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--beige-dark);border-radius:8px;font-size:0.82rem;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:0.6rem;box-sizing:border-box;" onfocus="this.style.borderColor='var(--rose-dark)'" onblur="this.style.borderColor='var(--beige-dark)'">
+            <input id="evUrl" placeholder="Link sito ufficiale (https://...)" style="width:100%;padding:0.6rem 0.85rem;border:1px solid var(--beige-dark);border-radius:8px;font-size:0.82rem;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:0.75rem;box-sizing:border-box;" onfocus="this.style.borderColor='var(--rose-dark)'" onblur="this.style.borderColor='var(--beige-dark)'">
+            <button onclick="addEvento()" style="padding:0.6rem 1.25rem;border-radius:99px;background:var(--brown);color:white;border:none;font-size:0.82rem;cursor:pointer;font-family:'DM Sans',sans-serif;">Salva evento</button>
+          </div>
+        </div>
+        <div id="eventiList"><div class="news-loading">Caricamento...</div></div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -2329,7 +2406,182 @@ async function shareOutfitWA(outfit, occasione) {
     window.open(`https://wa.me/?text=${encodeURIComponent(testo)}`, '_blank');
   }
 }
-// ── PERSONALIZZAZIONE ────────────────────────────────
+// ── NEWS & EVENTI ────────────────────────────────────
+
+// Notizie in cache locale
+let newsCache = JSON.parse(localStorage.getItem('miroir_news') || 'null');
+let eventiCache = [];
+
+function openNewsModal() {
+  document.getElementById('newsModal').classList.add('open');
+  switchNewsTab('news');
+  const adminKey = localStorage.getItem('miroir_admin_key');
+  if (adminKey) {
+    document.getElementById('newsAdminBar').style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:1rem;';
+    document.getElementById('eventiAdminBar').style.display = 'block';
+  }
+}
+
+function closeNewsModal() {
+  document.getElementById('newsModal').classList.remove('open');
+}
+
+function switchNewsTab(tab) {
+  document.getElementById('newsSection').style.display   = tab === 'news'   ? 'block' : 'none';
+  document.getElementById('eventiSection').style.display = tab === 'eventi' ? 'block' : 'none';
+  document.getElementById('tabNews').classList.toggle('on', tab === 'news');
+  document.getElementById('tabEventi').classList.toggle('on', tab === 'eventi');
+  if (tab === 'eventi') loadEventi();
+  if (tab === 'news') renderNews();
+}
+
+function renderNews() {
+  const list = document.getElementById('newsList');
+  if (!newsCache || !newsCache.articles?.length) {
+    list.innerHTML = `<div class="news-loading">
+      <div style="font-size:2rem;margin-bottom:0.75rem;">📰</div>
+      <div style="font-weight:500;color:var(--text);margin-bottom:0.4rem;">News non ancora caricate</div>
+      <div style="font-size:0.78rem;color:var(--text-muted);">Le news vengono aggiornate dall'amministratore.</div>
+    </div>`;
+    return;
+  }
+  const dateStr = newsCache.generatedAt
+    ? new Date(newsCache.generatedAt).toLocaleDateString('it-IT', { day:'numeric', month:'long', year:'numeric' })
+    : '';
+  if (dateStr) document.getElementById('newsLastUpdate').textContent = `Aggiornate il ${dateStr}`;
+  list.innerHTML = newsCache.articles.map(a => `
+    <div class="news-card">
+      <div class="news-card-tag">${a.categoria || 'Tendenze'}</div>
+      <div class="news-card-title">${a.titolo}</div>
+      <div class="news-card-body">${a.testo}</div>
+      ${a.data ? `<div class="news-card-date">${a.data}</div>` : ''}
+    </div>`).join('');
+}
+
+async function loadEventi() {
+  const list = document.getElementById('eventiList');
+  list.innerHTML = '<div class="news-loading">Caricamento...</div>';
+  try {
+    const res = await fetch(`${BACKEND_URL}/eventi`);
+    const data = await res.json();
+    eventiCache = data;
+    renderEventi(data);
+  } catch(e) {
+    list.innerHTML = '<div class="news-loading">Errore caricamento eventi.</div>';
+  }
+}
+
+function renderEventi(eventi) {
+  const list = document.getElementById('eventiList');
+  const adminKey = localStorage.getItem('miroir_admin_key');
+
+  if (!eventi?.length) {
+    list.innerHTML = `<div class="news-loading">
+      <div style="font-size:2rem;margin-bottom:0.75rem;">📅</div>
+      <div style="font-weight:500;color:var(--text);">Nessun evento in programma</div>
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = eventi.map(e => {
+    const d = new Date(e.data_inizio);
+    const dFine = e.data_fine ? new Date(e.data_fine) : null;
+    const day = d.getDate().toString().padStart(2,'0');
+    const month = d.toLocaleDateString('it-IT', { month:'short' }).toUpperCase();
+    const fineStr = dFine && dFine.getTime() !== d.getTime()
+      ? ` — ${dFine.toLocaleDateString('it-IT', { day:'numeric', month:'long' })}`
+      : '';
+    return `
+    <div class="evento-card" id="ev_${e.id}">
+      <div class="evento-date-box">
+        <div class="evento-day">${day}</div>
+        <div class="evento-month">${month}</div>
+      </div>
+      <div style="flex:1;">
+        <div class="evento-name">${e.nome}</div>
+        ${e.luogo ? `<div class="evento-place">📍 ${e.luogo}${fineStr}</div>` : ''}
+        ${e.descrizione ? `<div class="evento-desc">${e.descrizione}</div>` : ''}
+        <div style="display:flex;align-items:center;gap:0.75rem;">
+          ${e.url ? `<a class="evento-link" href="${e.url}" target="_blank" rel="noopener">Scopri di più →</a>` : ''}
+          ${adminKey ? `<button onclick="deleteEvento(${e.id})" style="background:none;border:none;color:#e74c3c;font-size:0.72rem;cursor:pointer;padding:0;">🗑️ Elimina</button>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function addEvento() {
+  const adminKey = localStorage.getItem('miroir_admin_key');
+  if (!adminKey) return;
+  const nome = document.getElementById('evNome').value.trim();
+  const luogo = document.getElementById('evLuogo').value.trim();
+  const dataInizio = document.getElementById('evDataInizio').value;
+  const dataFine = document.getElementById('evDataFine').value;
+  const desc = document.getElementById('evDesc').value.trim();
+  const url = document.getElementById('evUrl').value.trim();
+  if (!nome || !dataInizio) { showToast('Nome e data di inizio obbligatori'); return; }
+  try {
+    const res = await fetch(`${BACKEND_URL}/admin/eventi`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'x-admin-key': adminKey },
+      body: JSON.stringify({ nome, luogo, data_inizio:dataInizio, data_fine:dataFine, descrizione:desc, url })
+    });
+    if (!res.ok) throw new Error();
+    // Pulisci form
+    ['evNome','evLuogo','evDataInizio','evDataFine','evDesc','evUrl'].forEach(id => document.getElementById(id).value = '');
+    showToast('Evento aggiunto! 📅');
+    loadEventi();
+  } catch(e) {
+    showToast('Errore salvataggio evento');
+  }
+}
+
+async function deleteEvento(id) {
+  const adminKey = localStorage.getItem('miroir_admin_key');
+  if (!adminKey) return;
+  if (!confirm('Eliminare questo evento?')) return;
+  try {
+    await fetch(`${BACKEND_URL}/admin/eventi/${id}`, {
+      method: 'DELETE',
+      headers: { 'x-admin-key': adminKey }
+    });
+    document.getElementById(`ev_${id}`)?.remove();
+    showToast('Evento eliminato');
+  } catch(e) {
+    showToast('Errore eliminazione');
+  }
+}
+
+async function refreshNews() {
+  let adminKey = localStorage.getItem('miroir_admin_key');
+  if (!adminKey) {
+    adminKey = prompt('Inserisci la chiave admin:');
+    if (!adminKey) return;
+    localStorage.setItem('miroir_admin_key', adminKey);
+    document.getElementById('newsAdminBar').style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:1rem;';
+    document.getElementById('eventiAdminBar').style.display = 'block';
+  }
+  const btn = document.getElementById('refreshNewsBtn');
+  btn.disabled = true; btn.textContent = '⏳ Generazione...';
+  try {
+    const res = await fetch(`${BACKEND_URL}/admin/generate-news`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'x-admin-key': adminKey }
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      if (res.status === 403) localStorage.removeItem('miroir_admin_key');
+      throw new Error(data.error);
+    }
+    newsCache = data;
+    localStorage.setItem('miroir_news', JSON.stringify(data));
+    renderNews();
+    showToast('News aggiornate! ✦');
+  } catch(e) {
+    showToast('Errore: ' + e.message);
+  }
+  btn.disabled = false; btn.textContent = '🔄 Aggiorna news';
+}
 // Init chips multipla selezione standard
 document.querySelectorAll('#persColoriAmo .pers-chip, #persColoriEvito .pers-chip, #persMaiIndosso .pers-chip, #persIcona .pers-chip').forEach(chip => {
   chip.addEventListener('click', () => chip.classList.toggle('on'));
