@@ -1241,7 +1241,9 @@ function renderVariante(idx, genere) {
   document.getElementById('oIntro').textContent = v.intro || '';
   window._pezziData = v.pezzi;
 
-  const genSuffix = genere === 'uomo' ? 'man male fashion' : genere === 'donna' ? 'woman female fashion' : 'fashion';
+  // Query foto con genere esplicito e aggressivo
+  const genTag = genere === 'uomo' ? 'man wearing' : genere === 'donna' ? 'woman wearing' : 'person wearing';
+  const genSuffix = genere === 'uomo' ? 'man male outfit' : genere === 'donna' ? 'woman female outfit' : 'outfit';
   const catStyle = {
     'Abito':{'bg':'#F5DDE0','icon':'👗','color':'#C4878C'},'Vestito':{'bg':'#F5DDE0','icon':'👗','color':'#C4878C'},
     'Gonna':{'bg':'#F5DDE0','icon':'👗','color':'#C4878C'},'Top':{'bg':'#FCEEF0','icon':'👚','color':'#C4878C'},
@@ -1264,7 +1266,7 @@ function renderVariante(idx, genere) {
 
   document.getElementById('pgrid').innerHTML = (v.pezzi||[]).map((p,i) => {
     const st = catStyle[p.cat] || catStyle.default;
-    const cercaConGenere = (p.cerca || p.nome) + ' ' + genSuffix;
+    const cercaConGenere = genTag + ' ' + (p.cerca || p.nome);
     const thumbUrl = `https://tse1.mm.bing.net/th?q=${encodeURIComponent(cercaConGenere)}&w=120&h=120&c=7`;
     const prezzoTag = p.prezzo ? `<span style="font-size:0.7rem;color:var(--rose-dark);font-weight:500;">${p.prezzo}</span>` : '';
 
@@ -1788,47 +1790,77 @@ function closeProfilo() {
   document.getElementById('profiloModal').classList.remove('open');
 }
 
-// Mappa brand → store
+// Brand → homepage o ricerca affidabile
+// Regola: store con ricerca stabile → link ricerca | brand senza store IT → homepage
 const BRAND_STORE = {
-  'zara':        { label:'Zara',       url: (q,qi) => `https://www.zara.com/it/it/search?searchTerm=${qi}`, icon:'🏬' },
-  'h&m':         { label:'H&M',        url: (q,qi) => `https://www2.hm.com/it_it/search-results.html?q=${qi}`, icon:'🛍️' },
-  'hm':          { label:'H&M',        url: (q,qi) => `https://www2.hm.com/it_it/search-results.html?q=${qi}`, icon:'🛍️' },
-  'mango':       { label:'Mango',      url: (q,qi) => `https://shop.mango.com/it/search?q=${qi}&fullText=true`, icon:'🥭' },
-  'cos':         { label:'COS',        url: (q,qi) => `https://www.cos.com/it-it/search?q=${q}`, icon:'⬜' },
-  'uniqlo':      { label:'Uniqlo',     url: (q,qi) => `https://www.uniqlo.com/it/search/?q=${qi}`, icon:'🟥' },
-  'asos':        { label:'ASOS',       url: (q,qi) => `https://www.asos.com/it/ricerca/?q=${q}`, icon:'🔵' },
-  'primark':     { label:'Primark',    url: (q,qi) => `https://www.primark.com/it-it/c/abbigliamento?q=${qi}`, icon:'🟢' },
-  'decathlon':   { label:'Decathlon',  url: (q,qi) => `https://www.decathlon.it/search?Ntt=${q}`, icon:'🏃' },
-  'nike':        { label:'Nike',       url: (q,qi) => `https://www.nike.com/it/search?q=${q}`, icon:'✔️' },
-  'adidas':      { label:'Adidas',     url: (q,qi) => `https://www.adidas.it/search?q=${q}`, icon:'⚡' },
-  'a.p.c':       { label:'A.P.C.',     url: (q,qi) => `https://www.apc.fr/en/search?term=${q}`, icon:'🔲' },
-  'toteme':      { label:'Toteme',     url: (q,qi) => `https://toteme-studio.com/search?q=${q}`, icon:'⬛' },
-  'max mara':    { label:'Max Mara',   url: (q,qi) => `https://www.maxmara.com/it/search?q=${q}`, icon:'🟫' },
-  'acne':        { label:'Acne',       url: (q,qi) => `https://www.acnestudios.com/eu/en/search?q=${q}`, icon:'🔴' },
-  'isabel marant':{ label:'I.Marant',  url: (q,qi) => `https://www.isabelmarant.com/en/search?q=${q}`, icon:'🌿' },
+  // Fast fashion — ricerca funzionante
+  'zara':          { label:'Zara',          url:(q,qi)=>`https://www.zara.com/it/it/search?searchTerm=${qi}`, icon:'🏬' },
+  'h&m':           { label:'H&M',           url:(q,qi)=>`https://www2.hm.com/it_it/search-results.html?q=${qi}`, icon:'🛍️' },
+  'hm':            { label:'H&M',           url:(q,qi)=>`https://www2.hm.com/it_it/search-results.html?q=${qi}`, icon:'🛍️' },
+  'pull&bear':     { label:'Pull&Bear',     url:(q,qi)=>`https://www.pullandbear.com/it/search?searchTerm=${qi}`, icon:'🐻' },
+  'bershka':       { label:'Bershka',       url:(q,qi)=>`https://www.bershka.com/it/search?searchTerm=${qi}`, icon:'🔶' },
+  'massimo dutti': { label:'M.Dutti',       url:(q,qi)=>`https://www.massimodutti.com/it/search?searchTerm=${qi}`, icon:'🟤' },
+  'stradivarius':  { label:'Stradivarius',  url:(q,qi)=>`https://www.stradivarius.com/it/search?searchTerm=${qi}`, icon:'🎻' },
+  // Sport — ricerca funzionante
+  'nike':          { label:'Nike',          url:(q,qi)=>`https://www.nike.com/it/search?q=${q}`, icon:'✔️' },
+  'adidas':        { label:'Adidas',        url:(q,qi)=>`https://www.adidas.it/search?q=${q}`, icon:'⚡' },
+  'new balance':   { label:'New Balance',   url:(q,qi)=>`https://www.newbalance.it/search?q=${q}`, icon:'🔵' },
+  'puma':          { label:'Puma',          url:(q,qi)=>`https://it.puma.com/it/it/search?q=${q}`, icon:'🐆' },
+  'decathlon':     { label:'Decathlon',     url:(q,qi)=>`https://www.decathlon.it/search?Ntt=${q}`, icon:'🏃' },
+  'converse':      { label:'Converse',      url:(q,qi)=>`https://www.converse.com/it/search?q=${q}`, icon:'⭐' },
+  'vans':          { label:'Vans',          url:(q,qi)=>`https://www.vans.it/search?q=${q}`, icon:'🏄' },
+  // Contemporary — homepage (ricerca instabile)
+  'cos':           { label:'COS',           url:(q,qi)=>`https://www.cos.com/it-it`, icon:'⬜' },
+  'mango':         { label:'Mango',         url:(q,qi)=>`https://shop.mango.com/it`, icon:'🥭' },
+  'uniqlo':        { label:'Uniqlo',        url:(q,qi)=>`https://www.uniqlo.com/it`, icon:'🟥' },
+  'asos':          { label:'ASOS',          url:(q,qi)=>`https://www.asos.com/it/ricerca/?q=${q}`, icon:'🔵' },
+  'primark':       { label:'Primark',       url:(q,qi)=>`https://www.primark.com/it-it`, icon:'🟢' },
+  'weekday':       { label:'Weekday',       url:(q,qi)=>`https://www.weekday.com/en_eur/search?q=${q}`, icon:'📅' },
+  'arket':         { label:'Arket',         url:(q,qi)=>`https://www.arket.com/en_eur/search?q=${q}`, icon:'🌿' },
+  // Outdoor/workwear
+  'carhartt':      { label:'Carhartt',      url:(q,qi)=>`https://www.carhartt.com/search/${q}`, icon:'🟧' },
+  'stone island':  { label:'Stone Island',  url:(q,qi)=>`https://www.stoneisland.com/it/search?q=${q}`, icon:'🧭' },
+  'cp company':    { label:'C.P. Company',  url:(q,qi)=>`https://www.cpcompany.com/it/search?q=${q}`, icon:'🔭' },
+  'north face':    { label:'North Face',    url:(q,qi)=>`https://www.thenorthface.com/it-it/search?q=${q}`, icon:'⛰️' },
+  'patagonia':     { label:'Patagonia',     url:(q,qi)=>`https://eu.patagonia.com/it/it/search/?q=${q}`, icon:'🏔️' },
+  'levi':          { label:"Levi's",        url:(q,qi)=>`https://www.levi.com/IT/it_IT/search?keywords=${q}`, icon:'👖' },
+  // Premium/luxury — homepage
+  'a.p.c':         { label:'A.P.C.',        url:(q,qi)=>`https://www.apc.fr`, icon:'🔲' },
+  'toteme':        { label:'Toteme',        url:(q,qi)=>`https://toteme-studio.com`, icon:'⬛' },
+  'max mara':      { label:'Max Mara',      url:(q,qi)=>`https://www.maxmara.com/it`, icon:'🟫' },
+  'acne':          { label:'Acne Studios',  url:(q,qi)=>`https://www.acnestudios.com`, icon:'🔴' },
+  'isabel marant': { label:'I.Marant',      url:(q,qi)=>`https://www.isabelmarant.com`, icon:'🌿' },
+  'ami paris':     { label:'AMI Paris',     url:(q,qi)=>`https://www.amiparis.com`, icon:'❤️' },
+  'sandro':        { label:'Sandro',        url:(q,qi)=>`https://www.sandro-paris.com/it`, icon:'🇫🇷' },
+  'maje':          { label:'Maje',          url:(q,qi)=>`https://www.maje.com/it`, icon:'💎' },
+  'boss':          { label:'BOSS',          url:(q,qi)=>`https://www.hugoboss.com/it/search?q=${q}`, icon:'🎩' },
+  'ralph lauren':  { label:'Ralph Lauren',  url:(q,qi)=>`https://www.ralphlauren.it/search?q=${q}`, icon:'🏇' },
+  'tommy hilfiger':{ label:'Tommy H.',      url:(q,qi)=>`https://it.tommy.com/search?q=${q}`, icon:'⛵' },
+  'calvin klein':  { label:'Calvin Klein',  url:(q,qi)=>`https://www.calvinklein.it/search?searchTerm=${q}`, icon:'🔷' },
+  'armani':        { label:'Armani',        url:(q,qi)=>`https://www.armani.com/it-it/search?q=${q}`, icon:'🦅' },
 };
 
-// Determina quali store mostrare per un capo
+// Store affidabili di fallback (sempre funzionanti)
+const FALLBACK_STORES = [
+  { label:'Amazon',  url: qi => `https://www.amazon.it/s?k=${qi}`,                icon:'📦' },
+  { label:'Zalando', url: qi => `https://www.zalando.it/catalogues/?q=${qi}`,     icon:'👗' },
+  { label:'Zara',    url: qi => `https://www.zara.com/it/it/search?searchTerm=${qi}`, icon:'🏬' },
+];
+
 function getStoreLinks(p) {
   const nomeLower = (p.nome || '').toLowerCase();
-  // Query pulita: usa p.cerca (generata dall'AI per le ricerche) o fallback su nome
-  const queryRaw = p.cerca || p.nome || '';
-  const q = encodeURIComponent(queryRaw);
-  const qIt = encodeURIComponent(p.nome || queryRaw); // versione italiana per store IT
+  const qi = encodeURIComponent(p.nome || p.cerca || '');
+  const q  = encodeURIComponent(p.cerca || p.nome || '');
 
   // Cerca brand specifico nel nome del capo
   for (const [key, store] of Object.entries(BRAND_STORE)) {
     if (nomeLower.includes(key)) {
-      return [{ label: store.label, url: store.url(q, qIt), icon: store.icon }];
+      return [{ label: store.label, url: store.url(q, qi), icon: store.icon }];
     }
   }
 
-  // Nessun brand specifico — mostra Amazon + Zalando + Zara
-  return [
-    { label:'Amazon', url:`https://www.amazon.it/s?k=${qIt}`, icon:'📦' },
-    { label:'Zalando', url:`https://www.zalando.it/catalogues/?q=${qIt}`, icon:'👗' },
-    { label:'Zara', url:`https://www.zara.com/it/it/search?searchTerm=${qIt}`, icon:'🏬' },
-  ];
+  // Nessun brand → Amazon + Zalando + Zara (sempre affidabili)
+  return FALLBACK_STORES.map(s => ({ label: s.label, url: s.url(qi), icon: s.icon }));
 }
 
 async function loadSavedOutfits() {
