@@ -284,6 +284,9 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
   .pgrid { columns: 2; }
   nav { padding: 0.9rem 1.25rem; }
   .pw-plans { grid-template-columns: 1fr; }
+  /* Mobile: nascondi nome utente, mostra solo icone */
+  .nav-nome { display: none; }
+  .nav-logout[title="Il mio profilo"] { display: none; }
 }
 @media (max-width: 420px) { .pgrid { columns: 1; } }
 
@@ -325,6 +328,7 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
 .auth-err.show { display:block; }
 .nav-user { display:flex; align-items:center; gap:0.5rem; font-size:0.82rem; }
 .nav-nome { color:var(--brown); font-weight:500; }
+@media (max-width:600px) { .nav-nome { display:none; } }
 .nav-logout { background:none; border:none; color:var(--text-muted); font-size:0.78rem; cursor:pointer; padding:0.3rem 0.6rem; border-radius:6px; transition:all 0.15s; }
 .nav-logout:hover { background:var(--rose-light); color:var(--brown); }
 .nav-loginbtn { background:var(--brown); color:white; border:none; border-radius:99px; padding:0.4rem 1rem; font-size:0.8rem; cursor:pointer; transition:all 0.2s; }
@@ -426,7 +430,7 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
         <div class="chip on" data-v="matrimonio">💍 Matrimonio</div>
         <div class="chip" data-v="lavoro">💼 Lavoro</div>
         <div class="chip" data-v="aperitivo">🥂 Aperitivo</div>
-        <div class="chip" data-v="data">🌹 Prima data</div>
+        <div class="chip" data-v="appuntamento">🌹 Primo appuntamento</div>
         <div class="chip" data-v="casual">☀️ Casual</div>
         <div class="chip" data-v="serata">🌙 Serata</div>
         <div class="chip" data-v="sport">🏃 Sport</div>
@@ -644,6 +648,15 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
         <span id="savedCount"></span>
       </div>
       <div id="savedList"><div class="profilo-loading">Caricamento...</div></div>
+    </div>
+
+    <!-- SEZIONE REFERRAL -->
+    <div class="profilo-section" style="border-top:1px solid var(--beige-mid);padding-top:1.25rem;">
+      <div class="profilo-stitle">✦ Invita un amico</div>
+      <div style="background:var(--rose-light);border-radius:12px;padding:1rem;margin-bottom:0.75rem;font-size:0.82rem;color:var(--brown);line-height:1.6;">
+        Condividi il tuo link — quando un amico acquista crediti, <strong>tu ricevi il 50%</strong> dei suoi crediti in regalo.
+      </div>
+      <div id="referralInfo"><div class="profilo-loading" style="padding:0.5rem 0;">Caricamento...</div></div>
     </div>
   </div>
 </div>
@@ -878,12 +891,14 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
 <div class="lb" id="lb" onclick="if(event.target.id==='lb')closeLB()">
   <div class="lb-box">
     <button class="lb-x" onclick="closeLB()">✕</button>
-    <img class="lb-img" id="lbImg" src="" alt="">
+    <img class="lb-img" id="lbImg" src="" alt="" style="background:var(--rose-light);">
     <div class="lb-body">
       <div class="lb-cat" id="lbCat"></div>
       <div class="lb-nome" id="lbNome"></div>
       <div class="lb-desc" id="lbDesc"></div>
-      <a class="lb-btn" id="lbLink" href="#" target="_blank" rel="noopener">🔍 Cerca online</a>
+      <div id="lbLinks" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:0.75rem;">
+        <a class="lb-btn" id="lbLink" href="#" target="_blank" rel="noopener">🛒 Cerca online</a>
+      </div>
     </div>
   </div>
 </div>
@@ -1242,7 +1257,7 @@ const DB = {
     tips:["Indossa qualcosa che hai già messo con successo — non sperimentare.", "Il profumo è il ricordo che rimane più a lungo nella memoria.", "Un dettaglio personale (anello, orecchino, borsa) diventa argomento di conversazione."]
   },
   "data_mite_uomo_casual-chic": {
-    intro: "Prima data — curato ma non rigido, interessante ma non eccentrico.",
+    intro: "Primo appuntamento — curato ma non rigido, interessante ma non eccentrico.",
     pezzi: [
       { cat:"Camicia",  nome:"Camicia in chambray blu medio",            desc:"Tessuto misto lino-cotone, leggermente strutturato. Perfetta.", h:"230px", cerca:"blue chambray shirt man casual date evening" },
       { cat:"Pantaloni",nome:"Chino slim color nocciola",                desc:"Fit preciso, tessuto non stirato rigidamente. Décontracté.", h:"200px", cerca:"hazelnut slim chino man casual date evening" },
@@ -1480,11 +1495,13 @@ function renderVariante(idx, genere) {
   document.getElementById('pgrid').innerHTML = (v.pezzi||[]).map((p,i) => {
     const st = catStyle[p.cat] || catStyle.default;
     const cercaConGenere = genTag + ' ' + (p.cerca || p.nome);
-    const thumbUrl = `https://tse1.mm.bing.net/th?q=${encodeURIComponent(cercaConGenere)}&w=120&h=120&c=7`;
+    const thumbUrl = `https://tse1.mm.bing.net/th?q=${encodeURIComponent(cercaConGenere)}&w=200&h=200&c=7`;
+    const thumbUrlLarge = `https://tse1.mm.bing.net/th?q=${encodeURIComponent(cercaConGenere)}&w=400&h=400&c=7`;
 
     // Se è il capo dell'utente usa la sua foto
     const isTuo = p.tuo === true;
     const imgSrc = (isTuo && photoBase64) ? `data:${photoType||'image/jpeg'};base64,${photoBase64}` : thumbUrl;
+    const imgSrcLarge = (isTuo && photoBase64) ? `data:${photoType||'image/jpeg'};base64,${photoBase64}` : thumbUrlLarge;
     const imgBorder = isTuo ? '2px solid var(--rose-dark)' : 'none';
     const tuoBadge = isTuo ? `<div style="position:absolute;top:6px;left:6px;background:var(--rose-dark);color:white;font-size:0.6rem;padding:2px 7px;border-radius:99px;font-weight:500;">📸 Il tuo</div>` : '';
 
@@ -1507,8 +1524,9 @@ function renderVariante(idx, genere) {
       <div class="piw" style="height:${p.h||'200px'};background:${st.bg};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:1.25rem;position:relative;">
         ${tuoBadge}
         <img src="${imgSrc}" alt="${p.nome}"
-          style="width:110px;height:110px;object-fit:cover;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.12);border:${imgBorder};"
-          onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+          style="width:140px;height:140px;object-fit:cover;border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,0.12);border:${imgBorder};"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='block'"
+          data-large="${imgSrcLarge}">
         <div style="display:none;font-size:3rem;line-height:1">${st.icon}</div>
         <div style="font-size:0.8rem;font-weight:500;color:${st.color};text-align:center;max-width:150px;line-height:1.3">${p.nome}</div>
         ${prezzoTag}
@@ -1775,14 +1793,95 @@ async function checkPaymentReturn() {
 }
 
 // ── LIGHTBOX ─────────────────────────────────────────
+function renderStoreLinks({ zalando, asos }, nome) {
+  const loadingEl = document.getElementById('lbStoreLoading');
+  if (!loadingEl) return;
+  const qEncoded = encodeURIComponent(nome);
+  let html = '';
+  if (zalando?.found) html += `<a href="${zalando.url}" target="_blank" rel="noopener"
+    style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:99px;background:white;color:var(--text);border:1px solid var(--beige-dark);text-decoration:none;font-size:0.78rem;">
+    👗 Zalando</a>`;
+  if (asos?.found) html += `<a href="${asos.url}" target="_blank" rel="noopener"
+    style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:99px;background:white;color:var(--text);border:1px solid var(--beige-dark);text-decoration:none;font-size:0.78rem;">
+    🔵 ASOS</a>`;
+  html += `<a href="https://www.yoox.com/it/search?text=${qEncoded}" target="_blank" rel="noopener"
+    style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:99px;background:white;color:var(--text);border:1px solid var(--beige-dark);text-decoration:none;font-size:0.78rem;">
+    🔴 Yoox</a>`;
+  loadingEl.outerHTML = html;
+}
+
 function openLB(i) {
-  if (!curOutfit) return;
-  const p = curOutfit.pezzi[i];
-  document.getElementById('lbImg').src = p.img;
+  const v = curVarianti[curVarianteIdx];
+  if (!v || !v.pezzi) return;
+  const p = v.pezzi[i];
+  if (!p) return;
+
+  const genere = document.querySelector('#g-gen .on')?.dataset.v || 'donna';
+  const genTag = genere === 'uomo' ? 'man wearing' : genere === 'donna' ? 'woman wearing' : 'person wearing';
+  const cercaConGenere = genTag + ' ' + (p.cerca || p.nome);
+
+  // Immagine — usa foto utente se è il suo capo, altrimenti Bing
+  const imgSrc = (p.tuo && photoBase64)
+    ? `data:${photoType||'image/jpeg'};base64,${photoBase64}`
+    : `https://tse1.mm.bing.net/th?q=${encodeURIComponent(cercaConGenere)}&w=400&h=400&c=7`;
+
+  document.getElementById('lbImg').src = imgSrc;
   document.getElementById('lbCat').textContent = p.cat;
-  document.getElementById('lbNome').textContent = p.nome;
+  document.getElementById('lbNome').textContent = p.nome + (p.prezzo ? ` — ${p.prezzo}` : '');
   document.getElementById('lbDesc').textContent = p.desc;
-  document.getElementById('lbLink').href = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(p.cerca)}`;
+
+  // Store links — prima mostra quelli statici, poi verifica in background
+  const stores = getStoreLinks(p);
+  const qi = encodeURIComponent(p.nome);
+  const lbLinksEl = document.getElementById('lbLinks');
+
+  if (lbLinksEl) {
+    if (p.tuo) {
+      lbLinksEl.innerHTML = '<span style="font-size:0.8rem;color:var(--rose-dark);">📸 Dal tuo armadio</span>';
+    } else {
+      // Mostra subito Google Shopping + link brand specifico se presente
+      const nomeLower = (p.nome||'').toLowerCase();
+      const hasBrand = Object.keys(BRAND_STORE).some(k => nomeLower.includes(k));
+
+      let html = `<a href="https://www.google.com/search?tbm=shop&q=${qi}" target="_blank" rel="noopener"
+        style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:99px;background:var(--brown);color:white;text-decoration:none;font-size:0.78rem;font-weight:500;">
+        🛒 Google Shopping</a>`;
+
+      if (hasBrand) {
+        // Brand specifico — mostra direttamente
+        stores.forEach(s => {
+          html += `<a href="${s.url}" target="_blank" rel="noopener"
+            style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:99px;background:white;color:var(--text);border:1px solid var(--beige-dark);text-decoration:none;font-size:0.78rem;">
+            ${s.icon} ${s.label}</a>`;
+        });
+        lbLinksEl.innerHTML = html;
+      } else {
+        // Capo generico — verifica Zalando, ASOS in background con cache
+        html += `<span id="lbStoreLoading" style="font-size:0.75rem;color:var(--text-muted);">Cerco nei negozi...</span>`;
+        lbLinksEl.innerHTML = html;
+
+        const cacheKey = `store_${p.nome}`;
+        if (window._storeCache && window._storeCache[cacheKey]) {
+          // Usa cache — nessuna chiamata
+          renderStoreLinks(window._storeCache[cacheKey], p.nome);
+        } else {
+          // Prima volta — verifica e salva in cache
+          const qEncoded = encodeURIComponent(p.nome);
+          Promise.all([
+            fetch(`${BACKEND_URL}/check-store?store=zalando&q=${qEncoded}`).then(r=>r.json()).catch(()=>({found:false})),
+            fetch(`${BACKEND_URL}/check-store?store=asos&q=${qEncoded}`).then(r=>r.json()).catch(()=>({found:false})),
+          ]).then(([zalando, asos]) => {
+            if (!window._storeCache) window._storeCache = {};
+            window._storeCache[cacheKey] = { zalando, asos };
+            renderStoreLinks({ zalando, asos }, p.nome);
+          });
+        }
+      }
+    }
+  } else {
+    document.getElementById('lbLink').href = `https://www.google.com/search?tbm=shop&q=${qi}`;
+  }
+
   document.getElementById('lb').classList.add('open');
 }
 function closeLB() { document.getElementById('lb').classList.remove('open'); }
@@ -1914,13 +2013,19 @@ async function doRegister() {
   if (!email || !pass) return showAuthErr('Inserisci email e password');
   const btn = document.getElementById('regBtn');
   btn.disabled = true; btn.textContent = 'Creazione account...';
+
+  // Legge codice referral dall'URL o dal localStorage
+  const refCode = localStorage.getItem('miroir_ref') || new URLSearchParams(window.location.search).get('ref');
+
   try {
     const res = await fetch(`${BACKEND_URL}/auth/register`, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ email, password:pass, nome })
+      body: JSON.stringify({ email, password:pass, nome, refCode })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);
+    if (data.user.referralCode) localStorage.setItem('miroir_my_ref', data.user.referralCode);
+    localStorage.removeItem('miroir_ref'); // pulisce dopo uso
     onLogin(data.token, data.user);
   } catch(e) {
     showAuthErr(e.message);
@@ -2209,7 +2314,55 @@ async function openProfilo() {
   document.getElementById('profiloNome').textContent = currentUser.nome;
   document.getElementById('profiloEmail').textContent = currentUser.email;
   document.getElementById('profiloCredits').textContent = `${credits} crediti`;
-  await loadSavedOutfits();
+  await Promise.all([loadSavedOutfits(), loadReferral()]);
+}
+
+async function loadReferral() {
+  const el = document.getElementById('referralInfo');
+  if (!el) return;
+  try {
+    const res = await fetch(`${BACKEND_URL}/auth/referral`, {
+      headers: { 'Authorization': `Bearer ${getToken()}` }
+    });
+    const data = await res.json();
+    if (!data.code) {
+      el.innerHTML = '<div style="font-size:0.8rem;color:var(--text-muted);">Codice referral non ancora assegnato.</div>';
+      return;
+    }
+    const link = `https://mir-oir.it/?ref=${data.code}`;
+    el.innerHTML = `
+      <div style="background:white;border-radius:10px;border:1px solid var(--beige-mid);padding:0.85rem 1rem;margin-bottom:0.75rem;">
+        <div style="font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.35rem;">Il tuo link personale</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <code style="font-size:0.78rem;color:var(--brown);background:var(--rose-light);padding:4px 10px;border-radius:6px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${link}</code>
+          <button onclick="copyReferralLink('${link}')" style="background:var(--brown);color:white;border:none;border-radius:8px;padding:5px 12px;font-size:0.75rem;cursor:pointer;white-space:nowrap;">Copia</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:0.75rem;">
+        <div style="flex:1;background:white;border-radius:10px;border:1px solid var(--beige-mid);padding:0.75rem;text-align:center;">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--brown);">${data.totalReferrals}</div>
+          <div style="font-size:0.7rem;color:var(--text-muted);">amici invitati</div>
+        </div>
+        <div style="flex:1;background:white;border-radius:10px;border:1px solid var(--beige-mid);padding:0.75rem;text-align:center;">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--brown);">${data.creditsEarned}</div>
+          <div style="font-size:0.7rem;color:var(--text-muted);">crediti guadagnati</div>
+        </div>
+      </div>
+      <button onclick="shareReferral('${link}')" style="width:100%;padding:0.65rem;border-radius:99px;background:var(--rose-light);color:var(--brown);border:1px solid var(--rose);font-size:0.82rem;font-weight:500;cursor:pointer;">
+        📱 Condividi su WhatsApp
+      </button>`;
+  } catch(e) {
+    el.innerHTML = '<div style="font-size:0.8rem;color:var(--text-muted);">Errore caricamento referral.</div>';
+  }
+}
+
+function copyReferralLink(link) {
+  navigator.clipboard.writeText(link).then(() => showToast('Link copiato! 📋'));
+}
+
+function shareReferral(link) {
+  const testo = `Ho scoperto Miroir — il personal shopper AI che genera outfit perfetti per ogni occasione! 👗✨\n\nRegistrati con il mio link e prova gratis:\n${link}`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(testo)}`, '_blank');
 }
 
 function closeProfilo() {
@@ -2279,9 +2432,10 @@ const BRAND_STORE = {
 
 // Store affidabili di fallback (sempre funzionanti)
 const FALLBACK_STORES = [
-  { label:'Amazon',  url: qi => `https://www.amazon.it/s?k=${qi}`,                icon:'📦' },
-  { label:'Zalando', url: qi => `https://www.zalando.it/catalogues/?q=${qi}`,     icon:'👗' },
-  { label:'Zara',    url: qi => `https://www.zara.com/it/it/search?searchTerm=${qi}`, icon:'🏬' },
+  { label:'G.Shopping', url: qi => `https://www.google.com/search?tbm=shop&q=${qi}`, icon:'🛒' },
+  { label:'Amazon',     url: qi => `https://www.amazon.it/s?k=${qi}`,                icon:'📦' },
+  { label:'Zalando',    url: qi => `https://www.zalando.it/catalogues/?q=${qi}`,     icon:'👗' },
+  { label:'Zara',       url: qi => `https://www.zara.com/it/it/search?searchTerm=${qi}`, icon:'🏬' },
 ];
 
 function getStoreLinks(p) {
@@ -2815,6 +2969,13 @@ if (!localStorage.getItem('cookie_ok')) {
   setTimeout(() => {
     document.getElementById('cookieBanner').style.display = 'flex';
   }, 1500);
+}
+
+// Salva ref code dall'URL
+const _refParam = new URLSearchParams(window.location.search).get('ref');
+if (_refParam) {
+  localStorage.setItem('miroir_ref', _refParam);
+  window.history.replaceState({}, '', window.location.pathname);
 }
 
 // INIT
