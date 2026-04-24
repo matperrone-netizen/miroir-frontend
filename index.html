@@ -1871,9 +1871,32 @@ async function doRegister() {
 }
 
 async function doGoogle() {
-  // Google OAuth richiede un Client ID configurato su console.cloud.google.com
-  // Per ora mostra messaggio e suggerisce email/password
-  showAuthErr('Google login non ancora attivo — usa email e password per ora.');
+  if (!window.google) {
+    showAuthErr('Google login non disponibile — riprova tra un momento');
+    return;
+  }
+  try {
+    google.accounts.id.initialize({
+      client_id: '368090843325-vtivtdgpnau9som9mrgi9tusgb7vfjis.apps.googleusercontent.com',
+      callback: async (response) => {
+        try {
+          const res = await fetch(`${BACKEND_URL}/auth/google`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ googleToken: response.credential })
+          });
+          const data = await res.json();
+          if (!res.ok) return showAuthErr(data.error || 'Errore Google login');
+          onLogin(data.token, data.user);
+        } catch(e) {
+          showAuthErr('Errore di connessione — riprova');
+        }
+      }
+    });
+    google.accounts.id.prompt();
+  } catch(e) {
+    showAuthErr('Errore Google login — usa email e password');
+  }
 }
 
 function onLogin(token, user) {
