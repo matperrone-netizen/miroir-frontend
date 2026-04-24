@@ -2712,9 +2712,9 @@ async function savePers() {
 }
 
 function checkProfiloAfterLogin(user) {
-  // Mostra solo se profilo non compilato E non skippato E non già mostrato in questa sessione
-  if (!user.profilo && !localStorage.getItem('pers_skipped') && !sessionStorage.getItem('pers_shown')) {
-    sessionStorage.setItem('pers_shown', '1');
+  // Mostra SOLO se il profilo non è mai stato compilato nel DB
+  // Non usare sessionStorage/localStorage — si resettano con la cache
+  if (!user.profilo) {
     setTimeout(() => openPers(), 1200);
   }
 }
