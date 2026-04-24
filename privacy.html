@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Miroir — Privacy Policy & Termini di Servizio</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+:root {
+  --rose:#E8B4B8; --rose-light:#F5DDE0; --rose-dark:#C4878C;
+  --beige-mid:#EAE0D5; --cream:#FAF6F2; --brown:#6B4F4F;
+  --text:#3A2A2A; --text-muted:#8A6F6F;
+}
+body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--text); line-height:1.7; }
+nav { display:flex; align-items:center; justify-content:space-between; padding:1rem 2rem; background:rgba(250,246,242,0.96); backdrop-filter:blur(12px); border-bottom:1px solid rgba(232,180,184,0.2); position:sticky; top:0; z-index:100; }
+.nav-logo { font-family:'Cormorant Garamond',serif; font-size:1.6rem; color:var(--brown); font-style:italic; letter-spacing:0.12em; text-decoration:none; }
+.nav-back { font-size:0.82rem; color:var(--text-muted); text-decoration:none; }
+.nav-back:hover { color:var(--brown); }
+.page { max-width:760px; margin:0 auto; padding:3rem 2rem 4rem; }
+.tabs { display:flex; gap:6px; margin-bottom:2.5rem; background:var(--beige-mid); border-radius:12px; padding:4px; }
+.tab { flex:1; padding:0.65rem; border:none; background:none; border-radius:9px; font-size:0.84rem; cursor:pointer; color:var(--text-muted); transition:all 0.2s; font-family:'DM Sans',sans-serif; }
+.tab.on { background:white; color:var(--brown); font-weight:500; box-shadow:0 1px 4px rgba(0,0,0,0.08); }
+.doc { display:none; }
+.doc.on { display:block; }
+.doc-title { font-family:'Cormorant Garamond',serif; font-size:2.2rem; font-weight:300; color:var(--text); margin-bottom:0.4rem; }
+.doc-date { font-size:0.78rem; color:var(--text-muted); margin-bottom:2rem; }
+h2 { font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:400; color:var(--brown); margin:2rem 0 0.75rem; }
+h3 { font-size:0.9rem; font-weight:500; color:var(--text); margin:1.25rem 0 0.4rem; }
+p { font-size:0.88rem; color:var(--text); margin-bottom:0.85rem; }
+ul { font-size:0.88rem; color:var(--text); margin:0.5rem 0 0.85rem 1.25rem; }
+li { margin-bottom:0.3rem; }
+a { color:var(--rose-dark); }
+.highlight { background:var(--rose-light); border-left:3px solid var(--rose); border-radius:0 8px 8px 0; padding:0.85rem 1.1rem; margin:1rem 0; font-size:0.85rem; }
+footer { text-align:center; padding:2rem; font-size:0.75rem; color:var(--text-muted); border-top:1px solid var(--beige-mid); }
+footer a { color:var(--text-muted); text-decoration:none; }
+@media (max-width:600px) { .page { padding:2rem 1.25rem; } .doc-title { font-size:1.8rem; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/">Miroir</a>
+  <a class="nav-back" href="/">← Torna all'app</a>
+</nav>
+
+<div class="page">
+  <div class="tabs">
+    <button class="tab on" onclick="showDoc('privacy')">Privacy Policy</button>
+    <button class="tab" onclick="showDoc('termini')">Termini di Servizio</button>
+    <button class="tab" onclick="showDoc('cookie')">Cookie Policy</button>
+  </div>
+
+  <!-- PRIVACY POLICY -->
+  <div class="doc on" id="doc-privacy">
+    <div class="doc-title">Privacy Policy</div>
+    <div class="doc-date">Ultimo aggiornamento: Aprile 2025</div>
+
+    <div class="highlight">
+      Miroir rispetta la tua privacy. Non vendiamo i tuoi dati a terzi e non usiamo pubblicità comportamentale.
+    </div>
+
+    <h2>1. Titolare del Trattamento</h2>
+    <p>Il titolare del trattamento dei dati personali è Matteo Perrone, raggiungibile all'indirizzo <a href="mailto:supporto@mir-oir.it">supporto@mir-oir.it</a>.</p>
+
+    <h2>2. Dati Raccolti</h2>
+    <h3>Dati forniti dall'utente:</h3>
+    <ul>
+      <li>Nome e indirizzo email (alla registrazione)</li>
+      <li>Password (conservata in forma cifrata con bcrypt — mai leggibile)</li>
+      <li>Preferenze di stile (brand, colori, corporatura) — opzionali</li>
+      <li>Foto di capi di abbigliamento (solo per la generazione outfit — non salvate)</li>
+    </ul>
+    <h3>Dati raccolti automaticamente:</h3>
+    <ul>
+      <li>Dati di utilizzo del servizio (outfit generati, crediti usati)</li>
+      <li>Dati tecnici anonimi (tipo browser, lingua)</li>
+    </ul>
+    <h3>Dati di pagamento:</h3>
+    <p>I pagamenti sono gestiti da <strong>Stripe Inc.</strong> — Miroir non vede né conserva i dati della tua carta di credito. Stripe è certificato PCI DSS Level 1.</p>
+
+    <h2>3. Finalità del Trattamento</h2>
+    <ul>
+      <li>Erogazione del servizio di personal shopper AI</li>
+      <li>Gestione dell'account e autenticazione</li>
+      <li>Elaborazione dei pagamenti</li>
+      <li>Personalizzazione dei suggerimenti di moda</li>
+      <li>Comunicazioni di servizio (es. recupero password)</li>
+    </ul>
+
+    <h2>4. Base Giuridica</h2>
+    <p>Il trattamento si basa sul <strong>contratto</strong> (erogazione del servizio), sul tuo <strong>consenso</strong> (per i dati facoltativi) e sul <strong>legittimo interesse</strong> (per la sicurezza e il miglioramento del servizio).</p>
+
+    <h2>5. Conservazione dei Dati</h2>
+    <p>I tuoi dati sono conservati finché mantieni un account attivo. Puoi richiedere la cancellazione completa in qualsiasi momento scrivendo a <a href="mailto:supporto@mir-oir.it">supporto@mir-oir.it</a>. Le foto caricate per la funzione armadio non vengono mai salvate — vengono usate solo per la chiamata AI e scartate immediatamente.</p>
+
+    <h2>6. Condivisione con Terze Parti</h2>
+    <p>I tuoi dati non vengono venduti. Vengono condivisi solo con:</p>
+    <ul>
+      <li><strong>Anthropic</strong> (elaborazione AI degli outfit) — <a href="https://www.anthropic.com/privacy" target="_blank">Privacy Policy</a></li>
+      <li><strong>Stripe</strong> (pagamenti) — <a href="https://stripe.com/it/privacy" target="_blank">Privacy Policy</a></li>
+      <li><strong>Railway</strong> (hosting backend e database) — <a href="https://railway.app/privacy" target="_blank">Privacy Policy</a></li>
+      <li><strong>Resend</strong> (invio email transazionali) — <a href="https://resend.com/privacy" target="_blank">Privacy Policy</a></li>
+    </ul>
+
+    <h2>7. I Tuoi Diritti (GDPR)</h2>
+    <p>Hai diritto di:</p>
+    <ul>
+      <li>Accedere ai tuoi dati personali</li>
+      <li>Rettificare dati inesatti</li>
+      <li>Cancellare il tuo account e tutti i dati associati</li>
+      <li>Opporti al trattamento</li>
+      <li>Portabilità dei dati</li>
+      <li>Revocare il consenso in qualsiasi momento</li>
+    </ul>
+    <p>Per esercitare questi diritti scrivi a <a href="mailto:supporto@mir-oir.it">supporto@mir-oir.it</a>. Hai anche il diritto di presentare reclamo al Garante per la Protezione dei Dati Personali (<a href="https://www.garanteprivacy.it" target="_blank">garanteprivacy.it</a>).</p>
+
+    <h2>8. Sicurezza</h2>
+    <p>Adottiamo misure tecniche adeguate: connessioni HTTPS, password cifrate con bcrypt, database privato non accessibile pubblicamente, token JWT con scadenza.</p>
+
+    <h2>9. Contatti</h2>
+    <p>Per qualsiasi domanda sulla privacy: <a href="mailto:supporto@mir-oir.it">supporto@mir-oir.it</a></p>
+  </div>
+
+  <!-- TERMINI DI SERVIZIO -->
+  <div class="doc" id="doc-termini">
+    <div class="doc-title">Termini di Servizio</div>
+    <div class="doc-date">Ultimo aggiornamento: Aprile 2025</div>
+
+    <h2>1. Accettazione dei Termini</h2>
+    <p>Utilizzando Miroir accetti i presenti Termini di Servizio. Se non li accetti, non puoi utilizzare il servizio.</p>
+
+    <h2>2. Descrizione del Servizio</h2>
+    <p>Miroir è un servizio di personal shopper basato su intelligenza artificiale. Fornisce suggerimenti di abbigliamento personalizzati a scopo informativo. I suggerimenti non costituiscono consulenza professionale di moda.</p>
+
+    <h2>3. Account e Crediti</h2>
+    <ul>
+      <li>Ogni account è personale e non cedibile</li>
+      <li>I crediti acquistati non hanno scadenza ma non sono rimborsabili una volta utilizzati</li>
+      <li>In caso di problemi tecnici che causino la perdita di crediti, contatta il supporto entro 7 giorni</li>
+      <li>Gli utenti free possono salvare fino a 10 outfit, gli utenti che hanno acquistato crediti fino a 50</li>
+    </ul>
+
+    <h2>4. Pagamenti</h2>
+    <p>I pagamenti sono elaborati da Stripe. I prezzi sono in Euro e includono IVA. I crediti non utilizzati rimangono disponibili a tempo indeterminato. Non sono previsti rimborsi per crediti già acquistati, salvo malfunzionamenti tecnici documentati.</p>
+
+    <h2>5. Uso Accettabile</h2>
+    <p>È vietato:</p>
+    <ul>
+      <li>Usare il servizio per scopi illegali</li>
+      <li>Tentare di aggirare i limiti del piano gratuito</li>
+      <li>Caricare immagini che violino diritti di terzi o contenuti inappropriati</li>
+      <li>Condividere le credenziali del proprio account</li>
+    </ul>
+
+    <h2>6. Limitazione di Responsabilità</h2>
+    <p>Miroir fornisce suggerimenti AI a titolo informativo. Non garantiamo che i capi suggeriti siano sempre disponibili, ai prezzi indicati, o adatti alle specifiche esigenze dell'utente. I link a negozi terzi (Amazon, Zalando, Zara ecc.) sono forniti per comodità — Miroir non è responsabile del contenuto di siti esterni.</p>
+
+    <h2>7. Proprietà Intellettuale</h2>
+    <p>Il nome "Miroir", il design e il codice dell'applicazione sono di proprietà di Matteo Perrone. I contenuti generati dall'AI appartengono all'utente che li ha generati.</p>
+
+    <h2>8. Modifiche al Servizio</h2>
+    <p>Ci riserviamo il diritto di modificare i prezzi, le funzionalità e i presenti Termini con un preavviso di 30 giorni via email.</p>
+
+    <h2>9. Legge Applicabile</h2>
+    <p>I presenti Termini sono regolati dalla legge italiana. Per qualsiasi controversia è competente il Foro di Milano.</p>
+
+    <h2>10. Contatti</h2>
+    <p><a href="mailto:supporto@mir-oir.it">supporto@mir-oir.it</a> — <a href="/contatti.html">Pagina contatti</a></p>
+  </div>
+
+  <!-- COOKIE POLICY -->
+  <div class="doc" id="doc-cookie">
+    <div class="doc-title">Cookie Policy</div>
+    <div class="doc-date">Ultimo aggiornamento: Aprile 2025</div>
+
+    <div class="highlight">
+      Miroir usa solo cookie tecnici strettamente necessari al funzionamento. Non usiamo cookie di profilazione o pubblicitari.
+    </div>
+
+    <h2>Cosa sono i Cookie</h2>
+    <p>I cookie sono piccoli file di testo salvati nel browser. Miroir usa principalmente il <strong>localStorage</strong> del browser (tecnicamente non cookie, ma soggetto alle stesse regole) per salvare le tue preferenze.</p>
+
+    <h2>Cookie Tecnici (necessari)</h2>
+    <p>Questi non richiedono consenso perché strettamente necessari:</p>
+    <ul>
+      <li><strong>Token di autenticazione</strong> — mantiene la sessione di login attiva</li>
+      <li><strong>Crediti e preferenze</strong> — salva localmente il numero di crediti e le preferenze di stile</li>
+      <li><strong>News in cache</strong> — salva le ultime news per caricamento più veloce</li>
+    </ul>
+
+    <h2>Cookie di Terze Parti</h2>
+    <ul>
+      <li><strong>Stripe</strong> — cookie tecnici per la gestione dei pagamenti sicuri</li>
+      <li><strong>Google Sign-In</strong> — solo se usi il login con Google</li>
+    </ul>
+
+    <h2>Nessun Cookie di Profilazione</h2>
+    <p>Miroir non usa Google Analytics, Facebook Pixel, o qualsiasi altro strumento di tracciamento pubblicitario. Non vendiamo dati di navigazione.</p>
+
+    <h2>Come Gestire i Cookie</h2>
+    <p>Puoi eliminare tutti i dati salvati da Miroir aprendo la console del browser (F12) e digitando <code style="background:var(--beige-mid);padding:2px 6px;border-radius:4px;">localStorage.clear()</code>. Questo ti disconnetterà dall'account.</p>
+
+    <h2>Contatti</h2>
+    <p>Per domande sui cookie: <a href="mailto:supporto@mir-oir.it">supporto@mir-oir.it</a></p>
+  </div>
+</div>
+
+<footer>
+  © 2025 Miroir &nbsp;·&nbsp;
+  <a href="/">App</a> &nbsp;·&nbsp;
+  <a href="/contatti.html">Contatti</a> &nbsp;·&nbsp;
+  <a href="mailto:supporto@mir-oir.it">supporto@mir-oir.it</a>
+</footer>
+
+<script>
+function showDoc(id) {
+  document.querySelectorAll('.doc').forEach(d => d.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.getElementById('doc-' + id).classList.add('on');
+  event.target.classList.add('on');
+}
+</script>
+</body>
+</html>

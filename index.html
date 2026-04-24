@@ -209,6 +209,17 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
 .pers-save:hover { background:var(--text); }
 .pers-save:disabled { opacity:0.5; cursor:not-allowed; }
 
+/* COOKIE BANNER */
+.cookie-banner { position:fixed; bottom:0; left:0; right:0; background:var(--brown); color:white; padding:1rem 1.5rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; z-index:999; animation:slideUp 0.4s ease; flex-wrap:wrap; }
+@keyframes slideUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
+.cookie-text { font-size:0.78rem; line-height:1.55; color:rgba(255,255,255,0.88); flex:1; min-width:200px; }
+.cookie-text a { color:var(--rose-light); }
+.cookie-btns { display:flex; gap:8px; flex-shrink:0; }
+.cookie-ok { background:var(--rose); color:var(--brown); border:none; border-radius:99px; padding:0.55rem 1.25rem; font-size:0.82rem; font-weight:500; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.2s; }
+.cookie-ok:hover { background:white; }
+.cookie-info { background:none; color:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.3); border-radius:99px; padding:0.55rem 1rem; font-size:0.78rem; cursor:pointer; font-family:'DM Sans',sans-serif; text-decoration:none; transition:all 0.2s; }
+.cookie-info:hover { border-color:white; color:white; }
+
 /* NEWS & EVENTI MODAL */
 .news-ov { display:none; position:fixed; inset:0; background:rgba(30,10,10,0.78); z-index:500; align-items:flex-start; justify-content:center; padding:1rem; backdrop-filter:blur(5px); overflow-y:auto; }
 .news-ov.open { display:flex; }
@@ -600,6 +611,18 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
   </div>
 </div>
 
+<!-- COOKIE BANNER -->
+<div class="cookie-banner" id="cookieBanner" style="display:none">
+  <div class="cookie-text">
+    Usiamo solo cookie tecnici necessari al funzionamento — nessuna profilazione, nessuna pubblicità.
+    <a href="/privacy.html" target="_blank">Scopri di più</a>
+  </div>
+  <div class="cookie-btns">
+    <a class="cookie-info" href="/privacy.html" target="_blank">Privacy</a>
+    <button class="cookie-ok" onclick="acceptCookies()">Ho capito</button>
+  </div>
+</div>
+
 <!-- PROFILO PANEL -->
 <div class="profilo-ov" id="profiloModal" onclick="if(event.target.id==='profiloModal')closeProfilo()">
   <div class="profilo-panel">
@@ -868,7 +891,11 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
 
 <div style="text-align:center;padding:1.5rem 1rem;border-top:1px solid var(--beige-mid);margin-top:2rem;font-size:0.72rem;color:var(--text-muted);">
   © 2025 Miroir &nbsp;·&nbsp;
-  <a href="/contatti.html" style="color:var(--text-muted);text-decoration:none;" onmouseover="this.style.color='var(--brown)'" onmouseout="this.style.color='var(--text-muted)'">Supporto & Contatti</a>
+  <a href="/contatti.html" style="color:var(--text-muted);text-decoration:none;" onmouseover="this.style.color='var(--brown)'" onmouseout="this.style.color='var(--text-muted)'">Supporto</a>
+  &nbsp;·&nbsp;
+  <a href="/privacy.html" style="color:var(--text-muted);text-decoration:none;" onmouseover="this.style.color='var(--brown)'" onmouseout="this.style.color='var(--text-muted)'">Privacy Policy</a>
+  &nbsp;·&nbsp;
+  <a href="/privacy.html#termini" style="color:var(--text-muted);text-decoration:none;" onmouseover="this.style.color='var(--brown)'" onmouseout="this.style.color='var(--text-muted)'">Termini</a>
   &nbsp;·&nbsp;
   <a href="mailto:supporto@mir-oir.it" style="color:var(--text-muted);text-decoration:none;" onmouseover="this.style.color='var(--brown)'" onmouseout="this.style.color='var(--text-muted)'">supporto@mir-oir.it</a>
 </div>
@@ -2777,6 +2804,17 @@ function checkResetTokenOnLoad() {
     // Pulisci URL dopo aver salvato il token
     window.history.replaceState({}, '', window.location.pathname);
   }, 100);
+}
+
+// Cookie banner
+function acceptCookies() {
+  localStorage.setItem('cookie_ok', '1');
+  document.getElementById('cookieBanner').style.display = 'none';
+}
+if (!localStorage.getItem('cookie_ok')) {
+  setTimeout(() => {
+    document.getElementById('cookieBanner').style.display = 'flex';
+  }, 1500);
 }
 
 // INIT
