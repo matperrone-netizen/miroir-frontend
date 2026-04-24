@@ -2168,6 +2168,17 @@ function closeProfilo() {
 // Regola: store con ricerca stabile → link ricerca | brand senza store IT → homepage
 const BRAND_STORE = {
   // Fast fashion — ricerca funzionante
+  'gucci':         { label:'Gucci',        url:(q,qi)=>`https://www.gucci.com/it/it/search?q=${q}`, icon:'🟩' },
+  'louis vuitton': { label:'Louis Vuitton', url:(q,qi)=>`https://it.louisvuitton.com/ita-it/search/${q}`, icon:'🟫' },
+  'prada':         { label:'Prada',         url:(q,qi)=>`https://www.prada.com/it/it/search?search=${q}`, icon:'⬛' },
+  'bottega':       { label:'Bottega V.',    url:(q,qi)=>`https://www.bottegaveneta.com/it-it`, icon:'🟨' },
+  'saint laurent': { label:'YSL',           url:(q,qi)=>`https://www.ysl.com/it-it`, icon:'🖤' },
+  'dior':          { label:'Dior',          url:(q,qi)=>`https://www.dior.com/it_it/fashion`, icon:'🌹' },
+  'chanel':        { label:'Chanel',        url:(q,qi)=>`https://www.chanel.com/it/mode/`, icon:'⚫' },
+  'hermes':        { label:'Hermès',        url:(q,qi)=>`https://www.hermes.com/it/it/`, icon:'🟠' },
+  'versace':       { label:'Versace',       url:(q,qi)=>`https://www.versace.com/it/it/`, icon:'🦅' },
+  'fendi':         { label:'Fendi',         url:(q,qi)=>`https://www.fendi.com/it-it`, icon:'🟡' },
+  'moncler':       { label:'Moncler',       url:(q,qi)=>`https://www.moncler.com/it-it/search?q=${q}`, icon:'⛷️' },
   'zara':          { label:'Zara',          url:(q,qi)=>`https://www.zara.com/it/it/search?searchTerm=${qi}`, icon:'🏬' },
   'h&m':           { label:'H&M',           url:(q,qi)=>`https://www2.hm.com/it_it/search-results.html?q=${qi}`, icon:'🛍️' },
   'hm':            { label:'H&M',           url:(q,qi)=>`https://www2.hm.com/it_it/search-results.html?q=${qi}`, icon:'🛍️' },
@@ -2420,6 +2431,22 @@ function openNewsModal() {
     document.getElementById('newsAdminBar').style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:1rem;';
     document.getElementById('eventiAdminBar').style.display = 'block';
   }
+  // Carica sempre le news dal server
+  loadNews();
+}
+
+async function loadNews() {
+  try {
+    const res = await fetch(`${BACKEND_URL}/news`);
+    const data = await res.json();
+    if (data) {
+      newsCache = data;
+      localStorage.setItem('miroir_news', JSON.stringify(data));
+    }
+    renderNews();
+  } catch(e) {
+    renderNews(); // usa cache locale se offline
+  }
 }
 
 function closeNewsModal() {
@@ -2432,7 +2459,7 @@ function switchNewsTab(tab) {
   document.getElementById('tabNews').classList.toggle('on', tab === 'news');
   document.getElementById('tabEventi').classList.toggle('on', tab === 'eventi');
   if (tab === 'eventi') loadEventi();
-  if (tab === 'news') renderNews();
+  if (tab === 'news') loadNews();
 }
 
 function renderNews() {
@@ -2660,7 +2687,9 @@ async function savePers() {
 }
 
 function checkProfiloAfterLogin(user) {
-  if (!user.profilo && !localStorage.getItem('pers_skipped')) {
+  // Mostra solo se profilo non compilato E non skippato E non già mostrato in questa sessione
+  if (!user.profilo && !localStorage.getItem('pers_skipped') && !sessionStorage.getItem('pers_shown')) {
+    sessionStorage.setItem('pers_shown', '1');
     setTimeout(() => openPers(), 1200);
   }
 }
