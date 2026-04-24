@@ -480,7 +480,7 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
       </div>
     </div>
     <div class="fg">
-      <label class="fl">Budget</label>
+      <label class="fl">Fascia preferita <span style="font-weight:400;color:var(--text-muted);font-size:0.75rem;">(l'AI genera sempre tutte e 3)</span></label>
       <div class="tgrid" id="g-budget">
         <div class="tcard" data-v="basso"><span class="ti">💶</span><span class="tl">Basso<br>&lt;100€</span></div>
         <div class="tcard on" data-v="medio"><span class="ti">💶💶</span><span class="tl">Medio<br>100-300€</span></div>
@@ -1576,7 +1576,14 @@ async function showOutfit(data, isAI, genere) {
         <span class="vtab-label">${v.fascia}</span>
         <span class="vtab-price">${v.totale||'–'}</span>
       </div>`).join('');
-    renderVariante(0, genere);
+
+    // Apri la tab corrispondente al budget selezionato
+    const budget = getV('g-budget') || 'medio';
+    const budgetToFascia = { basso:0, medio:1, alto:2 };
+    const defaultIdx = budgetToFascia[budget] ?? 1;
+    renderVariante(defaultIdx, genere);
+    // Aggiorna tab visiva
+    tabsEl.querySelectorAll('.vtab').forEach((t,i) => t.classList.toggle('on', i===defaultIdx));
   } else {
     // Formato singolo (ricerche gratuite)
     curVarianti = [data.varianti?.[0] || data];
