@@ -2,6 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
+<!--Tradedoubler site verification 3481972-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Miroir — Il tuo outfit del giorno</title>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -2438,9 +2439,10 @@ const BRAND_STORE = {
 };
 
 // Store affidabili di fallback (sempre funzionanti)
+const AMAZON_TAG = 'miroir0a-21';
 const FALLBACK_STORES = [
   { label:'G.Shopping', url: qi => `https://www.google.com/search?tbm=shop&q=${qi}`, icon:'🛒' },
-  { label:'Amazon',     url: qi => `https://www.amazon.it/s?k=${qi}`,                icon:'📦' },
+  { label:'Amazon',     url: qi => `https://www.amazon.it/s?k=${qi}&tag=${AMAZON_TAG}`, icon:'📦' },
   { label:'Zalando',    url: qi => `https://www.zalando.it/catalogues/?q=${qi}`,     icon:'👗' },
   { label:'Zara',       url: qi => `https://www.zara.com/it/it/search?searchTerm=${qi}`, icon:'🏬' },
 ];
