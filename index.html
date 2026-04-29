@@ -2377,9 +2377,100 @@ function closeProfilo() {
   document.getElementById('profiloModal').classList.remove('open');
 }
 
+// Publisher ID Tradedoubler
+const TD_PID = '3481972';
+function tdLink(programId, url) {
+  return `https://clk.tradedoubler.com/click?p=${programId}&a=${TD_PID}&url=${encodeURIComponent(url)}`;
+}
+
 // Brand → homepage o ricerca affidabile
 // Regola: store con ricerca stabile → link ricerca | brand senza store IT → homepage
 const BRAND_STORE = {
+  // ── AFFILIATI TRADEDOUBLER ──────────────────────────
+  'about you':     { label:'About You',      url:(q,qi)=>tdLink('383727',`https://www.aboutyou.it/search?term=${q}`), icon:'🛍️' },
+  'aboutyou':      { label:'About You',      url:(q,qi)=>tdLink('383727',`https://www.aboutyou.it/search?term=${q}`), icon:'🛍️' },
+  'atelier vm':    { label:'Atelier VM',     url:(q,qi)=>tdLink('357544','https://www.ateliervm.com/eu/it/'), icon:'💍' },
+  'billabong':     { label:'Billabong',      url:(q,qi)=>tdLink('324691',`https://www.billabong-store.it/search?q=${q}`), icon:'🏄' },
+  'dc shoes':      { label:'DC Shoes',       url:(q,qi)=>tdLink('319678',`https://www.dcshoes.it/search?q=${q}`), icon:'🛹' },
+  'falke':         { label:'Falke',          url:(q,qi)=>tdLink('320721',`https://www.falke.com/it_it/search?q=${q}`), icon:'🧦' },
+  'burlington':    { label:'Burlington',     url:(q,qi)=>tdLink('320721',`https://www.falke.com/it_it/search?q=${q}`), icon:'🧦' },
+  'igi':           { label:'IGI&CO',         url:(q,qi)=>tdLink('314275',`https://www.igieco.it/search?q=${q}`), icon:'👠' },
+  'loccitane':     { label:"L'Occitane",     url:(q,qi)=>tdLink('235510','https://it.loccitane.com'), icon:'🌿' },
+  "l'occitane":    { label:"L'Occitane",     url:(q,qi)=>tdLink('235510','https://it.loccitane.com'), icon:'🌿' },
+  'massimo dutti': { label:'M.Dutti',        url:(q,qi)=>tdLink('374277',`https://www.massimodutti.com/it/search?searchTerm=${qi}`), icon:'🟤' },
+  'neve cosmetics':{ label:'Neve Cosmetics', url:(q,qi)=>tdLink('264888','https://www.nevecosmetics.it'), icon:'❄️' },
+  'neve':          { label:'Neve Cosmetics', url:(q,qi)=>tdLink('264888','https://www.nevecosmetics.it'), icon:'❄️' },
+  'primadonna':    { label:'Primadonna',     url:(q,qi)=>tdLink('299038',`https://www.primadonnacollection.com/it/search?q=${q}`), icon:'👠' },
+  'private sport': { label:'Private Sport',  url:(q,qi)=>tdLink('300319',`https://www.privatesportshop.it/recherche?search=${q}`), icon:'🏃' },
+  'pull&bear':     { label:'Pull&Bear',      url:(q,qi)=>tdLink('326654',`https://www.pullandbear.com/it/search?searchTerm=${qi}`), icon:'🐻' },
+  'pull and bear': { label:'Pull&Bear',      url:(q,qi)=>tdLink('326654',`https://www.pullandbear.com/it/search?searchTerm=${qi}`), icon:'🐻' },
+  'quiksilver':    { label:'Quiksilver',     url:(q,qi)=>tdLink('319675',`https://www.quiksilver.it/search?q=${q}`), icon:'🌊' },
+  'scarpe&scarpe': { label:'Scarpe&Scarpe',  url:(q,qi)=>tdLink('383697',`https://www.scarpescarpestore.com/search?q=${q}`), icon:'👟' },
+  'scarpe scarpe': { label:'Scarpe&Scarpe',  url:(q,qi)=>tdLink('383697',`https://www.scarpescarpestore.com/search?q=${q}`), icon:'👟' },
+  'woolrich':      { label:'Woolrich',       url:(q,qi)=>tdLink('321996',`https://www.woolrich.com/it/it/search?q=${q}`), icon:'🧥' },
+
+  // ── AWIN (da aggiornare con ID quando approvati) ────
+  'cisalfa':       { label:'Cisalfa',        url:(q,qi)=>`https://www.cisalfasport.it/search?q=${q}`, icon:'⚽' },
+  'camicissima':   { label:'Camicissima',    url:(q,qi)=>`https://www.camicissima.com/it/search?q=${q}`, icon:'👔' },
+  'intimissimi':   { label:'Intimissimi',    url:(q,qi)=>`https://www.intimissimi.com/it/search?q=${q}`, icon:'🌸' },
+  'patrizia pepe': { label:'Patrizia Pepe',  url:(q,qi)=>`https://www.patriziapepe.com/it/search?q=${q}`, icon:'🌹' },
+  'elisabetta franchi':{ label:'E.Franchi',  url:(q,qi)=>`https://www.elisabettafranchi.com/it/search?q=${q}`, icon:'✨' },
+  'guess':         { label:'Guess',          url:(q,qi)=>`https://www.guess.eu/it-it/search?q=${q}`, icon:'💫' },
+  'sundek':        { label:'Sundek',         url:(q,qi)=>`https://www.sundek.com/it/search?q=${q}`, icon:'☀️' },
+  'champion':      { label:'Champion',       url:(q,qi)=>`https://www.champion.com/it/search?q=${q}`, icon:'🏆' },
+  'foot locker':   { label:'Foot Locker',    url:(q,qi)=>`https://www.footlocker.it/it/search?query=${q}`, icon:'👟' },
+  'snipes':        { label:'Snipes',         url:(q,qi)=>`https://www.snipes.com/it/search?q=${q}`, icon:'🔥' },
+  'michael kors':  { label:'Michael Kors',   url:(q,qi)=>`https://www.michaelkors.com/it/search?q=${q}`, icon:'💼' },
+  'capri watch':   { label:'Capri Watch',    url:(q,qi)=>`https://www.capriwatch.com`, icon:'⌚' },
+
+  // ── BRAND DIRETTI (senza affiliazione attiva) ───────
+  'zara':          { label:'Zara',           url:(q,qi)=>`https://www.zara.com/it/it/search?searchTerm=${qi}`, icon:'🏬' },
+  'h&m':           { label:'H&M',            url:(q,qi)=>`https://www2.hm.com/it_it/search-results.html?q=${qi}`, icon:'🛍️' },
+  'hm':            { label:'H&M',            url:(q,qi)=>`https://www2.hm.com/it_it/search-results.html?q=${qi}`, icon:'🛍️' },
+  'mango':         { label:'Mango',          url:(q,qi)=>`https://shop.mango.com/it`, icon:'🥭' },
+  'cos':           { label:'COS',            url:(q,qi)=>`https://www.cos.com/it-it`, icon:'⬜' },
+  'uniqlo':        { label:'Uniqlo',         url:(q,qi)=>`https://www.uniqlo.com/it`, icon:'🟥' },
+  'asos':          { label:'ASOS',           url:(q,qi)=>`https://www.asos.com/it/ricerca/?q=${q}`, icon:'🔵' },
+  'primark':       { label:'Primark',        url:(q,qi)=>`https://www.primark.com/it-it`, icon:'🟢' },
+  'weekday':       { label:'Weekday',        url:(q,qi)=>`https://www.weekday.com/en_eur/search?q=${q}`, icon:'📅' },
+  'arket':         { label:'Arket',          url:(q,qi)=>`https://www.arket.com/en_eur/search?q=${q}`, icon:'🌿' },
+  'carhartt':      { label:'Carhartt',       url:(q,qi)=>`https://www.carhartt.com/search/${q}`, icon:'🟧' },
+  'stone island':  { label:'Stone Island',   url:(q,qi)=>`https://www.stoneisland.com/it/search?q=${q}`, icon:'🧭' },
+  'cp company':    { label:'C.P. Company',   url:(q,qi)=>`https://www.cpcompany.com/it/search?q=${q}`, icon:'🔭' },
+  'north face':    { label:'North Face',     url:(q,qi)=>`https://www.thenorthface.com/it-it/search?q=${q}`, icon:'⛰️' },
+  'patagonia':     { label:'Patagonia',      url:(q,qi)=>`https://eu.patagonia.com/it/it/search/?q=${q}`, icon:'🏔️' },
+  'levi':          { label:"Levi's",         url:(q,qi)=>`https://www.levi.com/IT/it_IT/search?keywords=${q}`, icon:'👖' },
+  'a.p.c':         { label:'A.P.C.',         url:(q,qi)=>`https://www.apc.fr`, icon:'🔲' },
+  'toteme':        { label:'Toteme',         url:(q,qi)=>`https://toteme-studio.com`, icon:'⬛' },
+  'max mara':      { label:'Max Mara',       url:(q,qi)=>`https://www.maxmara.com/it`, icon:'🟫' },
+  'acne':          { label:'Acne Studios',   url:(q,qi)=>`https://www.acnestudios.com`, icon:'🔴' },
+  'isabel marant': { label:'I.Marant',       url:(q,qi)=>`https://www.isabelmarant.com`, icon:'🌿' },
+  'ami paris':     { label:'AMI Paris',      url:(q,qi)=>`https://www.amiparis.com`, icon:'❤️' },
+  'sandro':        { label:'Sandro',         url:(q,qi)=>`https://www.sandro-paris.com/it`, icon:'🇫🇷' },
+  'boss':          { label:'BOSS',           url:(q,qi)=>`https://www.hugoboss.com/it/search?q=${q}`, icon:'🎩' },
+  'ralph lauren':  { label:'Ralph Lauren',   url:(q,qi)=>tdLink('384511',`https://www.ralphlauren.it/search?q=${q}`), icon:'🏇' },
+  'tommy hilfiger':{ label:'Tommy H.',       url:(q,qi)=>`https://it.tommy.com/search?q=${q}`, icon:'⛵' },
+  'calvin klein':  { label:'Calvin Klein',   url:(q,qi)=>`https://www.calvinklein.it/search?searchTerm=${q}`, icon:'🔷' },
+  'armani':        { label:'Armani',         url:(q,qi)=>`https://www.armani.com/it-it/search?q=${q}`, icon:'🦅' },
+  'gucci':         { label:'Gucci',          url:(q,qi)=>`https://www.gucci.com/it/it/search?q=${q}`, icon:'🟩' },
+  'louis vuitton': { label:'Louis Vuitton',  url:(q,qi)=>`https://it.louisvuitton.com/ita-it/search/${q}`, icon:'🟫' },
+  'prada':         { label:'Prada',          url:(q,qi)=>`https://www.prada.com/it/it/search?search=${q}`, icon:'⬛' },
+  'bottega':       { label:'Bottega V.',     url:(q,qi)=>`https://www.bottegaveneta.com/it-it`, icon:'🟨' },
+  'saint laurent': { label:'YSL',            url:(q,qi)=>`https://www.ysl.com/it-it`, icon:'🖤' },
+  'dior':          { label:'Dior',           url:(q,qi)=>`https://www.dior.com/it_it/fashion`, icon:'🌹' },
+  'chanel':        { label:'Chanel',         url:(q,qi)=>`https://www.chanel.com/it/mode/`, icon:'⚫' },
+  'hermes':        { label:'Hermès',         url:(q,qi)=>`https://www.hermes.com/it/it/`, icon:'🟠' },
+  'versace':       { label:'Versace',        url:(q,qi)=>`https://www.versace.com/it/it/`, icon:'🦅' },
+  'fendi':         { label:'Fendi',          url:(q,qi)=>`https://www.fendi.com/it-it`, icon:'🟡' },
+  'moncler':       { label:'Moncler',        url:(q,qi)=>`https://www.moncler.com/it-it/search?q=${q}`, icon:'⛷️' },
+  'nike':          { label:'Nike',           url:(q,qi)=>`https://www.nike.com/it/search?q=${q}`, icon:'✔️' },
+  'adidas':        { label:'Adidas',         url:(q,qi)=>`https://www.adidas.it/search?q=${q}`, icon:'⚡' },
+  'new balance':   { label:'New Balance',    url:(q,qi)=>`https://www.newbalance.it/search?q=${q}`, icon:'🔵' },
+  'puma':          { label:'Puma',           url:(q,qi)=>`https://it.puma.com/it/it/search?q=${q}`, icon:'🐆' },
+  'decathlon':     { label:'Decathlon',      url:(q,qi)=>`https://www.decathlon.it/search?Ntt=${q}`, icon:'🏃' },
+  'converse':      { label:'Converse',       url:(q,qi)=>`https://www.converse.com/it/search?q=${q}`, icon:'⭐' },
+  'vans':          { label:'Vans',           url:(q,qi)=>`https://www.vans.it/search?q=${q}`, icon:'🏄' },
+};
   // Fast fashion — ricerca funzionante
   'gucci':         { label:'Gucci',        url:(q,qi)=>`https://www.gucci.com/it/it/search?q=${q}`, icon:'🟩' },
   'louis vuitton': { label:'Louis Vuitton', url:(q,qi)=>`https://it.louisvuitton.com/ita-it/search/${q}`, icon:'🟫' },
