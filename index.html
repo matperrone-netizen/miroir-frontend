@@ -329,7 +329,11 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
 .auth-err.show { display:block; }
 .nav-user { display:flex; align-items:center; gap:0.5rem; font-size:0.82rem; }
 .nav-nome { color:var(--brown); font-weight:500; }
-@media (max-width:600px) { .nav-nome { display:none; } }
+@media (max-width:600px) { 
+  .nav-nome { display:none; }
+  .nav-news-txt { display:none; }
+  nav { padding:0.75rem 1rem; }
+}
 .nav-logout { background:none; border:none; color:var(--text-muted); font-size:0.78rem; cursor:pointer; padding:0.3rem 0.6rem; border-radius:6px; transition:all 0.15s; }
 .nav-logout:hover { background:var(--rose-light); color:var(--brown); }
 .nav-loginbtn { background:var(--brown); color:white; border:none; border-radius:99px; padding:0.4rem 1rem; font-size:0.8rem; cursor:pointer; transition:all 0.2s; }
@@ -341,7 +345,7 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
 <nav>
   <a class="nav-logo" href="#">Miroir</a>
   <div style="display:flex;align-items:center;gap:0.6rem;">
-    <button class="nav-logout" onclick="openNewsModal()" style="font-size:0.8rem;padding:0.3rem 0.75rem;border-radius:99px;border:1px solid var(--beige-dark);background:white;">✦ News</button>
+    <button class="nav-logout" onclick="openNewsModal()" style="font-size:0.8rem;padding:0.3rem 0.75rem;border-radius:99px;border:1px solid var(--beige-dark);background:white;">✦ <span class="nav-news-txt">News</span></button>
     <div id="navFree" class="free-badge">1 look gratis</div>
     <div id="navCredits" class="credits-pill" style="display:none">
       <span class="credits-num" id="creditsNum">0</span>
@@ -2470,63 +2474,6 @@ const BRAND_STORE = {
   'decathlon':     { label:'Decathlon',      url:(q,qi)=>`https://www.decathlon.it/search?Ntt=${q}`, icon:'🏃' },
   'converse':      { label:'Converse',       url:(q,qi)=>`https://www.converse.com/it/search?q=${q}`, icon:'⭐' },
   'vans':          { label:'Vans',           url:(q,qi)=>`https://www.vans.it/search?q=${q}`, icon:'🏄' },
-};
-  // Fast fashion — ricerca funzionante
-  'gucci':         { label:'Gucci',        url:(q,qi)=>`https://www.gucci.com/it/it/search?q=${q}`, icon:'🟩' },
-  'louis vuitton': { label:'Louis Vuitton', url:(q,qi)=>`https://it.louisvuitton.com/ita-it/search/${q}`, icon:'🟫' },
-  'prada':         { label:'Prada',         url:(q,qi)=>`https://www.prada.com/it/it/search?search=${q}`, icon:'⬛' },
-  'bottega':       { label:'Bottega V.',    url:(q,qi)=>`https://www.bottegaveneta.com/it-it`, icon:'🟨' },
-  'saint laurent': { label:'YSL',           url:(q,qi)=>`https://www.ysl.com/it-it`, icon:'🖤' },
-  'dior':          { label:'Dior',          url:(q,qi)=>`https://www.dior.com/it_it/fashion`, icon:'🌹' },
-  'chanel':        { label:'Chanel',        url:(q,qi)=>`https://www.chanel.com/it/mode/`, icon:'⚫' },
-  'hermes':        { label:'Hermès',        url:(q,qi)=>`https://www.hermes.com/it/it/`, icon:'🟠' },
-  'versace':       { label:'Versace',       url:(q,qi)=>`https://www.versace.com/it/it/`, icon:'🦅' },
-  'fendi':         { label:'Fendi',         url:(q,qi)=>`https://www.fendi.com/it-it`, icon:'🟡' },
-  'moncler':       { label:'Moncler',       url:(q,qi)=>`https://www.moncler.com/it-it/search?q=${q}`, icon:'⛷️' },
-  'zara':          { label:'Zara',          url:(q,qi)=>`https://www.zara.com/it/it/search?searchTerm=${qi}`, icon:'🏬' },
-  'h&m':           { label:'H&M',           url:(q,qi)=>`https://www2.hm.com/it_it/search-results.html?q=${qi}`, icon:'🛍️' },
-  'hm':            { label:'H&M',           url:(q,qi)=>`https://www2.hm.com/it_it/search-results.html?q=${qi}`, icon:'🛍️' },
-  'pull&bear':     { label:'Pull&Bear',     url:(q,qi)=>`https://www.pullandbear.com/it/search?searchTerm=${qi}`, icon:'🐻' },
-  'bershka':       { label:'Bershka',       url:(q,qi)=>`https://www.bershka.com/it/search?searchTerm=${qi}`, icon:'🔶' },
-  'massimo dutti': { label:'M.Dutti',       url:(q,qi)=>`https://www.massimodutti.com/it/search?searchTerm=${qi}`, icon:'🟤' },
-  'stradivarius':  { label:'Stradivarius',  url:(q,qi)=>`https://www.stradivarius.com/it/search?searchTerm=${qi}`, icon:'🎻' },
-  // Sport — ricerca funzionante
-  'nike':          { label:'Nike',          url:(q,qi)=>`https://www.nike.com/it/search?q=${q}`, icon:'✔️' },
-  'adidas':        { label:'Adidas',        url:(q,qi)=>`https://www.adidas.it/search?q=${q}`, icon:'⚡' },
-  'new balance':   { label:'New Balance',   url:(q,qi)=>`https://www.newbalance.it/search?q=${q}`, icon:'🔵' },
-  'puma':          { label:'Puma',          url:(q,qi)=>`https://it.puma.com/it/it/search?q=${q}`, icon:'🐆' },
-  'decathlon':     { label:'Decathlon',     url:(q,qi)=>`https://www.decathlon.it/search?Ntt=${q}`, icon:'🏃' },
-  'converse':      { label:'Converse',      url:(q,qi)=>`https://www.converse.com/it/search?q=${q}`, icon:'⭐' },
-  'vans':          { label:'Vans',          url:(q,qi)=>`https://www.vans.it/search?q=${q}`, icon:'🏄' },
-  // Contemporary — homepage (ricerca instabile)
-  'cos':           { label:'COS',           url:(q,qi)=>`https://www.cos.com/it-it`, icon:'⬜' },
-  'mango':         { label:'Mango',         url:(q,qi)=>`https://shop.mango.com/it`, icon:'🥭' },
-  'uniqlo':        { label:'Uniqlo',        url:(q,qi)=>`https://www.uniqlo.com/it`, icon:'🟥' },
-  'asos':          { label:'ASOS',          url:(q,qi)=>`https://www.asos.com/it/ricerca/?q=${q}`, icon:'🔵' },
-  'primark':       { label:'Primark',       url:(q,qi)=>`https://www.primark.com/it-it`, icon:'🟢' },
-  'weekday':       { label:'Weekday',       url:(q,qi)=>`https://www.weekday.com/en_eur/search?q=${q}`, icon:'📅' },
-  'arket':         { label:'Arket',         url:(q,qi)=>`https://www.arket.com/en_eur/search?q=${q}`, icon:'🌿' },
-  // Outdoor/workwear
-  'carhartt':      { label:'Carhartt',      url:(q,qi)=>`https://www.carhartt.com/search/${q}`, icon:'🟧' },
-  'stone island':  { label:'Stone Island',  url:(q,qi)=>`https://www.stoneisland.com/it/search?q=${q}`, icon:'🧭' },
-  'cp company':    { label:'C.P. Company',  url:(q,qi)=>`https://www.cpcompany.com/it/search?q=${q}`, icon:'🔭' },
-  'north face':    { label:'North Face',    url:(q,qi)=>`https://www.thenorthface.com/it-it/search?q=${q}`, icon:'⛰️' },
-  'patagonia':     { label:'Patagonia',     url:(q,qi)=>`https://eu.patagonia.com/it/it/search/?q=${q}`, icon:'🏔️' },
-  'levi':          { label:"Levi's",        url:(q,qi)=>`https://www.levi.com/IT/it_IT/search?keywords=${q}`, icon:'👖' },
-  // Premium/luxury — homepage
-  'a.p.c':         { label:'A.P.C.',        url:(q,qi)=>`https://www.apc.fr`, icon:'🔲' },
-  'toteme':        { label:'Toteme',        url:(q,qi)=>`https://toteme-studio.com`, icon:'⬛' },
-  'max mara':      { label:'Max Mara',      url:(q,qi)=>`https://www.maxmara.com/it`, icon:'🟫' },
-  'acne':          { label:'Acne Studios',  url:(q,qi)=>`https://www.acnestudios.com`, icon:'🔴' },
-  'isabel marant': { label:'I.Marant',      url:(q,qi)=>`https://www.isabelmarant.com`, icon:'🌿' },
-  'ami paris':     { label:'AMI Paris',     url:(q,qi)=>`https://www.amiparis.com`, icon:'❤️' },
-  'sandro':        { label:'Sandro',        url:(q,qi)=>`https://www.sandro-paris.com/it`, icon:'🇫🇷' },
-  'maje':          { label:'Maje',          url:(q,qi)=>`https://www.maje.com/it`, icon:'💎' },
-  'boss':          { label:'BOSS',          url:(q,qi)=>`https://www.hugoboss.com/it/search?q=${q}`, icon:'🎩' },
-  'ralph lauren':  { label:'Ralph Lauren',  url:(q,qi)=>`https://www.ralphlauren.it/search?q=${q}`, icon:'🏇' },
-  'tommy hilfiger':{ label:'Tommy H.',      url:(q,qi)=>`https://it.tommy.com/search?q=${q}`, icon:'⛵' },
-  'calvin klein':  { label:'Calvin Klein',  url:(q,qi)=>`https://www.calvinklein.it/search?searchTerm=${q}`, icon:'🔷' },
-  'armani':        { label:'Armani',        url:(q,qi)=>`https://www.armani.com/it-it/search?q=${q}`, icon:'🦅' },
 };
 
 // Store affidabili di fallback (sempre funzionanti)
