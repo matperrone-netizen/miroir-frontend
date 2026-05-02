@@ -2194,6 +2194,21 @@ async function generateFromPhoto() {
   startLoad();
   document.getElementById('loadingSub').textContent = 'Analizziamo il tuo capo...';
 
+  // Messaggi progressivi per la foto — ci vuole qualche secondo
+  const photoMsgs = [
+    'Analizziamo il tuo capo...',
+    'Identifico colore e stile...',
+    'Cerco i migliori abbinamenti...',
+    'Costruisco il tuo outfit...',
+    'Quasi pronto...'
+  ];
+  let photoMsgIdx = 0;
+  const photoTimer = setInterval(() => {
+    photoMsgIdx = (photoMsgIdx + 1) % photoMsgs.length;
+    const el = document.getElementById('loadingSub');
+    if (el) el.textContent = photoMsgs[photoMsgIdx];
+  }, 2500);
+
   try {
     const res = await fetch(`${BACKEND_URL}/generate-from-photo`, {
       method: 'POST',
@@ -2245,6 +2260,7 @@ async function generateFromPhoto() {
       }, 3200);
     }
 
+    clearInterval(photoTimer);
     credits = data.creditsLeft;
     localStorage.setItem('m_cred', credits);
     updateUI();
@@ -2256,6 +2272,7 @@ async function generateFromPhoto() {
     document.getElementById('oBadge').textContent = '📸 Outfit dal tuo armadio';
 
   } catch(e) {
+    clearInterval(photoTimer);
     stopLoad();
     document.getElementById('loadingState').classList.remove('vis');
     document.getElementById('emptyState').style.display = 'flex';
