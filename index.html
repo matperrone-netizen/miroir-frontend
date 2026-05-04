@@ -91,23 +91,23 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
 .ointro { font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; font-weight: 300; line-height: 1.8; color: var(--text); margin-bottom: 1.5rem; padding: 1.1rem 1.4rem; background: white; border-radius: 14px; border: 1px solid rgba(232,180,184,0.2); border-left: 3px solid var(--rose); }
 
 /* PINTEREST */
-.pgrid { columns: 3; column-gap: 12px; margin-bottom: 1.5rem; }
-@media (max-width: 1100px) { .pgrid { columns: 2; } }
-.pin { break-inside: avoid; margin-bottom: 12px; background: white; border-radius: 16px; overflow: hidden; border: 1px solid rgba(232,180,184,0.2); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; position: relative; }
-.pin:hover { transform: translateY(-4px); box-shadow: 0 14px 36px rgba(107,79,79,0.12); }
-.piw { position: relative; overflow: hidden; }
-.pimg { width: 100%; display: block; object-fit: cover; transition: transform 0.35s; background: var(--beige-mid); }
-.pin:hover .pimg { transform: scale(1.04); }
-.pph { display: none; width: 100%; background: var(--beige-mid); flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 2rem 1rem; }
-.pov { position: absolute; inset: 0; background: rgba(58,42,42,0.18); opacity: 0; transition: opacity 0.2s; display: flex; align-items: flex-end; padding: 10px; }
-.pin:hover .pov { opacity: 1; }
-.pov-b { background: white; border-radius: 8px; padding: 4px 8px; font-size: 10px; font-weight: 500; color: var(--brown); }
-.pb { padding: 10px 12px 12px; }
-.pcat { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 2px; }
-.pnome { font-size: 0.84rem; font-weight: 500; color: var(--text); margin-bottom: 3px; }
-.pdesc { font-size: 0.73rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 8px; }
-.plink { display: inline-flex; align-items: center; gap: 4px; font-size: 0.69rem; color: var(--rose-dark); background: var(--rose-light); padding: 3px 9px; border-radius: 99px; text-decoration: none; border: 1px solid rgba(232,180,184,0.4); transition: all 0.15s; }
-.plink:hover { background: var(--rose); color: white; }
+.pgrid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:1.5rem; }
+@media (max-width:600px) { .pgrid { grid-template-columns:repeat(2,1fr); gap:8px; } }
+.pin { background:white; border-radius:16px; overflow:hidden; border:1px solid rgba(232,180,184,0.2); cursor:pointer; transition:transform 0.2s,box-shadow 0.2s; display:flex; flex-direction:column; }
+.pin:hover { transform:translateY(-3px); box-shadow:0 10px 28px rgba(107,79,79,0.12); }
+.piw { width:100%; aspect-ratio:1/1; overflow:hidden; display:flex; align-items:center; justify-content:center; background:var(--rose-light); flex-shrink:0; position:relative; }
+.pimg { width:100%; height:100%; object-fit:cover; transition:transform 0.35s; }
+.pin:hover .pimg { transform:scale(1.04); }
+.pph { display:none; }
+.pov { position:absolute; inset:0; background:rgba(58,42,42,0.18); opacity:0; transition:opacity 0.2s; display:flex; align-items:flex-end; padding:10px; }
+.pin:hover .pov { opacity:1; }
+.pov-b { background:white; border-radius:8px; padding:4px 8px; font-size:10px; font-weight:500; color:var(--brown); }
+.pb { padding:10px 12px 12px; flex:1; display:flex; flex-direction:column; }
+.pcat { font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-muted); margin-bottom:2px; }
+.pnome { font-size:0.82rem; font-weight:500; color:var(--text); margin-bottom:3px; line-height:1.3; }
+.pdesc { font-size:0.72rem; color:var(--text-muted); line-height:1.45; margin-bottom:8px; flex:1; }
+.plink { display:inline-flex; align-items:center; gap:4px; font-size:0.69rem; color:var(--rose-dark); background:var(--rose-light); padding:3px 9px; border-radius:99px; text-decoration:none; border:1px solid rgba(232,180,184,0.4); transition:all 0.15s; }
+.plink:hover { background:var(--rose); color:white; }
 .otips { background: white; border-radius: 16px; border: 1px solid rgba(232,180,184,0.2); padding: 1.3rem; margin-bottom: 1.5rem; }
 .otitle { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 500; color: var(--brown); margin-bottom: 0.85rem; }
 .tlist { display: flex; flex-direction: column; gap: 0.5rem; }
@@ -282,14 +282,14 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
   .app-wrap { grid-template-columns: 1fr; }
   .config { border-right: none; border-bottom: 1px solid rgba(232,180,184,0.18); }
   .result { padding: 1.25rem; }
-  .pgrid { columns: 2; }
+  .pgrid { grid-template-columns: repeat(2,1fr); }
   nav { padding: 0.9rem 1.25rem; }
   .pw-plans { grid-template-columns: 1fr; }
   /* Mobile: nascondi nome utente, mostra solo icone */
   .nav-nome { display: none; }
   .nav-logout[title="Il mio profilo"] { display: flex; }
 }
-@media (max-width: 420px) { .pgrid { columns: 1; } }
+@media (max-width: 420px) { .pgrid { grid-template-columns: repeat(2,1fr); } }
 
 /* TAB VARIANTI FASCIA */
 .varianti-tabs { display:flex; gap:6px; margin-bottom:1.25rem; }
@@ -1500,48 +1500,36 @@ function renderVariante(idx, genere) {
   document.getElementById('pgrid').innerHTML = (v.pezzi||[]).map((p,i) => {
     const st = catStyle[p.cat] || catStyle.default;
     const cercaConGenere = genTag + ' ' + (p.cerca || p.nome);
-    const thumbUrl = `https://tse1.mm.bing.net/th?q=${encodeURIComponent(cercaConGenere)}&w=200&h=200&c=7`;
-    const thumbUrlLarge = `https://tse1.mm.bing.net/th?q=${encodeURIComponent(cercaConGenere)}&w=400&h=400&c=7`;
+    const thumbUrl = `https://tse1.mm.bing.net/th?q=${encodeURIComponent(cercaConGenere)}&w=300&h=300&c=7`;
 
-    // Se è il capo dell'utente usa la sua foto
     const isTuo = p.tuo === true;
     const imgSrc = (isTuo && photoBase64) ? `data:${photoType||'image/jpeg'};base64,${photoBase64}` : thumbUrl;
-    const imgSrcLarge = (isTuo && photoBase64) ? `data:${photoType||'image/jpeg'};base64,${photoBase64}` : thumbUrlLarge;
-    const imgBorder = isTuo ? '2px solid var(--rose-dark)' : 'none';
-    const tuoBadge = isTuo ? `<div style="position:absolute;top:6px;left:6px;background:var(--rose-dark);color:white;font-size:0.6rem;padding:2px 7px;border-radius:99px;font-weight:500;">📸 Il tuo</div>` : '';
+    const imgBorder = isTuo ? '3px solid var(--rose-dark)' : 'none';
+    const tuoBadge = isTuo ? `<div style="position:absolute;top:6px;left:6px;background:var(--rose-dark);color:white;font-size:0.6rem;padding:2px 7px;border-radius:99px;font-weight:500;z-index:1;">📸 Il tuo</div>` : '';
 
     const prezzoTag = p.prezzo
-      ? `<span style="font-size:0.7rem;color:var(--rose-dark);font-weight:500;">${p.prezzo}</span>`
-      : isTuo ? `<span style="font-size:0.68rem;color:var(--text-muted);">già tuo</span>` : '';
+      ? `<span style="font-size:0.72rem;color:var(--rose-dark);font-weight:500;margin-left:4px;">${p.prezzo}</span>`
+      : isTuo ? `<span style="font-size:0.68rem;color:var(--text-muted);margin-left:4px;">già tuo</span>` : '';
 
     const stores = getStoreLinks(p);
-    const storeIconsHtml = isTuo ? '' : stores.map(s =>
-      `<a href="${s.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()"
-         style="font-size:0.62rem;padding:3px 7px;border-radius:99px;background:white;color:#5A6A7A;border:1px solid #D9CBBF;text-decoration:none;white-space:nowrap;"
-         title="${s.label}">${s.icon}</a>`
-    ).join('');
-    const storePillsHtml = isTuo ? '<span style="font-size:0.72rem;color:var(--rose-dark);">📸 Dal tuo armadio</span>' : stores.map(s =>
-      `<a class="plink" href="${s.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${s.icon} ${s.label}</a>`
-    ).join('');
+    const storePillsHtml = isTuo
+      ? '<span style="font-size:0.72rem;color:var(--rose-dark);">📸 Dal tuo armadio</span>'
+      : stores.map(s => `<a class="plink" href="${s.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${s.icon} ${s.label}</a>`).join('');
 
     return `
     <div class="pin" onclick="openLB(${i})">
-      <div class="piw" style="height:${p.h||'200px'};background:${st.bg};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:1.25rem;position:relative;">
+      <div class="piw" style="background:${st.bg};">
         ${tuoBadge}
-        <img src="${imgSrc}" alt="${p.nome}"
-          style="width:140px;height:140px;object-fit:cover;border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,0.12);border:${imgBorder};"
-          onerror="this.style.display='none';this.nextElementSibling.style.display='block'"
-          data-large="${imgSrcLarge}">
-        <div style="display:none;font-size:3rem;line-height:1">${st.icon}</div>
-        <div style="font-size:0.8rem;font-weight:500;color:${st.color};text-align:center;max-width:150px;line-height:1.3">${p.nome}</div>
-        ${prezzoTag}
-        <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center;">${storeIconsHtml}</div>
+        <img class="pimg" src="${imgSrc}" alt="${p.nome}" style="border:${imgBorder};"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:3rem;">${st.icon}</div>
+        <div class="pov"><div class="pov-b">Vedi dettagli</div></div>
       </div>
       <div class="pb">
         <div class="pcat">${p.cat}</div>
-        <div class="pnome">${p.nome} ${prezzoTag}</div>
+        <div class="pnome">${p.nome}${prezzoTag}</div>
         <div class="pdesc">${p.desc}</div>
-        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;">${storePillsHtml}</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">${storePillsHtml}</div>
       </div>
     </div>`;
   }).join('');
