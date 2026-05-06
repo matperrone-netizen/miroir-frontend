@@ -2453,8 +2453,11 @@ const BRAND_STORE = {
   'levi':          { label:"Levi's",         url:(q,qi)=>`https://www.levi.com/IT/it_IT/search?keywords=${q}`, icon:'👖' },
   'a.p.c':         { label:'A.P.C.',         url:(q,qi)=>`https://www.apc.fr`, icon:'🔲' },
   'toteme':        { label:'Toteme',         url:(q,qi)=>`https://toteme-studio.com`, icon:'⬛' },
-  'max mara':      { label:'Max Mara',       url:(q,qi)=>`https://www.maxmara.com/it`, icon:'🟫' },
-  'acne':          { label:'Acne Studios',   url:(q,qi)=>`https://www.acnestudios.com`, icon:'🔴' },
+  'loro piana':    { label:'Loro Piana',     url:(q,qi)=>`https://www.loropiana.com/it/eshop/search?q=${q}`, icon:'🏔️' },
+  'brunello':      { label:'B.Cucinelli',    url:(q,qi)=>`https://www.brunellocucinelli.com/it/search?q=${q}`, icon:'🤎' },
+  'the row':       { label:'The Row',        url:(q,qi)=>`https://www.therow.com`, icon:'⬜' },
+  'max mara':      { label:'Max Mara',       url:(q,qi)=>`https://www.maxmara.com/it/search?q=${q}`, icon:'🟫' },
+  'acne':          { label:'Acne Studios',   url:(q,qi)=>`https://www.acnestudios.com/eu/en/search?q=${q}`, icon:'🔴' },
   'isabel marant': { label:'I.Marant',       url:(q,qi)=>`https://www.isabelmarant.com`, icon:'🌿' },
   'ami paris':     { label:'AMI Paris',      url:(q,qi)=>`https://www.amiparis.com`, icon:'❤️' },
   'sandro':        { label:'Sandro',         url:(q,qi)=>`https://www.sandro-paris.com/it`, icon:'🇫🇷' },
@@ -2489,7 +2492,6 @@ const FALLBACK_STORES = [
   { label:'G.Shopping', url: qi => `https://www.google.com/search?tbm=shop&q=${qi}`, icon:'🛒' },
   { label:'Amazon',     url: qi => `https://www.amazon.it/s?k=${qi}&tag=${AMAZON_TAG}`, icon:'📦' },
   { label:'Zalando',    url: qi => `https://www.zalando.it/catalogues/?q=${qi}`,     icon:'👗' },
-  { label:'Zara',       url: qi => `https://www.zara.com/it/it/search?searchTerm=${qi}`, icon:'🏬' },
 ];
 
 function getStoreLinks(p) {
