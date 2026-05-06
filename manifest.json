@@ -1,4 +1,5 @@
 {
+  "id": "it.mir-oir.app",
   "name": "Miroir — Personal Shopper AI",
   "short_name": "Miroir",
   "description": "Il tuo personal shopper AI. Outfit personalizzati per ogni occasione.",
@@ -22,12 +23,5 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["shopping", "lifestyle", "fashion"],
-  "screenshots": [
-    {
-      "src": "screenshot1.png",
-      "sizes": "1080x1920",
-      "type": "image/png"
-    }
-  ]
+  "categories": ["shopping", "lifestyle"]
 }
