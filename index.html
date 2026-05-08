@@ -2506,9 +2506,11 @@ function getStoreLinks(p) {
   const qi = encodeURIComponent(p.nome || p.cerca || '');
   const q  = encodeURIComponent(p.cerca || p.nome || '');
 
-  // Cerca brand specifico nel nome del capo
+  // Cerca brand specifico nel nome del capo (word-boundary safe)
   for (const [key, store] of Object.entries(BRAND_STORE)) {
-    if (nomeLower.includes(key)) {
+    const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(?<![a-z])${escaped}(?![a-z])`);
+    if (regex.test(nomeLower)) {
       return [{ label: store.label, url: store.url(q, qi), icon: store.icon }];
     }
   }
